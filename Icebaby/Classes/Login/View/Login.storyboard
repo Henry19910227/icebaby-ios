@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Login View Controller-->
+        <scene sceneID="mri-t1-uYP">
+            <objects>
+                <viewController storyboardIdentifier="ICLoginViewController" id="sXY-M5-rOs" customClass="ICLoginViewController" customModule="Icebaby" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="eyc-N1-DoU">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="請輸入密碼" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="kca-p0-GPI">
+                                <rect key="frame" x="20" y="269" width="374" height="45"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="1du-vw-rRN"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SSe-aJ-2de">
+                                <rect key="frame" x="20" y="364" width="374" height="45"/>
+                                <color key="backgroundColor" name="AccentColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="ghp-zS-vCv"/>
+                                </constraints>
+                                <state key="normal" title="登入">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                            </button>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="請輸入手機" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lX2-En-4Hj">
+                                <rect key="frame" x="20" y="194" width="374" height="45"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="ckN-Qm-TnV"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="skn-r3-9nq"/>
+                        <color key="backgroundColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="kca-p0-GPI" secondAttribute="trailing" constant="20" id="1cB-QZ-XO2"/>
+                            <constraint firstItem="lX2-En-4Hj" firstAttribute="top" secondItem="skn-r3-9nq" secondAttribute="top" constant="150" id="AiY-Sr-dB9"/>
+                            <constraint firstItem="kca-p0-GPI" firstAttribute="top" secondItem="lX2-En-4Hj" secondAttribute="bottom" constant="30" id="Gmi-TL-AKV"/>
+                            <constraint firstItem="lX2-En-4Hj" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="It7-3i-TNE"/>
+                            <constraint firstItem="SSe-aJ-2de" firstAttribute="top" secondItem="kca-p0-GPI" secondAttribute="bottom" constant="50" id="Opn-iA-S2D"/>
+                            <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="SSe-aJ-2de" secondAttribute="trailing" constant="20" id="Xvr-jq-38s"/>
+                            <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="lX2-En-4Hj" secondAttribute="trailing" constant="20" id="YEF-1b-U8A"/>
+                            <constraint firstItem="SSe-aJ-2de" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="iTA-uT-rKa"/>
+                            <constraint firstItem="kca-p0-GPI" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="maf-91-jcT"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AGk-iu-QBU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="201" y="188"/>
+        </scene>
+    </scenes>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>

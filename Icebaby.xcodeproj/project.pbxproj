@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		19BE90C95533D7C3DEEBF38E /* Pods_IcebabyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43CE1EAE08B454201DD00CB5 /* Pods_IcebabyTests.framework */; };
 		BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8A256ED34F00CC4917 /* AppDelegate.swift */; };
 		BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */; };
 		BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8E256ED34F00CC4917 /* ViewController.swift */; };
@@ -15,6 +16,19 @@
 		BA353E97256ED35100CC4917 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA353E95256ED35100CC4917 /* LaunchScreen.storyboard */; };
 		BA353EA2256ED35100CC4917 /* IcebabyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353EA1256ED35100CC4917 /* IcebabyTests.swift */; };
 		BA353EAD256ED35100CC4917 /* IcebabyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353EAC256ED35100CC4917 /* IcebabyUITests.swift */; };
+		BA353EC82570062D00CC4917 /* ICViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353EC72570062D00CC4917 /* ICViewModel.swift */; };
+		BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353ECF2570066300CC4917 /* ICNavigator.swift */; };
+		BA353EE825700E3E00CC4917 /* APIProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353EE725700E3E00CC4917 /* APIProtocol.swift */; };
+		BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353EEF25700E6400CC4917 /* URLProtocol.swift */; };
+		BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353EF7257013E400CC4917 /* ICApplicationNavigator.swift */; };
+		BA353F05257014CE00CC4917 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA353F04257014CE00CC4917 /* Login.storyboard */; };
+		BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F09257014E300CC4917 /* ICLoginViewController.swift */; };
+		BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F0E2570168E00CC4917 /* ICLoginViewModel.swift */; };
+		BA353F14257016F200CC4917 /* ICLoginNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F13257016F200CC4917 /* ICLoginNavigator.swift */; };
+		BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */; };
+		BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F2925701F1200CC4917 /* ICUser.swift */; };
+		CB51A212AE0F81CAA12F9A4A /* Pods_Icebaby_IcebabyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */; };
+		EBE0E940E18A5A511A065279 /* Pods_Icebaby.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +49,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Icebaby.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Icebaby_IcebabyUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		225E33FB8763C4CEB63E8B46 /* Pods-IcebabyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IcebabyTests.release.xcconfig"; path = "Target Support Files/Pods-IcebabyTests/Pods-IcebabyTests.release.xcconfig"; sourceTree = "<group>"; };
+		43CE1EAE08B454201DD00CB5 /* Pods_IcebabyTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IcebabyTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		484BCC2CC67DD6748DF3B835 /* Pods-Icebaby.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby.release.xcconfig"; path = "Target Support Files/Pods-Icebaby/Pods-Icebaby.release.xcconfig"; sourceTree = "<group>"; };
+		4C8340BB348C7C2F4487EA45 /* Pods-Icebaby-IcebabyUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.debug.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		A7653148BFE51172F96A9637 /* Pods-IcebabyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IcebabyTests.debug.xcconfig"; path = "Target Support Files/Pods-IcebabyTests/Pods-IcebabyTests.debug.xcconfig"; sourceTree = "<group>"; };
+		A7C887AC17529F7F2E13B5B4 /* Pods-Icebaby.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby.debug.xcconfig"; path = "Target Support Files/Pods-Icebaby/Pods-Icebaby.debug.xcconfig"; sourceTree = "<group>"; };
 		BA353E87256ED34F00CC4917 /* Icebaby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Icebaby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA353E8A256ED34F00CC4917 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -49,6 +71,18 @@
 		BA353EA8256ED35100CC4917 /* IcebabyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = IcebabyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA353EAC256ED35100CC4917 /* IcebabyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IcebabyUITests.swift; sourceTree = "<group>"; };
 		BA353EAE256ED35100CC4917 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BA353EC72570062D00CC4917 /* ICViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICViewModel.swift; sourceTree = "<group>"; };
+		BA353ECF2570066300CC4917 /* ICNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICNavigator.swift; sourceTree = "<group>"; };
+		BA353EE725700E3E00CC4917 /* APIProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIProtocol.swift; sourceTree = "<group>"; };
+		BA353EEF25700E6400CC4917 /* URLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLProtocol.swift; sourceTree = "<group>"; };
+		BA353EF7257013E400CC4917 /* ICApplicationNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICApplicationNavigator.swift; sourceTree = "<group>"; };
+		BA353F04257014CE00CC4917 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
+		BA353F09257014E300CC4917 /* ICLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginViewController.swift; sourceTree = "<group>"; };
+		BA353F0E2570168E00CC4917 /* ICLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginViewModel.swift; sourceTree = "<group>"; };
+		BA353F13257016F200CC4917 /* ICLoginNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginNavigator.swift; sourceTree = "<group>"; };
+		BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginAPIService.swift; sourceTree = "<group>"; };
+		BA353F2925701F1200CC4917 /* ICUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUser.swift; sourceTree = "<group>"; };
+		CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.release.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EBE0E940E18A5A511A065279 /* Pods_Icebaby.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19BE90C95533D7C3DEEBF38E /* Pods_IcebabyTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB51A212AE0F81CAA12F9A4A /* Pods_Icebaby_IcebabyUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +120,8 @@
 				BA353EA0256ED35100CC4917 /* IcebabyTests */,
 				BA353EAB256ED35100CC4917 /* IcebabyUITests */,
 				BA353E88256ED34F00CC4917 /* Products */,
+				CD238F742E8F93BC2774B83B /* Pods */,
+				E7873251D0E2388D93A7C8BF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,10 +138,11 @@
 		BA353E89256ED34F00CC4917 /* Icebaby */ = {
 			isa = PBXGroup;
 			children = (
-				BA353E8A256ED34F00CC4917 /* AppDelegate.swift */,
-				BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */,
+				BA353EE625700E2700CC4917 /* API */,
+				BA353EC6257005CD00CC4917 /* Protocol */,
+				BA353F1E25701E3800CC4917 /* Service */,
+				BA353EF425700F0000CC4917 /* Classes */,
 				BA353E8E256ED34F00CC4917 /* ViewController.swift */,
-				BA353E90256ED34F00CC4917 /* Main.storyboard */,
 				BA353E93256ED35100CC4917 /* Assets.xcassets */,
 				BA353E95256ED35100CC4917 /* LaunchScreen.storyboard */,
 				BA353E98256ED35100CC4917 /* Info.plist */,
@@ -128,6 +168,167 @@
 			path = IcebabyUITests;
 			sourceTree = "<group>";
 		};
+		BA353EC6257005CD00CC4917 /* Protocol */ = {
+			isa = PBXGroup;
+			children = (
+				BA353EC72570062D00CC4917 /* ICViewModel.swift */,
+				BA353ECF2570066300CC4917 /* ICNavigator.swift */,
+			);
+			path = Protocol;
+			sourceTree = "<group>";
+		};
+		BA353EE625700E2700CC4917 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				BA353EE725700E3E00CC4917 /* APIProtocol.swift */,
+				BA353EEF25700E6400CC4917 /* URLProtocol.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		BA353EF425700F0000CC4917 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				BA353EF5257010A000CC4917 /* Application */,
+				BA353EFD2570148800CC4917 /* Main */,
+				BA353EFF257014A400CC4917 /* Login */,
+				BA353F2725701EE900CC4917 /* Me */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		BA353EF5257010A000CC4917 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				BA353EFC2570140D00CC4917 /* AppMain */,
+				BA353EF6257013CF00CC4917 /* Navigator */,
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		BA353EF6257013CF00CC4917 /* Navigator */ = {
+			isa = PBXGroup;
+			children = (
+				BA353EF7257013E400CC4917 /* ICApplicationNavigator.swift */,
+			);
+			path = Navigator;
+			sourceTree = "<group>";
+		};
+		BA353EFC2570140D00CC4917 /* AppMain */ = {
+			isa = PBXGroup;
+			children = (
+				BA353E8A256ED34F00CC4917 /* AppDelegate.swift */,
+				BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */,
+			);
+			path = AppMain;
+			sourceTree = "<group>";
+		};
+		BA353EFD2570148800CC4917 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				BA353EFE2570149200CC4917 /* View */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		BA353EFE2570149200CC4917 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				BA353E90256ED34F00CC4917 /* Main.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		BA353EFF257014A400CC4917 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F00257014AD00CC4917 /* Controller */,
+				BA353F01257014B400CC4917 /* ViewModel */,
+				BA353F02257014BA00CC4917 /* Navigator */,
+				BA353F03257014C100CC4917 /* View */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
+		BA353F00257014AD00CC4917 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F09257014E300CC4917 /* ICLoginViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		BA353F01257014B400CC4917 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F0E2570168E00CC4917 /* ICLoginViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		BA353F02257014BA00CC4917 /* Navigator */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F13257016F200CC4917 /* ICLoginNavigator.swift */,
+			);
+			path = Navigator;
+			sourceTree = "<group>";
+		};
+		BA353F03257014C100CC4917 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F04257014CE00CC4917 /* Login.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		BA353F1E25701E3800CC4917 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		BA353F2725701EE900CC4917 /* Me */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F2825701EFB00CC4917 /* Model */,
+			);
+			path = Me;
+			sourceTree = "<group>";
+		};
+		BA353F2825701EFB00CC4917 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				BA353F2925701F1200CC4917 /* ICUser.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		CD238F742E8F93BC2774B83B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A7C887AC17529F7F2E13B5B4 /* Pods-Icebaby.debug.xcconfig */,
+				484BCC2CC67DD6748DF3B835 /* Pods-Icebaby.release.xcconfig */,
+				4C8340BB348C7C2F4487EA45 /* Pods-Icebaby-IcebabyUITests.debug.xcconfig */,
+				CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */,
+				A7653148BFE51172F96A9637 /* Pods-IcebabyTests.debug.xcconfig */,
+				225E33FB8763C4CEB63E8B46 /* Pods-IcebabyTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		E7873251D0E2388D93A7C8BF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */,
+				0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */,
+				43CE1EAE08B454201DD00CB5 /* Pods_IcebabyTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -135,9 +336,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BA353EB1256ED35100CC4917 /* Build configuration list for PBXNativeTarget "Icebaby" */;
 			buildPhases = (
+				1582B737F775941158F683F0 /* [CP] Check Pods Manifest.lock */,
 				BA353E83256ED34F00CC4917 /* Sources */,
 				BA353E84256ED34F00CC4917 /* Frameworks */,
 				BA353E85256ED34F00CC4917 /* Resources */,
+				F3989FD21AF9B259DAD8D1C6 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -152,6 +355,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BA353EB4256ED35100CC4917 /* Build configuration list for PBXNativeTarget "IcebabyTests" */;
 			buildPhases = (
+				E4D41F048DDCE2755FCBBF3D /* [CP] Check Pods Manifest.lock */,
 				BA353E99256ED35100CC4917 /* Sources */,
 				BA353E9A256ED35100CC4917 /* Frameworks */,
 				BA353E9B256ED35100CC4917 /* Resources */,
@@ -170,9 +374,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BA353EB7256ED35100CC4917 /* Build configuration list for PBXNativeTarget "IcebabyUITests" */;
 			buildPhases = (
+				C92B54655FDF80DBBFF4DDAD /* [CP] Check Pods Manifest.lock */,
 				BA353EA4256ED35100CC4917 /* Sources */,
 				BA353EA5256ED35100CC4917 /* Frameworks */,
 				BA353EA6256ED35100CC4917 /* Resources */,
+				389C88A10F57C759A0FC31C7 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -231,6 +437,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA353F05257014CE00CC4917 /* Login.storyboard in Resources */,
 				BA353E97256ED35100CC4917 /* LaunchScreen.storyboard in Resources */,
 				BA353E94256ED35100CC4917 /* Assets.xcassets in Resources */,
 				BA353E92256ED34F00CC4917 /* Main.storyboard in Resources */,
@@ -253,14 +460,127 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1582B737F775941158F683F0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Icebaby-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		389C88A10F57C759A0FC31C7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C92B54655FDF80DBBFF4DDAD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Icebaby-IcebabyUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E4D41F048DDCE2755FCBBF3D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-IcebabyTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F3989FD21AF9B259DAD8D1C6 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Icebaby/Pods-Icebaby-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Icebaby/Pods-Icebaby-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Icebaby/Pods-Icebaby-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		BA353E83256ED34F00CC4917 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BA353EC82570062D00CC4917 /* ICViewModel.swift in Sources */,
 				BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */,
+				BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */,
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
+				BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */,
+				BA353F14257016F200CC4917 /* ICLoginNavigator.swift in Sources */,
+				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
+				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
+				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
+				BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */,
+				BA353EE825700E3E00CC4917 /* APIProtocol.swift in Sources */,
 				BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */,
+				BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -373,6 +693,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -427,12 +748,14 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 		BA353EB2256ED35100CC4917 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A7C887AC17529F7F2E13B5B4 /* Pods-Icebaby.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -452,6 +775,7 @@
 		};
 		BA353EB3256ED35100CC4917 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 484BCC2CC67DD6748DF3B835 /* Pods-Icebaby.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -471,6 +795,7 @@
 		};
 		BA353EB5256ED35100CC4917 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A7653148BFE51172F96A9637 /* Pods-IcebabyTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -493,6 +818,7 @@
 		};
 		BA353EB6256ED35100CC4917 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 225E33FB8763C4CEB63E8B46 /* Pods-IcebabyTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -515,6 +841,7 @@
 		};
 		BA353EB8256ED35100CC4917 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4C8340BB348C7C2F4487EA45 /* Pods-Icebaby-IcebabyUITests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -535,6 +862,7 @@
 		};
 		BA353EB9256ED35100CC4917 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
