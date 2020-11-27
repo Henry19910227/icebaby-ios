@@ -24,9 +24,14 @@
 		BA353F05257014CE00CC4917 /* Login.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BA353F04257014CE00CC4917 /* Login.storyboard */; };
 		BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F09257014E300CC4917 /* ICLoginViewController.swift */; };
 		BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F0E2570168E00CC4917 /* ICLoginViewModel.swift */; };
-		BA353F14257016F200CC4917 /* ICLoginNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F13257016F200CC4917 /* ICLoginNavigator.swift */; };
+		BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F13257016F200CC4917 /* ICLoginRootNavigator.swift */; };
 		BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */; };
 		BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F2925701F1200CC4917 /* ICUser.swift */; };
+		C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A256F2570D26B00FCFA8D /* ICMainTabBarController.swift */; };
+		C77A25792570D5DD00FCFA8D /* Me.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C77A25782570D5DD00FCFA8D /* Me.storyboard */; };
+		C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A257E2570D61100FCFA8D /* ICMeViewController.swift */; };
+		C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */; };
+		C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */; };
 		CB51A212AE0F81CAA12F9A4A /* Pods_Icebaby_IcebabyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */; };
 		EBE0E940E18A5A511A065279 /* Pods_Icebaby.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */; };
 /* End PBXBuildFile section */
@@ -79,9 +84,14 @@
 		BA353F04257014CE00CC4917 /* Login.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Login.storyboard; sourceTree = "<group>"; };
 		BA353F09257014E300CC4917 /* ICLoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginViewController.swift; sourceTree = "<group>"; };
 		BA353F0E2570168E00CC4917 /* ICLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginViewModel.swift; sourceTree = "<group>"; };
-		BA353F13257016F200CC4917 /* ICLoginNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginNavigator.swift; sourceTree = "<group>"; };
+		BA353F13257016F200CC4917 /* ICLoginRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginRootNavigator.swift; sourceTree = "<group>"; };
 		BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginAPIService.swift; sourceTree = "<group>"; };
 		BA353F2925701F1200CC4917 /* ICUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUser.swift; sourceTree = "<group>"; };
+		C77A256F2570D26B00FCFA8D /* ICMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarController.swift; sourceTree = "<group>"; };
+		C77A25782570D5DD00FCFA8D /* Me.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Me.storyboard; sourceTree = "<group>"; };
+		C77A257E2570D61100FCFA8D /* ICMeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeViewController.swift; sourceTree = "<group>"; };
+		C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeRootNavigator.swift; sourceTree = "<group>"; };
+		C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarNavigator.swift; sourceTree = "<group>"; };
 		CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.release.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -226,6 +236,8 @@
 		BA353EFD2570148800CC4917 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				C77A256E2570D22F00FCFA8D /* Controller */,
+				C77A258F2570D6D000FCFA8D /* Navigator */,
 				BA353EFE2570149200CC4917 /* View */,
 			);
 			path = Main;
@@ -269,7 +281,7 @@
 		BA353F02257014BA00CC4917 /* Navigator */ = {
 			isa = PBXGroup;
 			children = (
-				BA353F13257016F200CC4917 /* ICLoginNavigator.swift */,
+				BA353F13257016F200CC4917 /* ICLoginRootNavigator.swift */,
 			);
 			path = Navigator;
 			sourceTree = "<group>";
@@ -293,7 +305,10 @@
 		BA353F2725701EE900CC4917 /* Me */ = {
 			isa = PBXGroup;
 			children = (
+				C77A257D2570D5E300FCFA8D /* Controller */,
 				BA353F2825701EFB00CC4917 /* Model */,
+				C77A25862570D61700FCFA8D /* Navigator */,
+				C77A25772570D5C900FCFA8D /* View */,
 			);
 			path = Me;
 			sourceTree = "<group>";
@@ -304,6 +319,46 @@
 				BA353F2925701F1200CC4917 /* ICUser.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		C77A256E2570D22F00FCFA8D /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				C77A256F2570D26B00FCFA8D /* ICMainTabBarController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		C77A25772570D5C900FCFA8D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C77A25782570D5DD00FCFA8D /* Me.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C77A257D2570D5E300FCFA8D /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				C77A257E2570D61100FCFA8D /* ICMeViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		C77A25862570D61700FCFA8D /* Navigator */ = {
+			isa = PBXGroup;
+			children = (
+				C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */,
+			);
+			path = Navigator;
+			sourceTree = "<group>";
+		};
+		C77A258F2570D6D000FCFA8D /* Navigator */ = {
+			isa = PBXGroup;
+			children = (
+				C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */,
+			);
+			path = Navigator;
 			sourceTree = "<group>";
 		};
 		CD238F742E8F93BC2774B83B /* Pods */ = {
@@ -439,6 +494,7 @@
 			files = (
 				BA353F05257014CE00CC4917 /* Login.storyboard in Resources */,
 				BA353E97256ED35100CC4917 /* LaunchScreen.storyboard in Resources */,
+				C77A25792570D5DD00FCFA8D /* Me.storyboard in Resources */,
 				BA353E94256ED35100CC4917 /* Assets.xcassets in Resources */,
 				BA353E92256ED34F00CC4917 /* Main.storyboard in Resources */,
 			);
@@ -573,14 +629,18 @@
 				BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */,
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
 				BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */,
-				BA353F14257016F200CC4917 /* ICLoginNavigator.swift in Sources */,
+				C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */,
+				BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */,
 				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
+				C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */,
 				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
 				BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */,
 				BA353EE825700E3E00CC4917 /* APIProtocol.swift in Sources */,
 				BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */,
+				C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */,
 				BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */,
+				C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

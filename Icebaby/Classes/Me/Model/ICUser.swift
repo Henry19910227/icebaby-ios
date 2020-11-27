@@ -8,5 +8,9 @@
 import UIKit
 
 class ICUser: Codable {
-
+    var id: Int?
+    var nickname: String?
+    var role: Int?
+    var status: Int?
+    var loginStatus: Int?
 }
