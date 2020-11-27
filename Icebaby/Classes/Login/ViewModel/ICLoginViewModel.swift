@@ -21,9 +21,15 @@ class ICLoginViewModel: ICViewModel {
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
     
+    //Param
+    private var identifier = ""
+    private var password = ""
+    
     
     struct Input {
         public let loginTap: Driver<Void>
+        public let identifier: Driver<String?>
+        public let password: Driver<String?>
     }
     
     struct Output {
@@ -36,28 +42,65 @@ class ICLoginViewModel: ICViewModel {
     }
     
     @discardableResult func transform(input: Input) -> Output {
-        input
-            .loginTap.do(onNext: { [unowned self] (_) in
-                self.apiUserLogin()
-            })
-            .drive()
-            .disposed(by: disposeBag)
+        bindIdentifierDriver(input.identifier)
+        bindPasswordDriver(input.password)
+        bindLoginTap(input.loginTap)
+        
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false))
     }
 }
 
+//MARK: - Bind
+extension ICLoginViewModel {
+    private func bindLoginTap(_ loginTap: Driver<Void>) {
+        loginTap
+            .do(onNext: { [unowned self] (_) in
+                self.apiUserLogin()
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIdentifierDriver(_ identifierDriver: Driver<String?>) {
+        identifierDriver
+           .do(onNext: { [unowned self] (identifier) in
+                self.identifier = identifier ?? ""
+           })
+           .drive()
+           .disposed(by: disposeBag)
+    }
+    
+    private func bindPasswordDriver(_ passwordDriver: Driver<String?>) {
+        passwordDriver
+           .do(onNext: { [unowned self] (password) in
+                self.password = password ?? ""
+           })
+           .drive()
+           .disposed(by: disposeBag)
+    }
+}
+
+//MARK: - API
 extension ICLoginViewModel {
     func apiUserLogin() {
         showLoadingSubject.onNext(true)
         loginAPIService
-            .apiUserLogin(identifier: "0978820789", password: "12345678")
+            .apiUserLogin(identifier: identifier, password: password)
             .subscribe(onSuccess: { [unowned self] (user) in
                 self.showLoadingSubject.onNext(false)
                 self.navigator.presendToMain()
             }) { [unowned self] (error) in
+                switch error as! APIError {
+                case .requestError(let desc):
+                    print(desc)
+                case .tokenInvalid:
+                    print("無效的 Token")
+                default:
+                    print("Error")
+                    break
+                }
                 self.showLoadingSubject.onNext(false)
             }
             .disposed(by: disposeBag)
-        
     }
 }

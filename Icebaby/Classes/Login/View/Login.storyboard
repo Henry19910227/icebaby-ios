@@ -23,7 +23,7 @@
                                     <constraint firstAttribute="height" constant="45" id="1du-vw-rRN"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SSe-aJ-2de">
                                 <rect key="frame" x="20" y="364" width="374" height="45"/>
@@ -42,7 +42,7 @@
                                     <constraint firstAttribute="height" constant="45" id="ckN-Qm-TnV"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="tel"/>
                             </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="skn-r3-9nq"/>
@@ -61,6 +61,8 @@
                     </view>
                     <connections>
                         <outlet property="loginButton" destination="SSe-aJ-2de" id="CsJ-Kg-Yxi"/>
+                        <outlet property="mobileTextField" destination="lX2-En-4Hj" id="tex-o4-kNv"/>
+                        <outlet property="pwdTextField" destination="kca-p0-GPI" id="poQ-W3-css"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AGk-iu-QBU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

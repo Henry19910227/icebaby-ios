@@ -43,16 +43,27 @@ protocol APIToken {
 
 extension APIBaseRequest {
     func sendRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?, headers: HTTPHeaders?) -> Single<JSON> {
-
         return Single<JSON>.create { (single) -> Disposable in
-            let _ = request(medthod, url, parameters: parameter, headers: headers)
-                .json()
-                .map({JSON($0)})
-                .subscribe(onNext: { (item) in
-                    single(.success(item))
-                },onError: { (error) in
-                    single(.error(APIError.requestError(desc: error.localizedDescription)))
-                })
+            AF.request(url, method: medthod, parameters: parameter, encoding: JSONEncoding.default, headers: headers)
+                .responseJSON { (response) in
+                    guard let value = response.value else {
+                        single(.error(APIError.NullData))
+                        return
+                    }
+                    switch response.response?.statusCode ?? 0 {
+                    case 200:
+                        single(.success(JSON(value)))
+                    case 400:
+                        let msg = JSON(value).dictionary?["msg"]?.string ?? ""
+                        single(.error(APIError.requestError(desc: msg)))
+                    case 403:
+                        single(.error(APIError.tokenInvalid))
+                    default:
+                        let msg = JSON(value).dictionary?["msg"]?.string ?? ""
+                        single(.error(APIError.requestError(desc: msg)))
+                        break
+                    }
+                }
             return Disposables.create()
         }
     }
@@ -86,18 +97,9 @@ extension APIRequest {
             let headers = (url != self.loginURL) ? HTTPHeaders(["token": self.token() ?? ""]) : nil
             let _ = self.sendRequest(medthod: medthod, url: url, parameter: parameter, headers: headers)
                 .subscribe(onSuccess: { (result) in
-                    switch result["code"].intValue {
-                    case 400:
-                        let errorMsg = result["msg"].string ?? ""
-                        single(.error(APIError.requestError(desc: errorMsg)))
-                    case 403:
-                        single(.error(APIError.tokenInvalid))
-                    default:
-                        single(.success(result))
-                        break
-                    }
+                    single(.success(result))
                 }) { (error) in
-                    single(.error(APIError.requestError(desc: error.localizedDescription)))
+                    single(.error(error))
                 }
             return Disposables.create()
         }
