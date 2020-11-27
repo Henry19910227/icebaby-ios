@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ICLoginNavigator {
+class ICLoginRootNavigator {
     weak var storyboard: UIStoryboard?
     weak var navigationController: UINavigationController?
     weak var window: UIWindow?
@@ -19,9 +19,18 @@ class ICLoginNavigator {
     }
 }
 
-extension ICLoginNavigator: ICRootNavigator {
+extension ICLoginRootNavigator: ICRootNavigator {
     func toRoot() {
         let vc = storyboard?.instantiateViewController(withIdentifier: "ICLoginViewController") as! ICLoginViewController
+        vc.viewModel = ICLoginViewModel(navigator: self, loginAPIService: ICLoginAPIService())
         navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func presendToMain() {
+        let mainTabBarController = ICMainTabBarController()
+        mainTabBarController.modalPresentationStyle = .fullScreen
+        mainTabBarController.modalTransitionStyle = .flipHorizontal
+        ICMainTabBarNavigator(window,mainTabBarController).toMain()
+        navigationController?.present(mainTabBarController, animated: true, completion: nil)
     }
 }

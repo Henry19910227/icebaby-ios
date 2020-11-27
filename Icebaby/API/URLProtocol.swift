@@ -7,14 +7,14 @@
 
 import Foundation
 
-protocol CKBaseURL {
+protocol ICBaseURL {
     var baseURL: URL { get }
 }
-protocol CKLoginURL: CKBaseURL {
+protocol ICLoginURL: ICBaseURL {
     var registerURL: URL { get }
     var loginURL: URL { get }
 }
-protocol CKCourtURL: CKBaseURL {
+protocol ICCourtURL: ICBaseURL {
     var getLocationsURL: URL { get }
     var getLocationDetailURL: URL { get }
     var checkin: URL { get }
@@ -22,41 +22,41 @@ protocol CKCourtURL: CKBaseURL {
     var getFavoriteCourtURL: URL { get }
     var inCourtRange: URL { get }
 }
-protocol CKCourtDetailURL: CKBaseURL {
+protocol ICCourtDetailURL: ICBaseURL {
     var getCourtDetailURL: URL { get }
     var addFavoriteURL: URL { get }
     var deleteFavoriteURL: URL { get }
 }
-protocol CKUserURL: CKBaseURL {
+protocol ICUserURL: ICBaseURL {
     var userDetailURL: URL { get }
     var editUserDetailURL: URL { get }
     var editUserImageURL: URL { get }
 }
-protocol CKMessageURL: CKBaseURL {
+protocol ICMessageURL: ICBaseURL {
     var getMessageURL: URL { get }
     var addMessageURL: URL { get }
 }
-protocol CKFavoriteURL: CKBaseURL {
+protocol ICFavoriteURL: ICBaseURL {
     var getFavoriteCourtURL: URL { get }
     var addFavoriteURL: URL { get }
     var deleteFavoriteURL: URL { get }
 }
 
 
-extension CKBaseURL {
+extension ICBaseURL {
     var baseURL: URL {
-        return URL(string: "https://chuck-sit.dot-tw.com")!
+        return URL(string: "http://127.0.0.1:9090")!
     }
 }
-extension CKLoginURL {
+extension ICLoginURL {
     var registerURL: URL {
-        return URL(string: "\(baseURL)/WebBridge/api/User/Register")!
+        return URL(string: "\(baseURL)/icebaby/v1/register")!
     }
     var loginURL: URL {
-        return URL(string: "\(baseURL)/WebBridge/api/User/Login")!
+        return URL(string: "\(baseURL)/icebaby/v1/login")!
     }
 }
-extension CKCourtURL {
+extension ICCourtURL {
     var getLocationsURL: URL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/GetLocations")!
     }
@@ -79,7 +79,7 @@ extension CKCourtURL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/InCourtRange")!
     }
 }
-extension CKCourtDetailURL {
+extension ICCourtDetailURL {
     var getCourtDetailURL: URL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/GetDetail")!
     }
@@ -90,7 +90,7 @@ extension CKCourtDetailURL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/DeleteFavorite")!
     }
 }
-extension CKUserURL {
+extension ICUserURL {
     var userDetailURL: URL {
         return URL(string: "\(baseURL)/WebBridge/api/User/GetSomeoneDetail")!
     }
@@ -101,7 +101,7 @@ extension CKUserURL {
         return URL(string: "\(baseURL)/WebBridge/api/User/UploadSelfImage")!
     }
 }
-extension CKMessageURL {
+extension ICMessageURL {
     var getMessageURL: URL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/GetMessage")!
     }
@@ -112,7 +112,7 @@ extension CKMessageURL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/DeleteMessage")!
     }
 }
-extension CKFavoriteURL {
+extension ICFavoriteURL {
     var getFavoriteCourtURL: URL {
         return URL(string: "\(baseURL)/WebBridge/api/User/GetSelfFavoriteCourt")!
     }

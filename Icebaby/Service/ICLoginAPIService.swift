@@ -11,12 +11,12 @@ import RxCocoa
 import RxAlamofire
 import SwiftyJSON
 
-protocol CKLoginAPIProtocol {
+protocol ICLoginAPI {
     func apiUserRegister(parameter: [String: Any]?) -> Single<ICUser>
-    func apiUserLogin(type: Int, loginId: String, loginPwd: String) -> Single<ICUser>
+    func apiUserLogin(identifier: String, password: String) -> Single<ICUser>
 }
 
-class CKLoginAPIService: CKLoginAPIProtocol, APIRequest, APIToken, CKLoginURL, APIDataTransform {
+class ICLoginAPIService: ICLoginAPI, APIRequest, APIToken, ICLoginURL, APIDataTransform {
     
     func apiUserRegister(parameter: [String: Any]?) -> Single<ICUser>  {
         return Single<ICUser>.create { [unowned self] (single) -> Disposable in
@@ -37,15 +37,15 @@ class CKLoginAPIService: CKLoginAPIProtocol, APIRequest, APIToken, CKLoginURL, A
         }
     }
     
-    func apiUserLogin(type: Int, loginId: String, loginPwd: String) -> Single<ICUser> {
+    func apiUserLogin(identifier: String, password: String) -> Single<ICUser> {
         return Single<ICUser>.create { [unowned self] (single) -> Disposable in
-            let parameter: [String: Any] = ["Type": type, "LoginId": loginId, "LoginPass": loginPwd]
+            let parameter: [String: Any] = ["identifier": identifier, "password": password]
             let _ = self.apiRequest(medthod: .post, url: self.loginURL, parameter: parameter)
                 .do(onSuccess: { [unowned self] (result) in
-                    self.saveToken(result["Data"]["Token"].string ?? "")
+                    self.saveToken(result["token"].string ?? "")
                 })
                 .map({ [unowned self] (result) -> ICUser? in
-                    return self.dataDecoderTransform(ICUser.self, result.dictionaryValue["Data"] ?? JSON())
+                    return self.dataDecoderTransform(ICUser.self, result.dictionaryValue["data"] ?? JSON())
                 })
                 .subscribe(onSuccess: { (user) in
                     guard let user = user else {

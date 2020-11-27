@@ -24,7 +24,7 @@ protocol APIBaseRequest {
     func uploadFile(medthod: HTTPMethod, url: URL, data: Data, headers: HTTPHeaders?) -> Single<JSON>
 }
 
-protocol APIRequest: APIBaseRequest, APIToken, CKLoginURL {
+protocol APIRequest: APIBaseRequest, APIToken, ICLoginURL {
     func apiRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?) -> Single<JSON>
     func apiUploadFile(medthod: HTTPMethod, url: URL, data: Data) -> Single<JSON>
 }
@@ -43,6 +43,7 @@ protocol APIToken {
 
 extension APIBaseRequest {
     func sendRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?, headers: HTTPHeaders?) -> Single<JSON> {
+
         return Single<JSON>.create { (single) -> Disposable in
             let _ = request(medthod, url, parameters: parameter, headers: headers)
                 .json()
@@ -82,12 +83,12 @@ extension APIBaseRequest {
 extension APIRequest {
     public func apiRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?) -> Single<JSON> {
         return Single<JSON>.create { (single) -> Disposable in
-            let headers = (url != self.loginURL) ? HTTPHeaders(["Token": self.token() ?? ""]) : nil
+            let headers = (url != self.loginURL) ? HTTPHeaders(["token": self.token() ?? ""]) : nil
             let _ = self.sendRequest(medthod: medthod, url: url, parameter: parameter, headers: headers)
                 .subscribe(onSuccess: { (result) in
-                    switch result["Code"].intValue {
+                    switch result["code"].intValue {
                     case 400:
-                        let errorMsg = result["Message"].string ?? ""
+                        let errorMsg = result["msg"].string ?? ""
                         single(.error(APIError.requestError(desc: errorMsg)))
                     case 403:
                         single(.error(APIError.tokenInvalid))

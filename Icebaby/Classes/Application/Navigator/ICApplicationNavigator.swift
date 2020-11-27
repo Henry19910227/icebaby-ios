@@ -20,6 +20,6 @@ class ICApplicationNavigator: ICAppNavigator {
         let loginStoryboard = UIStoryboard(name: "Login", bundle: nil)
         let loginNav = UINavigationController()
         window.rootViewController = loginNav
-        ICLoginNavigator(window, loginNav, loginStoryboard).toRoot()
+        ICLoginRootNavigator(window, loginNav, loginStoryboard).toRoot()
     }
 }

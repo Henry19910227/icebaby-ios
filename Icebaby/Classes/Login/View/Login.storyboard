@@ -59,6 +59,9 @@
                             <constraint firstItem="kca-p0-GPI" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="maf-91-jcT"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="loginButton" destination="SSe-aJ-2de" id="CsJ-Kg-Yxi"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AGk-iu-QBU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
