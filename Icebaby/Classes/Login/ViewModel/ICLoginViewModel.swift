@@ -20,6 +20,7 @@ class ICLoginViewModel: ICViewModel {
     
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
+    private let showErrorMsgSubject = PublishSubject<String>()
     
     //Param
     private var identifier = ""
@@ -34,6 +35,7 @@ class ICLoginViewModel: ICViewModel {
     
     struct Output {
         public let showLoading: Driver<Bool>
+        public let showErrorMsg: Driver<String>
     }
     
     init(navigator: ICLoginRootNavigator, loginAPIService: ICLoginAPI) {
@@ -46,7 +48,8 @@ class ICLoginViewModel: ICViewModel {
         bindPasswordDriver(input.password)
         bindLoginTap(input.loginTap)
         
-        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false))
+        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -91,9 +94,8 @@ extension ICLoginViewModel {
                 self.navigator.presendToMain()
             }) { [unowned self] (error) in
                 self.showLoadingSubject.onNext(false)
-                guard let e = error as? ICError else { return }
-                print("錯誤碼 : \(e.code ?? 0)")
-                print("錯誤訊息 : \(e.msg ?? "")")
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
     }

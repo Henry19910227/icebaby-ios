@@ -27,6 +27,9 @@
 		BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F13257016F200CC4917 /* ICLoginRootNavigator.swift */; };
 		BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */; };
 		BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353F2925701F1200CC4917 /* ICUser.swift */; };
+		BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCAC9A2576C51500D98060 /* ICBaseViewController.swift */; };
+		BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */; };
+		BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */; };
 		C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A256F2570D26B00FCFA8D /* ICMainTabBarController.swift */; };
 		C77A25792570D5DD00FCFA8D /* Me.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C77A25782570D5DD00FCFA8D /* Me.storyboard */; };
 		C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A257E2570D61100FCFA8D /* ICMeViewController.swift */; };
@@ -87,6 +90,9 @@
 		BA353F13257016F200CC4917 /* ICLoginRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginRootNavigator.swift; sourceTree = "<group>"; };
 		BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoginAPIService.swift; sourceTree = "<group>"; };
 		BA353F2925701F1200CC4917 /* ICUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUser.swift; sourceTree = "<group>"; };
+		BADCAC9A2576C51500D98060 /* ICBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICBaseViewController.swift; sourceTree = "<group>"; };
+		BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoadingProgressHUD.swift; sourceTree = "<group>"; };
+		BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICProgressHUD.swift; sourceTree = "<group>"; };
 		C77A256F2570D26B00FCFA8D /* ICMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarController.swift; sourceTree = "<group>"; };
 		C77A25782570D5DD00FCFA8D /* Me.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Me.storyboard; sourceTree = "<group>"; };
 		C77A257E2570D61100FCFA8D /* ICMeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeViewController.swift; sourceTree = "<group>"; };
@@ -150,6 +156,7 @@
 			children = (
 				BA353EE625700E2700CC4917 /* API */,
 				BA353EC6257005CD00CC4917 /* Protocol */,
+				BADCACA22576C52300D98060 /* Tool */,
 				BA353F1E25701E3800CC4917 /* Service */,
 				BA353EF425700F0000CC4917 /* Classes */,
 				BA353E8E256ED34F00CC4917 /* ViewController.swift */,
@@ -183,6 +190,7 @@
 			children = (
 				BA353EC72570062D00CC4917 /* ICViewModel.swift */,
 				BA353ECF2570066300CC4917 /* ICNavigator.swift */,
+				BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */,
 			);
 			path = Protocol;
 			sourceTree = "<group>";
@@ -199,6 +207,7 @@
 		BA353EF425700F0000CC4917 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				BADCAC992576C4F700D98060 /* Base */,
 				BA353EF5257010A000CC4917 /* Application */,
 				BA353EFD2570148800CC4917 /* Main */,
 				BA353EFF257014A400CC4917 /* Login */,
@@ -319,6 +328,22 @@
 				BA353F2925701F1200CC4917 /* ICUser.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		BADCAC992576C4F700D98060 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				BADCAC9A2576C51500D98060 /* ICBaseViewController.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		BADCACA22576C52300D98060 /* Tool */ = {
+			isa = PBXGroup;
+			children = (
+				BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */,
+			);
+			path = Tool;
 			sourceTree = "<group>";
 		};
 		C77A256E2570D22F00FCFA8D /* Controller */ = {
@@ -630,11 +655,14 @@
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
 				BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */,
 				C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */,
+				BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */,
 				BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */,
 				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
 				C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */,
 				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
+				BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */,
+				BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */,
 				BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */,
 				BA353EE825700E3E00CC4917 /* APIProtocol.swift in Sources */,
 				BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */,

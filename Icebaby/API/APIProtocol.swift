@@ -22,6 +22,10 @@ enum APIError: Error {
 class ICError: Codable, Error {
     var code: Int?
     var msg: String?
+    init(_ code: Int?, _ msg: String?) {
+        self.code = code
+        self.msg = msg
+    }
 }
 
 protocol APIBaseRequest: APIDataTransform {
@@ -52,20 +56,17 @@ extension APIBaseRequest {
             AF.request(url, method: medthod, parameters: parameter, encoding: JSONEncoding.default, headers: headers)
                 .responseJSON { (response) in
                     guard let value = response.value else {
-                        let e = ICError()
-                        e.code = 0
-                        e.msg = "Null Data!"
-                        single(.error(e))
+                        single(.error(ICError(0, "不明的錯誤!")))
                         return
                     }
                     switch response.response?.statusCode ?? 0 {
                     case 200:
                         single(.success(JSON(value)))
                     case 400:
-                        let err = self.dataDecoderTransform(ICError.self, JSON(value)) ?? ICError()
+                        let err = self.dataDecoderTransform(ICError.self, JSON(value)) ?? ICError(0, "")
                         single(.error(err))
                     default:
-                        let err = self.dataDecoderTransform(ICError.self, JSON(value)) ?? ICError()
+                        let err = self.dataDecoderTransform(ICError.self, JSON(value)) ?? ICError(0, "")
                         single(.error(err))
                         break
                     }
