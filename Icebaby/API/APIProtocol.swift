@@ -19,7 +19,12 @@ enum APIError: Error {
     case tokenInvalid
 }
 
-protocol APIBaseRequest {
+class ICError: Codable, Error {
+    var code: Int?
+    var msg: String?
+}
+
+protocol APIBaseRequest: APIDataTransform {
     func sendRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?, headers: HTTPHeaders?) -> Single<JSON>
     func uploadFile(medthod: HTTPMethod, url: URL, data: Data, headers: HTTPHeaders?) -> Single<JSON>
 }
@@ -47,20 +52,21 @@ extension APIBaseRequest {
             AF.request(url, method: medthod, parameters: parameter, encoding: JSONEncoding.default, headers: headers)
                 .responseJSON { (response) in
                     guard let value = response.value else {
-                        single(.error(APIError.NullData))
+                        let e = ICError()
+                        e.code = 0
+                        e.msg = "Null Data!"
+                        single(.error(e))
                         return
                     }
                     switch response.response?.statusCode ?? 0 {
                     case 200:
                         single(.success(JSON(value)))
                     case 400:
-                        let msg = JSON(value).dictionary?["msg"]?.string ?? ""
-                        single(.error(APIError.requestError(desc: msg)))
-                    case 403:
-                        single(.error(APIError.tokenInvalid))
+                        let err = self.dataDecoderTransform(ICError.self, JSON(value)) ?? ICError()
+                        single(.error(err))
                     default:
-                        let msg = JSON(value).dictionary?["msg"]?.string ?? ""
-                        single(.error(APIError.requestError(desc: msg)))
+                        let err = self.dataDecoderTransform(ICError.self, JSON(value)) ?? ICError()
+                        single(.error(err))
                         break
                     }
                 }

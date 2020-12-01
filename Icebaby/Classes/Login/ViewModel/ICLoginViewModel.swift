@@ -90,16 +90,10 @@ extension ICLoginViewModel {
                 self.showLoadingSubject.onNext(false)
                 self.navigator.presendToMain()
             }) { [unowned self] (error) in
-                switch error as! APIError {
-                case .requestError(let desc):
-                    print(desc)
-                case .tokenInvalid:
-                    print("無效的 Token")
-                default:
-                    print("Error")
-                    break
-                }
                 self.showLoadingSubject.onNext(false)
+                guard let e = error as? ICError else { return }
+                print("錯誤碼 : \(e.code ?? 0)")
+                print("錯誤訊息 : \(e.msg ?? "")")
             }
             .disposed(by: disposeBag)
     }
