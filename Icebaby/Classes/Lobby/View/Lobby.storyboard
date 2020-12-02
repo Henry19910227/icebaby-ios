@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Lobby View Controller-->
+        <scene sceneID="7rH-qk-CDp">
+            <objects>
+                <viewController storyboardIdentifier="ICLobbyViewController" id="kyg-yO-yPe" customClass="ICLobbyViewController" customModule="Icebaby" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Clt-IG-a9I">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="TMz-5j-O4C">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="ICLobbyCell" rowHeight="70" id="Ieg-b8-JVT" customClass="ICLobbyCell" customModule="Icebaby" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="28" width="414" height="70"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ieg-b8-JVT" id="xNS-TV-xP4">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="70"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Henry" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jL5-c9-kDd">
+                                                    <rect key="frame" x="20" y="24.5" width="46" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ukE-hY-Huh">
+                                                    <rect key="frame" x="0.0" y="69" width="414" height="1"/>
+                                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="1" id="hSL-XK-LjR"/>
+                                                    </constraints>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="ukE-hY-Huh" firstAttribute="leading" secondItem="xNS-TV-xP4" secondAttribute="leading" id="FHz-hA-164"/>
+                                                <constraint firstAttribute="bottom" secondItem="ukE-hY-Huh" secondAttribute="bottom" id="N4Q-OY-W6F"/>
+                                                <constraint firstAttribute="trailing" secondItem="ukE-hY-Huh" secondAttribute="trailing" id="b4f-QJ-b9C"/>
+                                                <constraint firstItem="jL5-c9-kDd" firstAttribute="centerY" secondItem="xNS-TV-xP4" secondAttribute="centerY" id="q8G-Mx-DQe"/>
+                                                <constraint firstItem="jL5-c9-kDd" firstAttribute="leading" secondItem="xNS-TV-xP4" secondAttribute="leading" constant="20" id="qQ4-Mq-daA"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="kyg-yO-yPe" id="2Nk-5V-9Ql"/>
+                                    <outlet property="delegate" destination="kyg-yO-yPe" id="OVq-cq-sDd"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="bMz-86-j1w"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="bMz-86-j1w" firstAttribute="bottom" secondItem="TMz-5j-O4C" secondAttribute="bottom" id="5xT-OX-Qzi"/>
+                            <constraint firstItem="TMz-5j-O4C" firstAttribute="leading" secondItem="bMz-86-j1w" secondAttribute="leading" id="8GJ-mJ-uJ8"/>
+                            <constraint firstItem="bMz-86-j1w" firstAttribute="trailing" secondItem="TMz-5j-O4C" secondAttribute="trailing" id="RX0-qw-Hw6"/>
+                            <constraint firstItem="TMz-5j-O4C" firstAttribute="top" secondItem="bMz-86-j1w" secondAttribute="top" id="XiF-MO-WqI"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="TMz-5j-O4C" id="JN1-8U-hBX"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="g9a-Qe-NGF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="140.57971014492756" y="65.625"/>
+        </scene>
+    </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
