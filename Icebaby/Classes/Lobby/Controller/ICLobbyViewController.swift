@@ -43,7 +43,10 @@ extension ICLobbyViewController {
             .map ({ _ in })
             .asDriver(onErrorJustReturn: ())
         
-        let input = ICLobbyViewModel.Input(trigger: trigger)
+        let itemSelected = tableView.rx.itemSelected.asDriver(onErrorJustReturn: IndexPath())
+        
+        let input = ICLobbyViewModel.Input(trigger: trigger,
+                                           itemSelected: itemSelected)
         let output = viewModel?.transform(input: input)
         
         output?

@@ -31,6 +31,10 @@
 		BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */; };
 		BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */; };
 		BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */; };
+		BADCACE425780ABD00D98060 /* ICUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACE325780ABD00D98060 /* ICUserViewController.swift */; };
+		BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACE825780B2200D98060 /* ICUserNavigator.swift */; };
+		BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACED25780B2F00D98060 /* ICUserViewModel.swift */; };
+		BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACF52578150400D98060 /* ICUserDetail.swift */; };
 		C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */; };
 		C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */; };
 		C74728B525776E2900FE8ED2 /* Lobby.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C74728B425776E2900FE8ED2 /* Lobby.storyboard */; };
@@ -41,7 +45,6 @@
 		C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */; };
 		C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */; };
 		C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */; };
-		C7CF3CC42577987600D34FFD /* ICLobbyNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CC32577987600D34FFD /* ICLobbyNavigator.swift */; };
 		C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */; };
 		CB51A212AE0F81CAA12F9A4A /* Pods_Icebaby_IcebabyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */; };
 		EBE0E940E18A5A511A065279 /* Pods_Icebaby.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */; };
@@ -102,6 +105,10 @@
 		BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoadingProgressHUD.swift; sourceTree = "<group>"; };
 		BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICProgressHUD.swift; sourceTree = "<group>"; };
 		BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyCellViewModel.swift; sourceTree = "<group>"; };
+		BADCACE325780ABD00D98060 /* ICUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserViewController.swift; sourceTree = "<group>"; };
+		BADCACE825780B2200D98060 /* ICUserNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserNavigator.swift; sourceTree = "<group>"; };
+		BADCACED25780B2F00D98060 /* ICUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserViewModel.swift; sourceTree = "<group>"; };
+		BADCACF52578150400D98060 /* ICUserDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserDetail.swift; sourceTree = "<group>"; };
 		C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewController.swift; sourceTree = "<group>"; };
 		C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyRootNavigator.swift; sourceTree = "<group>"; };
 		C74728B425776E2900FE8ED2 /* Lobby.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Lobby.storyboard; sourceTree = "<group>"; };
@@ -112,7 +119,6 @@
 		C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarNavigator.swift; sourceTree = "<group>"; };
 		C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyCell.swift; sourceTree = "<group>"; };
 		C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewModel.swift; sourceTree = "<group>"; };
-		C7CF3CC32577987600D34FFD /* ICLobbyNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyNavigator.swift; sourceTree = "<group>"; };
 		C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyAPIService.swift; sourceTree = "<group>"; };
 		CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.release.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -344,6 +350,7 @@
 			isa = PBXGroup;
 			children = (
 				BA353F2925701F1200CC4917 /* ICUser.swift */,
+				BADCACF52578150400D98060 /* ICUserDetail.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -379,6 +386,7 @@
 			isa = PBXGroup;
 			children = (
 				C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */,
+				BADCACE325780ABD00D98060 /* ICUserViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -396,7 +404,7 @@
 			isa = PBXGroup;
 			children = (
 				C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */,
-				C7CF3CC32577987600D34FFD /* ICLobbyNavigator.swift */,
+				BADCACE825780B2200D98060 /* ICUserNavigator.swift */,
 			);
 			path = Navigator;
 			sourceTree = "<group>";
@@ -446,6 +454,7 @@
 			children = (
 				C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */,
 				BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */,
+				BADCACED25780B2F00D98060 /* ICUserViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -727,16 +736,19 @@
 				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
 				C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */,
 				BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */,
+				BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */,
 				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
 				C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */,
 				BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */,
 				BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */,
+				BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */,
 				C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */,
-				C7CF3CC42577987600D34FFD /* ICLobbyNavigator.swift in Sources */,
+				BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */,
 				C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */,
 				BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */,
 				BA353EE825700E3E00CC4917 /* APIProtocol.swift in Sources */,
+				BADCACE425780ABD00D98060 /* ICUserViewController.swift in Sources */,
 				BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */,
 				C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */,
 				BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */,

@@ -18,6 +18,8 @@ class ICLobbyViewModel: ICViewModel {
     private let navigator: ICLobbyRootNavigator?
     private let lobbyAPIService: ICLobbyAPI?
     
+    //Data
+    private var users: [ICUser] = []
     
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
@@ -26,6 +28,7 @@ class ICLobbyViewModel: ICViewModel {
     
     struct Input {
         public let trigger: Driver<Void>
+        public let itemSelected: Driver<IndexPath>
     }
     
     struct Output {
@@ -44,6 +47,7 @@ class ICLobbyViewModel: ICViewModel {
 extension ICLobbyViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(trigger: input.trigger)
+        itemSelected(itemSelected: input.itemSelected)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
@@ -60,6 +64,15 @@ extension ICLobbyViewModel {
             .drive()
             .disposed(by: disposeBag)
     }
+    
+    private func itemSelected(itemSelected: Driver<IndexPath>) {
+        itemSelected
+            .do (onNext:{ [unowned self] (indexPath) in
+                self.navigator?.toUser(userID: self.users[indexPath.row].id ?? 0)
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
 }
 
 // MARK: - API
@@ -68,6 +81,9 @@ extension ICLobbyViewModel {
         showLoadingSubject.onNext(true)
         lobbyAPIService?
             .apiGetUserList()
+            .do(onSuccess: { [unowned self] (users) in
+                self.users = users
+            })
             .map({ (users) -> [ICLobbyCellViewModel] in
                 return users.map { (user) -> ICLobbyCellViewModel in
                     let cellVM = ICLobbyCellViewModel()
