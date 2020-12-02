@@ -16,6 +16,7 @@ target 'Icebaby' do
   pod 'JGProgressHUD'
   pod 'IQKeyboardManagerSwift'
   pod 'SwiftCentrifuge'
+  pod 'Toast-Swift', '~> 5.0.1'
 
   target 'IcebabyTests' do
     inherit! :search_paths

@@ -20,6 +20,7 @@ class ICLoginViewModel: ICViewModel {
     
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
+    private let showErrorMsgSubject = PublishSubject<String>()
     
     //Param
     private var identifier = ""
@@ -34,6 +35,7 @@ class ICLoginViewModel: ICViewModel {
     
     struct Output {
         public let showLoading: Driver<Bool>
+        public let showErrorMsg: Driver<String>
     }
     
     init(navigator: ICLoginRootNavigator, loginAPIService: ICLoginAPI) {
@@ -46,7 +48,8 @@ class ICLoginViewModel: ICViewModel {
         bindPasswordDriver(input.password)
         bindLoginTap(input.loginTap)
         
-        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false))
+        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -90,16 +93,9 @@ extension ICLoginViewModel {
                 self.showLoadingSubject.onNext(false)
                 self.navigator.presendToMain()
             }) { [unowned self] (error) in
-                switch error as! APIError {
-                case .requestError(let desc):
-                    print(desc)
-                case .tokenInvalid:
-                    print("無效的 Token")
-                default:
-                    print("Error")
-                    break
-                }
                 self.showLoadingSubject.onNext(false)
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
     }
