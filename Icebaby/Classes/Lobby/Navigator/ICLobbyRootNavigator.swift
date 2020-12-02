@@ -23,7 +23,7 @@ class ICLobbyRootNavigator: ICRootNavigator {
     
     func toRoot() {
         let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: ICLobbyViewController.self)) as! ICLobbyViewController
-        vc.viewModel = ICLobbyViewModel(navigator: self)
+        vc.viewModel = ICLobbyViewModel(navigator: self, lobbyAPIService: ICLobbyAPIService())
         navigationController?.pushViewController(vc, animated: true)
     }
 }

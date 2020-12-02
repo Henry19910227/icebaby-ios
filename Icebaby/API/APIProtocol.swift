@@ -53,7 +53,8 @@ protocol APIToken {
 extension APIBaseRequest {
     func sendRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?, headers: HTTPHeaders?) -> Single<JSON> {
         return Single<JSON>.create { (single) -> Disposable in
-            AF.request(url, method: medthod, parameters: parameter, encoding: JSONEncoding.default, headers: headers)
+            let encoding: ParameterEncoding = (medthod == HTTPMethod.get) ? URLEncoding.default : JSONEncoding.default
+            AF.request(url, method: medthod, parameters: parameter, encoding: encoding, headers: headers)
                 .responseJSON { (response) in
                     guard let value = response.value else {
                         single(.error(ICError(0, "不明的錯誤!")))

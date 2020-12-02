@@ -11,6 +11,6 @@ class ICMeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        title = "我的"
     }
 }

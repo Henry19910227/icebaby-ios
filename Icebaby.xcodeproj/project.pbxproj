@@ -30,6 +30,7 @@
 		BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCAC9A2576C51500D98060 /* ICBaseViewController.swift */; };
 		BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */; };
 		BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */; };
+		BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */; };
 		C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */; };
 		C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */; };
 		C74728B525776E2900FE8ED2 /* Lobby.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C74728B425776E2900FE8ED2 /* Lobby.storyboard */; };
@@ -100,6 +101,7 @@
 		BADCAC9A2576C51500D98060 /* ICBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICBaseViewController.swift; sourceTree = "<group>"; };
 		BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoadingProgressHUD.swift; sourceTree = "<group>"; };
 		BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICProgressHUD.swift; sourceTree = "<group>"; };
+		BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyCellViewModel.swift; sourceTree = "<group>"; };
 		C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewController.swift; sourceTree = "<group>"; };
 		C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyRootNavigator.swift; sourceTree = "<group>"; };
 		C74728B425776E2900FE8ED2 /* Lobby.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Lobby.storyboard; sourceTree = "<group>"; };
@@ -443,6 +445,7 @@
 			isa = PBXGroup;
 			children = (
 				C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */,
+				BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -723,6 +726,7 @@
 				BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */,
 				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
 				C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */,
+				BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */,
 				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
 				C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */,

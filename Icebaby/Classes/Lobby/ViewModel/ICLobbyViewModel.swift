@@ -18,12 +18,20 @@ class ICLobbyViewModel: ICViewModel {
     private let navigator: ICLobbyRootNavigator?
     private let lobbyAPIService: ICLobbyAPI?
     
+    
+    //Subject
+    private let showLoadingSubject = PublishSubject<Bool>()
+    private let showErrorMsgSubject = PublishSubject<String>()
+    private let itemsSubject = PublishSubject<[ICLobbyCellViewModel]>()
+    
     struct Input {
         public let trigger: Driver<Void>
     }
     
     struct Output {
-        
+        public let showLoading: Driver<Bool>
+        public let showErrorMsg: Driver<String>
+        public let items: Driver<[ICLobbyCellViewModel]>
     }
 
     init(navigator: ICLobbyRootNavigator, lobbyAPIService: ICLobbyAPI) {
@@ -36,7 +44,9 @@ class ICLobbyViewModel: ICViewModel {
 extension ICLobbyViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(trigger: input.trigger)
-        return Output()
+        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
+                      items: itemsSubject.asDriver(onErrorJustReturn: []))
     }
 }
 
@@ -55,12 +65,23 @@ extension ICLobbyViewModel {
 // MARK: - API
 extension ICLobbyViewModel {
     private func apiGetUserList() {
+        showLoadingSubject.onNext(true)
         lobbyAPIService?
             .apiGetUserList()
-            .subscribe(onSuccess: { (users) in
-                
-            },onError: { (error) in
-                
+            .map({ (users) -> [ICLobbyCellViewModel] in
+                return users.map { (user) -> ICLobbyCellViewModel in
+                    let cellVM = ICLobbyCellViewModel()
+                    cellVM.model = user
+                    return cellVM
+                }
+            })
+            .subscribe(onSuccess: { [unowned self] (cellVMs) in
+                self.showLoadingSubject.onNext(false)
+                self.itemsSubject.onNext(cellVMs)
+            },onError: { [unowned self] (error) in
+                self.showLoadingSubject.onNext(false)
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
     }
