@@ -14,8 +14,9 @@ class ICLobbyViewModel: ICViewModel {
     //RX
     private let disposeBag = DisposeBag()
     
-    //DI Param
+    //Param
     private let navigator: ICLobbyRootNavigator?
+    private let lobbyAPIService: ICLobbyAPI?
     
     struct Input {
         public let trigger: Driver<Void>
@@ -25,8 +26,9 @@ class ICLobbyViewModel: ICViewModel {
         
     }
 
-    init(navigator: ICLobbyRootNavigator) {
+    init(navigator: ICLobbyRootNavigator, lobbyAPIService: ICLobbyAPI) {
         self.navigator = navigator
+        self.lobbyAPIService = lobbyAPIService
     }
 }
 
@@ -42,8 +44,8 @@ extension ICLobbyViewModel {
 extension ICLobbyViewModel {
     private func bindTrigger(trigger: Driver<Void>) {
         trigger
-            .do(onNext: { (_) in
-                
+            .do(onNext: { [unowned self] (_) in
+                self.apiGetUserList()
             })
             .drive()
             .disposed(by: disposeBag)
@@ -52,7 +54,16 @@ extension ICLobbyViewModel {
 
 // MARK: - API
 extension ICLobbyViewModel {
-    
+    private func apiGetUserList() {
+        lobbyAPIService?
+            .apiGetUserList()
+            .subscribe(onSuccess: { (users) in
+                
+            },onError: { (error) in
+                
+            })
+            .disposed(by: disposeBag)
+    }
 }
 
 

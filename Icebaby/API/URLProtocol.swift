@@ -14,6 +14,9 @@ protocol ICLoginURL: ICBaseURL {
     var registerURL: URL { get }
     var loginURL: URL { get }
 }
+protocol ICLobbyURL: ICBaseURL {
+    var usersURL: URL { get }
+}
 protocol ICCourtURL: ICBaseURL {
     var getLocationsURL: URL { get }
     var getLocationDetailURL: URL { get }
@@ -54,6 +57,11 @@ extension ICLoginURL {
     }
     var loginURL: URL {
         return URL(string: "\(baseURL)/icebaby/v1/login")!
+    }
+}
+extension ICLobbyURL {
+    var usersURL: URL {
+        return URL(string: "\(baseURL)/icebaby/v1/users")!
     }
 }
 extension ICCourtURL {
