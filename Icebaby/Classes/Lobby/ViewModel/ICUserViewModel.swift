@@ -14,8 +14,8 @@ class ICUserViewModel: ICViewModel {
     //RX
     private let disposeBag = DisposeBag()
     
-    //Parameter
-    private let navigator: ICLobbyRootNavigator?
+    //Dependency Injection
+    private let navigator: ICUserNavigator?
     private let lobbyAPIService: ICLobbyAPI?
     private let userID: Int
     
@@ -40,7 +40,7 @@ class ICUserViewModel: ICViewModel {
         public let birthday: Driver<String>
     }
     
-    init(navigator: ICLobbyRootNavigator, lobbyAPIService: ICLobbyAPI, userID: Int) {
+    init(navigator: ICUserNavigator, lobbyAPIService: ICLobbyAPI, userID: Int) {
         self.navigator = navigator
         self.lobbyAPIService = lobbyAPIService
         self.userID = userID
@@ -73,8 +73,8 @@ extension ICUserViewModel {
     
     private func bindChatTap(chatTap: Driver<Void>) {
         chatTap
-            .do(onNext: { (_) in
-                print("start chat")
+            .do(onNext: { [unowned self] (_) in
+                self.navigator?.switchToChat()
             })
             .drive()
             .disposed(by: disposeBag)

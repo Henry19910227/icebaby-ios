@@ -14,6 +14,7 @@ class ICMainTabBarNavigator: ICMainNavigator {
     
     // storyboard
     private let lobbyStoryboard = UIStoryboard(name: "Lobby", bundle: nil)
+    private let chatStoryboard = UIStoryboard(name: "Chat", bundle: nil)
     private let meStoryboard = UIStoryboard(name: "Me", bundle: nil)
     
     
@@ -22,6 +23,11 @@ class ICMainTabBarNavigator: ICMainNavigator {
          let lobbyNav = UINavigationController()
          lobbyNav.title = "大廳"
          return lobbyNav
+    }()
+    private lazy var chatNav: UINavigationController = {
+         let chatNav = UINavigationController()
+         chatNav.title = "聊天"
+         return chatNav
     }()
     private lazy var meNav: UINavigationController = {
          let meNav = UINavigationController()
@@ -37,12 +43,19 @@ class ICMainTabBarNavigator: ICMainNavigator {
     }
     
     private func commonInit() {
-        self.tabBarController.viewControllers = [lobbyNav, meNav]
+        self.tabBarController.viewControllers = [lobbyNav, chatNav, meNav]
     }
     
+}
+
+extension ICMainTabBarNavigator {
     func toMain() {
-        ICLobbyRootNavigator(window, lobbyNav, lobbyStoryboard).toRoot()
+        ICLobbyRootNavigator(window, lobbyNav, lobbyStoryboard, self).toRoot()
+        ICChatRootNavigator(window, chatNav, chatStoryboard).toRoot()
         ICMeRootNavigator(window, meNav, meStoryboard).toRoot()
     }
-
+    
+    func selectedIndex(_ index: Int) {
+        self.tabBarController.selectedIndex = index
+    }
 }

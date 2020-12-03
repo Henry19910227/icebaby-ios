@@ -9,17 +9,22 @@ import UIKit
 
 class ICApplicationNavigator: ICAppNavigator {
     var storyboard: UIStoryboard?
-    var navigationController: UINavigationController?
+    var navigationController = UINavigationController()
     var window: UIWindow
+    var loginRootNavigator: ICLoginRootNavigator?
     @discardableResult required init(window: UIWindow) {
         self.window = window
+        commonInit()
         toLogin()
     }
     
-    private func toLogin() {
+    private func commonInit() {
         let loginStoryboard = UIStoryboard(name: "Login", bundle: nil)
-        let loginNav = UINavigationController()
-        window.rootViewController = loginNav
-        ICLoginRootNavigator(window, loginNav, loginStoryboard).toRoot()
+        loginRootNavigator = ICLoginRootNavigator(window, navigationController, loginStoryboard)
+    }
+    
+    private func toLogin() {
+        window.rootViewController = navigationController
+        loginRootNavigator?.toRoot()
     }
 }

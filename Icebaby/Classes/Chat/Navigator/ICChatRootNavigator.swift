@@ -1,14 +1,13 @@
 //
-//  ICMeRootNavigator.swift
+//  ICChatRootNavigator.swift
 //  Icebaby
 //
-//  Created by Henry.Liao on 2020/11/27.
+//  Created by Henry.Liao on 2020/12/3.
 //
 
 import UIKit
 
-class ICMeRootNavigator: ICRootNavigator {
-
+class ICChatRootNavigator: ICRootNavigator {
     weak var window: UIWindow?
     weak var storyboard: UIStoryboard?
     weak var navigationController: UINavigationController?
@@ -20,9 +19,12 @@ class ICMeRootNavigator: ICRootNavigator {
         self.storyboard = storyboard
         self.window = window
     }
-    
+}
+
+extension ICChatRootNavigator {
     func toRoot() {
-        let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: ICMeViewController.self)) as! ICMeViewController
+        let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: ICChatListViewController.self)) as! ICChatListViewController
+        vc.viewModel = ICChatListViewModel(navigator: self, chatAPIService: ICChatAPIService())
         navigationController?.setViewControllers([vc], animated: true)
     }
 }

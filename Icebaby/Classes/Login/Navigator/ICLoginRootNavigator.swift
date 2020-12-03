@@ -12,6 +12,8 @@ class ICLoginRootNavigator {
     weak var navigationController: UINavigationController?
     weak var window: UIWindow?
     
+    private var mainTabBarNavigator: ICMainTabBarNavigator?
+    
     init(_ window: UIWindow?, _ navigationController: UINavigationController?, _ storyboard: UIStoryboard?) {
         self.navigationController = navigationController
         self.storyboard = storyboard
@@ -30,7 +32,9 @@ extension ICLoginRootNavigator: ICRootNavigator {
         let mainTabBarController = ICMainTabBarController()
         mainTabBarController.modalPresentationStyle = .fullScreen
         mainTabBarController.modalTransitionStyle = .flipHorizontal
-        ICMainTabBarNavigator(window,mainTabBarController).toMain()
+        mainTabBarNavigator = ICMainTabBarNavigator(window, mainTabBarController)
+        mainTabBarNavigator?.toMain()
         navigationController?.present(mainTabBarController, animated: true, completion: nil)
+        
     }
 }
