@@ -20,10 +20,12 @@ class ICMainTabBarNavigator: ICMainNavigator {
     // navigation
     private lazy var lobbyNav: UINavigationController = {
          let lobbyNav = UINavigationController()
+         lobbyNav.title = "大廳"
          return lobbyNav
     }()
     private lazy var meNav: UINavigationController = {
          let meNav = UINavigationController()
+         meNav.title = "我的"
          return meNav
     }()
     

@@ -6,11 +6,22 @@
 //
 
 import UIKit
+import RxCocoa
+import RxSwift
 
-class ICUserViewController: UIViewController {
+class ICUserViewController: ICBaseViewController {
 
     // VM
     public var viewModel: ICUserViewModel?
+    
+    // Rx
+    private let disposeBag = DisposeBag()
+    
+    // UI
+    @IBOutlet weak var uidLabel: UILabel!
+    @IBOutlet weak var nicknameLabel: UILabel!
+    @IBOutlet weak var birthdayLabel: UILabel!
+    @IBOutlet weak var chatButton: UIButton!
     
 }
 
@@ -30,7 +41,38 @@ extension ICUserViewController {
             .map ({ _ in })
             .asDriver(onErrorJustReturn: ())
         
-        let input = ICUserViewModel.Input(trigger: trigger)
-        viewModel?.transform(input: input)
+        let input = ICUserViewModel.Input(trigger: trigger,
+                                          chatTap: chatButton.rx.tap.asDriver())
+        let output = viewModel?.transform(input: input)
+        
+        output?
+            .showLoading
+            .drive(rx.isShowLoading)
+            .disposed(by: disposeBag)
+        
+        output?
+            .showErrorMsg
+            .drive(onNext: { [unowned self] (msg) in
+                self.view.makeToast(msg, duration: 1.0, position: .top)
+            })
+            .disposed(by: disposeBag)
+        
+        output?
+            .uid
+            .map({ (uid) -> String in
+                return String(uid)
+            })
+            .drive(uidLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output?
+            .nickname
+            .drive(nicknameLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output?
+            .birthday
+            .drive(birthdayLabel.rx.text)
+            .disposed(by: disposeBag)
     }
 }
