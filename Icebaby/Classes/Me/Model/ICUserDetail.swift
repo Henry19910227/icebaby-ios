@@ -1,13 +1,13 @@
 //
-//  ICUser.swift
+//  ICUserDetail.swift
 //  Icebaby
 //
-//  Created by 廖冠翰 on 2020/11/27.
+//  Created by 廖冠翰 on 2020/12/3.
 //
 
 import UIKit
 
-class ICUser: Codable {
+class ICUserDetail: Codable {
     var id: Int?
     var role: Int?
     var nickname: String?
@@ -16,4 +16,9 @@ class ICUser: Codable {
     var sex: Int?
     var birthday: String?
     var area: String?
+    var height: Int?
+    var weight: Int?
+    var favorite: String?
+    var smoke: Int?
+    var Dring: Int?
 }

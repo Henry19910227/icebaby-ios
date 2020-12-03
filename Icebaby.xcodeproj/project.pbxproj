@@ -30,11 +30,22 @@
 		BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCAC9A2576C51500D98060 /* ICBaseViewController.swift */; };
 		BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */; };
 		BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */; };
+		BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */; };
+		BADCACE425780ABD00D98060 /* ICUserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACE325780ABD00D98060 /* ICUserViewController.swift */; };
+		BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACE825780B2200D98060 /* ICUserNavigator.swift */; };
+		BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACED25780B2F00D98060 /* ICUserViewModel.swift */; };
+		BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACF52578150400D98060 /* ICUserDetail.swift */; };
+		C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */; };
+		C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */; };
+		C74728B525776E2900FE8ED2 /* Lobby.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C74728B425776E2900FE8ED2 /* Lobby.storyboard */; };
 		C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A256F2570D26B00FCFA8D /* ICMainTabBarController.swift */; };
 		C77A25792570D5DD00FCFA8D /* Me.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C77A25782570D5DD00FCFA8D /* Me.storyboard */; };
 		C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A257E2570D61100FCFA8D /* ICMeViewController.swift */; };
 		C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */; };
 		C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */; };
+		C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */; };
+		C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */; };
+		C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */; };
 		CB51A212AE0F81CAA12F9A4A /* Pods_Icebaby_IcebabyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */; };
 		EBE0E940E18A5A511A065279 /* Pods_Icebaby.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */; };
 /* End PBXBuildFile section */
@@ -93,11 +104,22 @@
 		BADCAC9A2576C51500D98060 /* ICBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICBaseViewController.swift; sourceTree = "<group>"; };
 		BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLoadingProgressHUD.swift; sourceTree = "<group>"; };
 		BADCACAE2576C5C900D98060 /* ICProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICProgressHUD.swift; sourceTree = "<group>"; };
+		BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyCellViewModel.swift; sourceTree = "<group>"; };
+		BADCACE325780ABD00D98060 /* ICUserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserViewController.swift; sourceTree = "<group>"; };
+		BADCACE825780B2200D98060 /* ICUserNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserNavigator.swift; sourceTree = "<group>"; };
+		BADCACED25780B2F00D98060 /* ICUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserViewModel.swift; sourceTree = "<group>"; };
+		BADCACF52578150400D98060 /* ICUserDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserDetail.swift; sourceTree = "<group>"; };
+		C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewController.swift; sourceTree = "<group>"; };
+		C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyRootNavigator.swift; sourceTree = "<group>"; };
+		C74728B425776E2900FE8ED2 /* Lobby.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Lobby.storyboard; sourceTree = "<group>"; };
 		C77A256F2570D26B00FCFA8D /* ICMainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarController.swift; sourceTree = "<group>"; };
 		C77A25782570D5DD00FCFA8D /* Me.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Me.storyboard; sourceTree = "<group>"; };
 		C77A257E2570D61100FCFA8D /* ICMeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeViewController.swift; sourceTree = "<group>"; };
 		C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeRootNavigator.swift; sourceTree = "<group>"; };
 		C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarNavigator.swift; sourceTree = "<group>"; };
+		C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyCell.swift; sourceTree = "<group>"; };
+		C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewModel.swift; sourceTree = "<group>"; };
+		C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyAPIService.swift; sourceTree = "<group>"; };
 		CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.release.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -211,6 +233,7 @@
 				BA353EF5257010A000CC4917 /* Application */,
 				BA353EFD2570148800CC4917 /* Main */,
 				BA353EFF257014A400CC4917 /* Login */,
+				C74728A325776B3900FE8ED2 /* Lobby */,
 				BA353F2725701EE900CC4917 /* Me */,
 			);
 			path = Classes;
@@ -307,6 +330,7 @@
 			isa = PBXGroup;
 			children = (
 				BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */,
+				C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -326,6 +350,7 @@
 			isa = PBXGroup;
 			children = (
 				BA353F2925701F1200CC4917 /* ICUser.swift */,
+				BADCACF52578150400D98060 /* ICUserDetail.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -344,6 +369,44 @@
 				BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */,
 			);
 			path = Tool;
+			sourceTree = "<group>";
+		};
+		C74728A325776B3900FE8ED2 /* Lobby */ = {
+			isa = PBXGroup;
+			children = (
+				C74728A425776BA500FE8ED2 /* Controller */,
+				C7CF3CBA257792B700D34FFD /* ViewModel */,
+				C74728B325776DE000FE8ED2 /* Navigator */,
+				C74728AD25776BFB00FE8ED2 /* View */,
+			);
+			path = Lobby;
+			sourceTree = "<group>";
+		};
+		C74728A425776BA500FE8ED2 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */,
+				BADCACE325780ABD00D98060 /* ICUserViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		C74728AD25776BFB00FE8ED2 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				C74728B425776E2900FE8ED2 /* Lobby.storyboard */,
+				C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C74728B325776DE000FE8ED2 /* Navigator */ = {
+			isa = PBXGroup;
+			children = (
+				C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */,
+				BADCACE825780B2200D98060 /* ICUserNavigator.swift */,
+			);
+			path = Navigator;
 			sourceTree = "<group>";
 		};
 		C77A256E2570D22F00FCFA8D /* Controller */ = {
@@ -384,6 +447,16 @@
 				C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */,
 			);
 			path = Navigator;
+			sourceTree = "<group>";
+		};
+		C7CF3CBA257792B700D34FFD /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */,
+				BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */,
+				BADCACED25780B2F00D98060 /* ICUserViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		CD238F742E8F93BC2774B83B /* Pods */ = {
@@ -522,6 +595,7 @@
 				C77A25792570D5DD00FCFA8D /* Me.storyboard in Resources */,
 				BA353E94256ED35100CC4917 /* Assets.xcassets in Resources */,
 				BA353E92256ED34F00CC4917 /* Main.storyboard in Resources */,
+				C74728B525776E2900FE8ED2 /* Lobby.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -650,21 +724,31 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA353EC82570062D00CC4917 /* ICViewModel.swift in Sources */,
+				C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */,
 				BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */,
 				BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */,
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
 				BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */,
 				C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */,
+				C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */,
 				BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */,
 				BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */,
 				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
 				C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */,
+				BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */,
+				BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */,
 				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
+				C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */,
 				BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */,
 				BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */,
+				BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */,
+				C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */,
+				BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */,
+				C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */,
 				BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */,
 				BA353EE825700E3E00CC4917 /* APIProtocol.swift in Sources */,
+				BADCACE425780ABD00D98060 /* ICUserViewController.swift in Sources */,
 				BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */,
 				C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */,
 				BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */,
