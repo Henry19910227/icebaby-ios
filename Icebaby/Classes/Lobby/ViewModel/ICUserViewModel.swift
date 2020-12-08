@@ -25,7 +25,7 @@ class ICUserViewModel: ICViewModel {
     private let uidSubject = PublishSubject<Int>()
     private let nicknameSubject = PublishSubject<String>()
     private let birthdaySubject = PublishSubject<String>()
-    
+    private let switchTabSubject = PublishSubject<Int>()
 
     struct Input {
         public let trigger: Driver<Void>
@@ -38,6 +38,7 @@ class ICUserViewModel: ICViewModel {
         public let uid: Driver<Int>
         public let nickname: Driver<String>
         public let birthday: Driver<String>
+        public let switchTab: Driver<Int>
     }
     
     init(navigator: ICUserNavigator, lobbyAPIService: ICLobbyAPI, userID: Int) {
@@ -56,7 +57,8 @@ extension ICUserViewModel {
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       uid: uidSubject.asDriver(onErrorJustReturn: 0),
                       nickname: nicknameSubject.asDriver(onErrorJustReturn: ""),
-                      birthday: birthdaySubject.asDriver(onErrorJustReturn: ""))
+                      birthday: birthdaySubject.asDriver(onErrorJustReturn: ""),
+                      switchTab: switchTabSubject.asDriver(onErrorJustReturn: 0))
     }
 }
 
@@ -74,11 +76,11 @@ extension ICUserViewModel {
     private func bindChatTap(chatTap: Driver<Void>) {
         chatTap
             .do(onNext: { [unowned self] (_) in
-                self.navigator?.switchToChat()
-            })
+                self.switchTabSubject.onNext(1)
+                self.post()
+            }) 
             .drive()
             .disposed(by: disposeBag)
-
     }
 }
 
@@ -99,6 +101,13 @@ extension ICUserViewModel {
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension ICUserViewModel {
+    private func post() {
+        let name = Notification.Name(rawValue: "StartNewChat")
+        NotificationCenter.default.post(name: name, object: nil, userInfo: ["uid": 99])
     }
 }
 

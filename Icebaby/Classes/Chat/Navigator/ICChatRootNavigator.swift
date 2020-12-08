@@ -20,11 +20,3 @@ class ICChatRootNavigator: ICRootNavigator {
         self.window = window
     }
 }
-
-extension ICChatRootNavigator {
-    func toRoot() {
-        let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: ICChatListViewController.self)) as! ICChatListViewController
-        vc.viewModel = ICChatListViewModel(navigator: self, chatAPIService: ICChatAPIService())
-        navigationController?.setViewControllers([vc], animated: true)
-    }
-}

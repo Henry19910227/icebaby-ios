@@ -52,6 +52,7 @@
 		C7CF3CE02578A60800D34FFD /* ICChatRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CDF2578A60800D34FFD /* ICChatRootNavigator.swift */; };
 		C7CF3CE52578A61600D34FFD /* Chat.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7CF3CE42578A61600D34FFD /* Chat.storyboard */; };
 		C7CF3D052578BCDD00D34FFD /* ICChatAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3D042578BCDD00D34FFD /* ICChatAPIService.swift */; };
+		C7E42044257F254B005403B4 /* ICMainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E42043257F254B005403B4 /* ICMainTabBarViewModel.swift */; };
 		CB51A212AE0F81CAA12F9A4A /* Pods_Icebaby_IcebabyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */; };
 		EBE0E940E18A5A511A065279 /* Pods_Icebaby.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */; };
 /* End PBXBuildFile section */
@@ -132,6 +133,7 @@
 		C7CF3CDF2578A60800D34FFD /* ICChatRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatRootNavigator.swift; sourceTree = "<group>"; };
 		C7CF3CE42578A61600D34FFD /* Chat.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Chat.storyboard; sourceTree = "<group>"; };
 		C7CF3D042578BCDD00D34FFD /* ICChatAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatAPIService.swift; sourceTree = "<group>"; };
+		C7E42043257F254B005403B4 /* ICMainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarViewModel.swift; sourceTree = "<group>"; };
 		CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.release.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -291,6 +293,7 @@
 			isa = PBXGroup;
 			children = (
 				C77A256E2570D22F00FCFA8D /* Controller */,
+				C7E42042257F252A005403B4 /* ViewModel */,
 				C77A258F2570D6D000FCFA8D /* Navigator */,
 				BA353EFE2570149200CC4917 /* View */,
 			);
@@ -523,6 +526,14 @@
 				C7CF3CDF2578A60800D34FFD /* ICChatRootNavigator.swift */,
 			);
 			path = Navigator;
+			sourceTree = "<group>";
+		};
+		C7E42042257F252A005403B4 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				C7E42043257F254B005403B4 /* ICMainTabBarViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		CD238F742E8F93BC2774B83B /* Pods */ = {
@@ -801,6 +812,7 @@
 				C7CF3CDB2578A5F900D34FFD /* ICChatListViewModel.swift in Sources */,
 				C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */,
 				BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */,
+				C7E42044257F254B005403B4 /* ICMainTabBarViewModel.swift in Sources */,
 				BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */,
 				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
 				C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */,

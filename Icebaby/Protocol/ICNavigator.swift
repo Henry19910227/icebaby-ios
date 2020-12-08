@@ -12,11 +12,10 @@ protocol ICAppNavigator {
 }
 
 protocol ICMainNavigator {
-    func toMain()
 }
 
 protocol ICRootNavigator {
-    func toRoot()
+    
 }
 
 protocol ICNavigator {}

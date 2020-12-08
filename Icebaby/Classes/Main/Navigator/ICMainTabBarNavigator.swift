@@ -10,7 +10,6 @@ import UIKit
 class ICMainTabBarNavigator: ICMainNavigator {
     
     weak var window: UIWindow?
-    private let tabBarController: UITabBarController
     
     // storyboard
     private let lobbyStoryboard = UIStoryboard(name: "Lobby", bundle: nil)
@@ -36,26 +35,30 @@ class ICMainTabBarNavigator: ICMainNavigator {
     }()
     
     
-    init(_ window: UIWindow?, _ tabBarController: UITabBarController) {
-        self.tabBarController = tabBarController
+    init(_ window: UIWindow?) {
         self.window = window
-        self.commonInit()
     }
-    
-    private func commonInit() {
-        self.tabBarController.viewControllers = [lobbyNav, chatNav, meNav]
-    }
-    
 }
 
 extension ICMainTabBarNavigator {
-    func toMain() {
-        ICLobbyRootNavigator(window, lobbyNav, lobbyStoryboard, self).toRoot()
-        ICChatRootNavigator(window, chatNav, chatStoryboard).toRoot()
-        ICMeRootNavigator(window, meNav, meStoryboard).toRoot()
-    }
-    
-    func selectedIndex(_ index: Int) {
-        self.tabBarController.selectedIndex = index
+    func toMain(tabbarVC: UITabBarController) {
+        tabbarVC.viewControllers = [lobbyNav, chatNav, meNav]
+        
+        // 大廳 tabbar
+        let lobbyNavgator = ICLobbyRootNavigator(window, lobbyNav, lobbyStoryboard)
+        let lobbyVC = lobbyStoryboard.instantiateViewController(withIdentifier: String(describing: ICLobbyViewController.self)) as! ICLobbyViewController
+        lobbyVC.viewModel = ICLobbyViewModel(navigator: lobbyNavgator, lobbyAPIService: ICLobbyAPIService())
+        lobbyNav.setViewControllers([lobbyVC], animated: true)
+        
+        // 聊天 tabbar
+        let chatNavigator = ICChatRootNavigator(window, chatNav, chatStoryboard)
+        let chatVC = chatStoryboard.instantiateViewController(withIdentifier: String(describing: ICChatListViewController.self)) as! ICChatListViewController
+        chatVC.viewModel = ICChatListViewModel(navigator: chatNavigator, chatAPIService: ICChatAPIService())
+        chatNav.setViewControllers([chatVC], animated: true)
+        chatVC.loadViewIfNeeded()
+
+        // 我的 tabbar
+        let meVC = meStoryboard.instantiateViewController(withIdentifier: String(describing: ICMeViewController.self)) as! ICMeViewController
+        meNav.setViewControllers([meVC], animated: true)
     }
 }

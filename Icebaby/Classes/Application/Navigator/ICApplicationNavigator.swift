@@ -20,7 +20,8 @@ class ICApplicationNavigator: ICAppNavigator {
     
     private func commonInit() {
         let loginStoryboard = UIStoryboard(name: "Login", bundle: nil)
-        loginRootNavigator = ICLoginRootNavigator(window, navigationController, loginStoryboard)
+        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+        loginRootNavigator = ICLoginRootNavigator(window, navigationController, loginStoryboard, mainStoryboard)
     }
     
     private func toLogin() {

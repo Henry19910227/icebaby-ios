@@ -19,6 +19,7 @@ class ICChatListViewModel: ICViewModel {
     private let chatAPIService: ICChatAPI?
     
     struct Input {
+        public let chatTrigger: Driver<[String: Any]>
     }
     
     struct Output {
@@ -30,8 +31,22 @@ class ICChatListViewModel: ICViewModel {
     }
 }
 
+//MARK: - transform
 extension ICChatListViewModel {
     @discardableResult func transform(input: Input) -> Output {
+        bindChatTrigger(trigger: input.chatTrigger)
         return Output()
+    }
+}
+
+//MARK: - bind
+extension ICChatListViewModel {
+    private func bindChatTrigger(trigger: Driver<[String: Any]>) {
+        trigger
+            .do(onNext: { (userinfo) in
+                print("id:\(userinfo["uid"] as? Int ?? 0)")
+            })
+            .drive()
+            .disposed(by: disposeBag)
     }
 }
