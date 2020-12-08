@@ -7,28 +7,37 @@
 
 import UIKit
 import SwiftCentrifuge
+import RxCocoa
+import RxSwift
 
-class ICChatManager: NSObject, APIToken {
+struct ICChatData: Codable {
+    var channel: String?
+    var uid: Int?
+    var type: String?
+    var msg: String?
+}
+
+class ICChatManager: NSObject {
     static let shard = ICChatManager()
     private lazy var client: CentrifugeClient = {
         let url = "ws://127.0.0.1:8000/connection/websocket?format=protobuf"
         let client = CentrifugeClient(url: url, config: CentrifugeClientConfig(), delegate: self)
         return client
     }()
+    private var uid: Int = 0
+    private var currentSubscribe: [String: CentrifugeSubscription] = [:]
     
-    private var userSub: CentrifugeSubscription?
+    //RX
+    public let onPublish = PublishSubject<ICChatData?>()
 }
 
+//MARK: - Public
 extension ICChatManager {
-    public func start(token: String) {
+    public func connect(token: String, uid: Int) {
         client.setToken(token)
         client.connect()
-        do {
-            userSub = try client.newSubscription(channel: "chat", delegate: self)
-        } catch {
-            print("subscribe error!")
-        }
-        userSub?.subscribe()
+        self.uid = uid
+        subscribeChannel(String(uid))
     }
 }
 
@@ -40,7 +49,10 @@ extension ICChatManager: CentrifugeClientDelegate {
 
 extension ICChatManager: CentrifugeSubscriptionDelegate {
     func onPublish(_ sub: CentrifugeSubscription, _ event: CentrifugePublishEvent) {
-        print("\(sub.channel) \(String(data: event.data, encoding: .utf8) ?? "")")
+        do {
+            let data = try? JSONDecoder().decode(ICChatData.self, from: event.data)
+            onPublish.onNext(data)
+        }
     }
     
     func onSubscribeSuccess(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeSuccessEvent) {
@@ -49,5 +61,20 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
         print("Subscribe \(sub.channel) error" )
+    }
+}
+
+//MARK: - Other
+extension ICChatManager {
+    private func subscribeChannel(_ channel: String) {
+        guard currentSubscribe[channel] == nil else { return }
+        var subscribeItem: CentrifugeSubscription?
+        do {
+            subscribeItem = try client.newSubscription(channel: channel, delegate: self)
+        } catch {
+            print("subscribe error!")
+        }
+        subscribeItem?.subscribe()
+        currentSubscribe[channel] = subscribeItem
     }
 }

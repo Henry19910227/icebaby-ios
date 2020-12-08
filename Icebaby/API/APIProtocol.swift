@@ -33,22 +33,10 @@ protocol APIBaseRequest: APIDataTransform {
     func uploadFile(medthod: HTTPMethod, url: URL, data: Data, headers: HTTPHeaders?) -> Single<JSON>
 }
 
-protocol APIRequest: APIBaseRequest, APIToken, ICLoginURL {
-    func apiRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?) -> Single<JSON>
-    func apiUploadFile(medthod: HTTPMethod, url: URL, data: Data) -> Single<JSON>
-}
-
 protocol APIDataTransform {
     func dataDecoderTransform<T: Codable>(_ type:T.Type, _ value: JSON) -> T?
     func dataDecoderArrayTransform<T: Codable>(_ type:T.Type, _ value: [JSON]) -> [T]
 }
-
-protocol APIToken {
-    func saveToken(_ token: String)
-    func token() -> String?
-    func clearToken()
-}
-
 
 extension APIBaseRequest {
     func sendRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?, headers: HTTPHeaders?) -> Single<JSON> {
@@ -99,43 +87,29 @@ extension APIBaseRequest {
     }
 }
 
-extension APIRequest {
-    public func apiRequest(medthod: HTTPMethod, url: URL, parameter: [String: Any]?) -> Single<JSON> {
-        return Single<JSON>.create { (single) -> Disposable in
-            let headers = (url != self.loginURL) ? HTTPHeaders(["token": self.token() ?? ""]) : nil
-            let _ = self.sendRequest(medthod: medthod, url: url, parameter: parameter, headers: headers)
-                .subscribe(onSuccess: { (result) in
-                    single(.success(result))
-                }) { (error) in
-                    single(.error(error))
-                }
-            return Disposables.create()
-        }
-    }
-    
-    
-    func apiUploadFile(medthod: HTTPMethod, url: URL, data: Data) -> Single<JSON> {
-        let headers = (url != self.loginURL) ? HTTPHeaders(["Token": self.token() ?? ""]) : nil
-        return Single<JSON>.create { (single) -> Disposable in
-            let _ = self.uploadFile(medthod: medthod, url: url, data: data, headers: headers)
-                .subscribe(onSuccess: { (result) in
-                    switch result["Code"].intValue {
-                    case 400:
-                        let errorMsg = result["Message"].string ?? ""
-                        single(.error(APIError.requestError(desc: errorMsg)))
-                    case 403:
-                        single(.error(APIError.tokenInvalid))
-                    default:
-                        single(.success(result))
-                        break
-                    }
-                }) { (error) in
-                    single(.error(APIError.requestError(desc: error.localizedDescription)))
-                }
-            return Disposables.create()
-        }
-    }
-}
+//extension APIRequest {
+//    func apiUploadFile(medthod: HTTPMethod, url: URL, data: Data) -> Single<JSON> {
+//        let headers = (url != self.loginURL) ? HTTPHeaders(["Token": self.token() ?? ""]) : nil
+//        return Single<JSON>.create { (single) -> Disposable in
+//            let _ = self.uploadFile(medthod: medthod, url: url, data: data, headers: headers)
+//                .subscribe(onSuccess: { (result) in
+//                    switch result["Code"].intValue {
+//                    case 400:
+//                        let errorMsg = result["Message"].string ?? ""
+//                        single(.error(APIError.requestError(desc: errorMsg)))
+//                    case 403:
+//                        single(.error(APIError.tokenInvalid))
+//                    default:
+//                        single(.success(result))
+//                        break
+//                    }
+//                }) { (error) in
+//                    single(.error(APIError.requestError(desc: error.localizedDescription)))
+//                }
+//            return Disposables.create()
+//        }
+//    }
+//}
 
 extension APIDataTransform {
     func dataDecoderTransform<T: Codable>(_ type:T.Type, _ value: JSON) -> T? {
@@ -163,19 +137,5 @@ extension APIDataTransform {
             }
         }
         return models
-    }
-}
-
-extension APIToken {
-    func saveToken(_ token: String) {
-        UserDefaults.standard.set(token, forKey: "APIToken")
-    }
-    
-    func token() -> String? {
-        return UserDefaults.standard.value(forKey: "APIToken") as? String
-    }
-    
-    func clearToken() {
-        UserDefaults.standard.set(nil, forKey: "APIToken")
     }
 }

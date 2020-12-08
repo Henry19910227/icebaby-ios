@@ -89,7 +89,8 @@ extension ICLoginViewModel {
         showLoadingSubject.onNext(true)
         loginAPIService
             .apiUserLogin(identifier: identifier, password: password)
-            .subscribe(onSuccess: { [unowned self] (user) in
+            .subscribe(onSuccess: { [unowned self] (uid) in
+                print("Login UID : \(uid)")
                 self.showLoadingSubject.onNext(false)
                 self.navigator.presendToMain()
             }) { [unowned self] (error) in

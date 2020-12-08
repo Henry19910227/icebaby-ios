@@ -27,8 +27,9 @@ class ICLoginRootNavigator {
 
 extension ICLoginRootNavigator: ICRootNavigator {
     func toRoot() {
+        let loginAPIService = ICLoginAPIService(userManager: ICUserManager())
         let vc = loginStoryboard?.instantiateViewController(withIdentifier: "ICLoginViewController") as! ICLoginViewController
-        vc.viewModel = ICLoginViewModel(navigator: self, loginAPIService: ICLoginAPIService())
+        vc.viewModel = ICLoginViewModel(navigator: self, loginAPIService: loginAPIService)
         navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -37,7 +38,9 @@ extension ICLoginRootNavigator: ICRootNavigator {
         let tabbarVC = mainStoryboard?.instantiateViewController(withIdentifier: "ICMainTabBarController") as! ICMainTabBarController
         tabbarVC.modalPresentationStyle = .fullScreen
         tabbarVC.modalTransitionStyle = .flipHorizontal
-        tabbarVC.viewModel = ICMainTabBarViewModel(navigator: navigator, chatManager: ICChatManager.shard)
+        tabbarVC.viewModel = ICMainTabBarViewModel(navigator: navigator,
+                                                   chatManager: ICChatManager.shard,
+                                                   userManager: ICUserManager())
         navigationController?.present(tabbarVC, animated: true, completion: nil)
     }
 }

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		19BE90C95533D7C3DEEBF38E /* Pods_IcebabyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43CE1EAE08B454201DD00CB5 /* Pods_IcebabyTests.framework */; };
 		BA235B78257E906900A09280 /* ICChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA235B77257E906900A09280 /* ICChatManager.swift */; };
+		BA235B86257FCF6700A09280 /* ICUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA235B85257FCF6700A09280 /* ICUserManager.swift */; };
 		BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8A256ED34F00CC4917 /* AppDelegate.swift */; };
 		BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */; };
 		BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8E256ED34F00CC4917 /* ViewController.swift */; };
@@ -84,6 +85,7 @@
 		A7653148BFE51172F96A9637 /* Pods-IcebabyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IcebabyTests.debug.xcconfig"; path = "Target Support Files/Pods-IcebabyTests/Pods-IcebabyTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A7C887AC17529F7F2E13B5B4 /* Pods-Icebaby.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby.debug.xcconfig"; path = "Target Support Files/Pods-Icebaby/Pods-Icebaby.debug.xcconfig"; sourceTree = "<group>"; };
 		BA235B77257E906900A09280 /* ICChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatManager.swift; sourceTree = "<group>"; };
+		BA235B85257FCF6700A09280 /* ICUserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserManager.swift; sourceTree = "<group>"; };
 		BA353E87256ED34F00CC4917 /* Icebaby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Icebaby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA353E8A256ED34F00CC4917 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				BA235B77257E906900A09280 /* ICChatManager.swift */,
+				BA235B85257FCF6700A09280 /* ICUserManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -822,6 +825,7 @@
 				C7CF3D052578BCDD00D34FFD /* ICChatAPIService.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
 				C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */,
+				BA235B86257FCF6700A09280 /* ICUserManager.swift in Sources */,
 				BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */,
 				BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */,
 				BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */,

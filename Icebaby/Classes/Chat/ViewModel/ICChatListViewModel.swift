@@ -17,6 +17,7 @@ class ICChatListViewModel: ICViewModel {
     //Dependency Injection
     private let navigator: ICChatRootNavigator?
     private let chatAPIService: ICChatAPI?
+    private let chatManager: ICChatManager
     
     struct Input {
         public let chatTrigger: Driver<[String: Any]>
@@ -25,9 +26,11 @@ class ICChatListViewModel: ICViewModel {
     struct Output {
     }
     
-    init(navigator: ICChatRootNavigator, chatAPIService: ICChatAPI) {
+    init(navigator: ICChatRootNavigator, chatAPIService: ICChatAPI, chatManager: ICChatManager) {
         self.navigator = navigator
         self.chatAPIService = chatAPIService
+        self.chatManager = chatManager
+        bindOnPublish(chatManager.onPublish.asDriver(onErrorJustReturn: nil))
     }
 }
 
@@ -49,4 +52,19 @@ extension ICChatListViewModel {
             .drive()
             .disposed(by: disposeBag)
     }
+    
+    private func bindOnPublish(_ onPublish: Driver<ICChatData?>) {
+        onPublish
+            .do(onNext: { (info) in
+                print("channel:\(info?.channel ?? ""), uid:\(info?.uid ?? 0), type:\(info?.type ?? ""), msg:\(info?.msg ?? "")" )
+            })
+            .drive()
+            .disposed(by: disposeBag)
+
+    }
+}
+
+//MARK: - API
+extension ICChatListViewModel {
+    
 }

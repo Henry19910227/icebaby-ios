@@ -16,6 +16,7 @@ class ICMainTabBarViewModel: ICViewModel {
     
     private let navigator: ICMainTabBarNavigator?
     private let chatManager: ICChatManager?
+    private let userManager: UserManager
     
     struct Input {
         public let trigger: Driver<UITabBarController>
@@ -25,9 +26,10 @@ class ICMainTabBarViewModel: ICViewModel {
 
     }
     
-    init(navigator: ICMainTabBarNavigator, chatManager: ICChatManager) {
+    init(navigator: ICMainTabBarNavigator, chatManager: ICChatManager, userManager: UserManager) {
         self.navigator = navigator
         self.chatManager = chatManager
+        self.userManager = userManager
     }
 }
 
@@ -38,12 +40,12 @@ extension ICMainTabBarViewModel {
     }
 }
 
-extension ICMainTabBarViewModel: APIToken {
+extension ICMainTabBarViewModel {
     private func bindTrigger(trigger: Driver<UITabBarController>) {
         trigger
             .do(onNext: { [unowned self] (tabbarVC) in
                 self.navigator?.toMain(tabbarVC: tabbarVC)
-                self.chatManager?.start(token: token() ?? "")
+                self.chatManager?.connect(token: self.userManager.token() ?? "", uid: self.userManager.uid())
             })
             .drive()
             .disposed(by: disposeBag)

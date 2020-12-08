@@ -46,14 +46,17 @@ extension ICMainTabBarNavigator {
         
         // 大廳 tabbar
         let lobbyNavgator = ICLobbyRootNavigator(window, lobbyNav, lobbyStoryboard)
+        let lobbyAPIService = ICLobbyAPIService(userManager: ICUserManager())
         let lobbyVC = lobbyStoryboard.instantiateViewController(withIdentifier: String(describing: ICLobbyViewController.self)) as! ICLobbyViewController
-        lobbyVC.viewModel = ICLobbyViewModel(navigator: lobbyNavgator, lobbyAPIService: ICLobbyAPIService())
+        lobbyVC.viewModel = ICLobbyViewModel(navigator: lobbyNavgator, lobbyAPIService: lobbyAPIService)
         lobbyNav.setViewControllers([lobbyVC], animated: true)
         
         // 聊天 tabbar
         let chatNavigator = ICChatRootNavigator(window, chatNav, chatStoryboard)
         let chatVC = chatStoryboard.instantiateViewController(withIdentifier: String(describing: ICChatListViewController.self)) as! ICChatListViewController
-        chatVC.viewModel = ICChatListViewModel(navigator: chatNavigator, chatAPIService: ICChatAPIService())
+        chatVC.viewModel = ICChatListViewModel(navigator: chatNavigator,
+                                               chatAPIService: ICChatAPIService(),
+                                               chatManager: ICChatManager.shard)
         chatNav.setViewControllers([chatVC], animated: true)
         chatVC.loadViewIfNeeded()
 
