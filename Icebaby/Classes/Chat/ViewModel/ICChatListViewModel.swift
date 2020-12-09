@@ -60,7 +60,10 @@ extension ICChatListViewModel {
             })
             .drive()
             .disposed(by: disposeBag)
-
+    }
+    
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<String>) {
+        
     }
 }
 

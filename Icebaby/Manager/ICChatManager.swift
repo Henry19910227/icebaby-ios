@@ -29,6 +29,8 @@ class ICChatManager: NSObject {
     
     //RX
     public let onPublish = PublishSubject<ICChatData?>()
+    public let subscribe = PublishSubject<String>()
+    public let onSubscribeSuccess = PublishSubject<String>()
 }
 
 //MARK: - Public
@@ -50,13 +52,22 @@ extension ICChatManager: CentrifugeClientDelegate {
 extension ICChatManager: CentrifugeSubscriptionDelegate {
     func onPublish(_ sub: CentrifugeSubscription, _ event: CentrifugePublishEvent) {
         do {
-            let data = try? JSONDecoder().decode(ICChatData.self, from: event.data)
-            onPublish.onNext(data)
+            let data = try JSONDecoder().decode(ICChatData.self, from: event.data)
+            switch data.type {
+            case "subscribe":
+                subscribeChannel(data.msg)
+            case "message":
+                onPublish.onNext(data)
+            default:
+                break
+            }
+        } catch {
+            print("Error!")
         }
     }
     
     func onSubscribeSuccess(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeSuccessEvent) {
-        print("Subscribe \(sub.channel) success" )
+        onSubscribeSuccess.onNext(sub.channel)
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
@@ -66,8 +77,8 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
 
 //MARK: - Other
 extension ICChatManager {
-    private func subscribeChannel(_ channel: String) {
-        guard currentSubscribe[channel] == nil else { return }
+    private func subscribeChannel(_ channel: String?) {
+        guard let channel = channel, currentSubscribe[channel] == nil else { return }
         var subscribeItem: CentrifugeSubscription?
         do {
             subscribeItem = try client.newSubscription(channel: channel, delegate: self)
