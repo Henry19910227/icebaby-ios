@@ -41,7 +41,19 @@ extension ICChatListViewController {
                     })
                     .asDriver(onErrorJustReturn: [:])
         let input = ICChatListViewModel.Input(chatTrigger: chatTrigger)
-        viewModel?.transform(input: input)
+        let output = viewModel?.transform(input: input)
+        
+        output?
+            .showLoading
+            .drive(rx.isShowLoading)
+            .disposed(by: disposeBag)
+        
+        output?
+            .showErrorMsg
+            .drive(onNext: { [unowned self] (msg) in
+                self.view.makeToast(msg, duration: 1.0, position: .top)
+            })
+            .disposed(by: disposeBag)
 
     }
 }

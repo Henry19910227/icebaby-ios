@@ -12,9 +12,9 @@ import RxSwift
 
 struct ICChatData: Codable {
     var channel: String?
-    var uid: Int?
     var type: String?
-    var msg: String?
+    var uid: Int?
+    var content: String?
 }
 
 class ICChatManager: NSObject {
@@ -38,7 +38,6 @@ extension ICChatManager {
     public func connect(token: String, uid: Int) {
         client.setToken(token)
         client.connect()
-        self.uid = uid
         subscribeChannel(String(uid))
     }
 }
@@ -53,14 +52,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     func onPublish(_ sub: CentrifugeSubscription, _ event: CentrifugePublishEvent) {
         do {
             let data = try JSONDecoder().decode(ICChatData.self, from: event.data)
-            switch data.type {
-            case "subscribe":
-                subscribeChannel(data.msg)
-            case "message":
-                onPublish.onNext(data)
-            default:
-                break
-            }
+            onPublish.onNext(data)
         } catch {
             print("Error!")
         }
@@ -77,7 +69,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
 
 //MARK: - Other
 extension ICChatManager {
-    private func subscribeChannel(_ channel: String?) {
+    public func subscribeChannel(_ channel: String?) {
         guard let channel = channel, currentSubscribe[channel] == nil else { return }
         var subscribeItem: CentrifugeSubscription?
         do {

@@ -107,7 +107,7 @@ extension ICUserViewModel {
 extension ICUserViewModel {
     private func post() {
         let name = Notification.Name(rawValue: "StartNewChat")
-        NotificationCenter.default.post(name: name, object: nil, userInfo: ["uid": 99])
+        NotificationCenter.default.post(name: name, object: nil, userInfo: ["uid": self.userID])
     }
 }
 

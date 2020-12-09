@@ -11,19 +11,26 @@ import RxCocoa
 
 class ICChatListViewModel: ICViewModel {
     
-    //RX
-    private let disposeBag = DisposeBag()
-    
     //Dependency Injection
     private let navigator: ICChatRootNavigator?
     private let chatAPIService: ICChatAPI?
     private let chatManager: ICChatManager
+    
+    //RX
+    private let disposeBag = DisposeBag()
+    
+    //Subject
+    private let showLoadingSubject = PublishSubject<Bool>()
+    private let showErrorMsgSubject = PublishSubject<String>()
+    
     
     struct Input {
         public let chatTrigger: Driver<[String: Any]>
     }
     
     struct Output {
+        public let showLoading: Driver<Bool>
+        public let showErrorMsg: Driver<String>
     }
     
     init(navigator: ICChatRootNavigator, chatAPIService: ICChatAPI, chatManager: ICChatManager) {
@@ -31,6 +38,7 @@ class ICChatListViewModel: ICViewModel {
         self.chatAPIService = chatAPIService
         self.chatManager = chatManager
         bindOnPublish(chatManager.onPublish.asDriver(onErrorJustReturn: nil))
+        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -38,7 +46,8 @@ class ICChatListViewModel: ICViewModel {
 extension ICChatListViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindChatTrigger(trigger: input.chatTrigger)
-        return Output()
+        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -46,8 +55,9 @@ extension ICChatListViewModel {
 extension ICChatListViewModel {
     private func bindChatTrigger(trigger: Driver<[String: Any]>) {
         trigger
-            .do(onNext: { (userinfo) in
-                print("id:\(userinfo["uid"] as? Int ?? 0)")
+            .do(onNext: { [unowned self] (userinfo) in
+                let guestID = userinfo["uid"] as? Int ?? 0
+                self.apiNewChat(guestID: guestID)
             })
             .drive()
             .disposed(by: disposeBag)
@@ -55,19 +65,47 @@ extension ICChatListViewModel {
     
     private func bindOnPublish(_ onPublish: Driver<ICChatData?>) {
         onPublish
-            .do(onNext: { (info) in
-                print("channel:\(info?.channel ?? ""), uid:\(info?.uid ?? 0), type:\(info?.type ?? ""), msg:\(info?.msg ?? "")" )
+            .filter({ (data) -> Bool in
+                return data?.type == "subscribe"
             })
-            .drive()
+            .drive(onNext: { [unowned self] (data) in
+                self.chatManager.subscribeChannel(data?.content)
+            })
+            .disposed(by: disposeBag)
+        
+        onPublish
+            .filter({ (data) -> Bool in
+                return data?.type == "message"
+            })
+            .drive(onNext: { (data) in
+                print("message : \(data?.content ?? "")")
+            })
             .disposed(by: disposeBag)
     }
     
     private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<String>) {
-        
+        onSubscribeSuccess
+            .do(onNext: { (channel) in
+                print("Subscribe channel : \(channel)")
+             })
+            .drive()
+            .disposed(by: disposeBag)
     }
 }
 
 //MARK: - API
 extension ICChatListViewModel {
-    
+    private func apiNewChat(guestID: Int) {
+        showLoadingSubject.onNext(true)
+        chatAPIService?
+            .apiNewChat(guestID: guestID)
+            .subscribe(onSuccess: { [unowned self] (channelID) in
+                self.showLoadingSubject.onNext(false)
+            }, onError: { [unowned self] (error) in
+                self.showLoadingSubject.onNext(false)
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            })
+            .disposed(by: disposeBag)
+    }
 }

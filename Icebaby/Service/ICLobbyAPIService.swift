@@ -26,7 +26,7 @@ class ICLobbyAPIService: APIBaseRequest, APIDataTransform, ICLobbyAPI, ICLobbyUR
     }
     
     func apiGetUserList() -> Single<[ICUser]> {
-        return Single<[ICUser]>.create { (single) -> Disposable in
+        return Single<[ICUser]>.create { [unowned self] (single) -> Disposable in
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
             let parameter: [String: Any] = ["role": 2]
             let _ = self.sendRequest(medthod: .get, url: self.usersURL, parameter: parameter, headers: header)
@@ -43,7 +43,7 @@ class ICLobbyAPIService: APIBaseRequest, APIDataTransform, ICLobbyAPI, ICLobbyUR
     }
     
     func apiGetUserDetail(userID: Int) -> Single<ICUserDetail?> {
-        return Single<ICUserDetail?>.create { (single) -> Disposable in
+        return Single<ICUserDetail?>.create { [unowned self] (single) -> Disposable in
             let url = self.userDetailURL(userID: userID)
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
             let _ = self.sendRequest(medthod: .get, url: url, parameter: nil, headers: header)
