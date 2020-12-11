@@ -69,6 +69,7 @@ extension ICChatListViewModel {
                 return data?.type == "subscribe"
             })
             .drive(onNext: { [unowned self] (data) in
+                self.apiGetMyChannels()
                 self.chatManager.subscribeChannel(data?.content)
             })
             .disposed(by: disposeBag)
@@ -103,6 +104,23 @@ extension ICChatListViewModel {
                 self.showLoadingSubject.onNext(false)
             }, onError: { [unowned self] (error) in
                 self.showLoadingSubject.onNext(false)
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func apiGetMyChannels() {
+        showLoadingSubject.onNext(true)
+        chatAPIService?
+            .apiGetMyChannel()
+            .subscribe(onSuccess: { [unowned self] (channels) in
+                self.showLoadingSubject.onNext(true)
+                for channel in channels {
+                    print("member : \(channel.members?.count ?? 0)")
+                }
+            }, onError: { [unowned self] (error) in
+                self.showLoadingSubject.onNext(true)
                 guard let err = error as? ICError else { return }
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })

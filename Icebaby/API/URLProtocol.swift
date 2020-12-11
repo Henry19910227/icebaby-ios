@@ -19,7 +19,8 @@ protocol ICLobbyURL: ICBaseURL {
     func userDetailURL(userID: Int) -> URL
 }
 protocol ICChatURL: ICBaseURL {
-    var newChatURL:URL {get}
+    var newChatURL: URL { get }
+    var myChannelsURL: URL { get }
 }
 
 
@@ -77,6 +78,10 @@ extension ICLobbyURL {
 extension ICChatURL {
     var newChatURL: URL {
         return URL(string: "\(baseURL)/icebaby/v1/chat/new")!
+    }
+    
+    var myChannelsURL: URL {
+        return URL(string: "\(baseURL)/icebaby/v1/chat/mychannels")!
     }
 }
 

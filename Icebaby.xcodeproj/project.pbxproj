@@ -37,6 +37,8 @@
 		BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACE825780B2200D98060 /* ICUserNavigator.swift */; };
 		BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACED25780B2F00D98060 /* ICUserViewModel.swift */; };
 		BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACF52578150400D98060 /* ICUserDetail.swift */; };
+		C7082CF725836DAF00C49DCF /* ICChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7082CF625836DAF00C49DCF /* ICChannel.swift */; };
+		C7082CFF25836DC700C49DCF /* ICMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7082CFE25836DC700C49DCF /* ICMember.swift */; };
 		C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */; };
 		C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */; };
 		C74728B525776E2900FE8ED2 /* Lobby.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C74728B425776E2900FE8ED2 /* Lobby.storyboard */; };
@@ -119,6 +121,8 @@
 		BADCACE825780B2200D98060 /* ICUserNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserNavigator.swift; sourceTree = "<group>"; };
 		BADCACED25780B2F00D98060 /* ICUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserViewModel.swift; sourceTree = "<group>"; };
 		BADCACF52578150400D98060 /* ICUserDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserDetail.swift; sourceTree = "<group>"; };
+		C7082CF625836DAF00C49DCF /* ICChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChannel.swift; sourceTree = "<group>"; };
+		C7082CFE25836DC700C49DCF /* ICMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMember.swift; sourceTree = "<group>"; };
 		C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewController.swift; sourceTree = "<group>"; };
 		C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyRootNavigator.swift; sourceTree = "<group>"; };
 		C74728B425776E2900FE8ED2 /* Lobby.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Lobby.storyboard; sourceTree = "<group>"; };
@@ -400,6 +404,15 @@
 			path = Tool;
 			sourceTree = "<group>";
 		};
+		C7082CF525836D9A00C49DCF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C7082CF625836DAF00C49DCF /* ICChannel.swift */,
+				C7082CFE25836DC700C49DCF /* ICMember.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		C74728A325776B3900FE8ED2 /* Lobby */ = {
 			isa = PBXGroup;
 			children = (
@@ -493,6 +506,7 @@
 			children = (
 				C7CF3CD12578A50500D34FFD /* Controller */,
 				C7CF3CD32578A51300D34FFD /* ViewModel */,
+				C7082CF525836D9A00C49DCF /* Model */,
 				C7CF3CD42578A51900D34FFD /* Navigator */,
 				C7CF3CD22578A50E00D34FFD /* View */,
 			);
@@ -807,6 +821,7 @@
 				BA353EC82570062D00CC4917 /* ICViewModel.swift in Sources */,
 				BA235B78257E906900A09280 /* ICChatManager.swift in Sources */,
 				C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */,
+				C7082CFF25836DC700C49DCF /* ICMember.swift in Sources */,
 				BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */,
 				BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */,
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
@@ -841,6 +856,7 @@
 				C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */,
 				BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */,
 				C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */,
+				C7082CF725836DAF00C49DCF /* ICChannel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

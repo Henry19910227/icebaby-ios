@@ -14,6 +14,7 @@ import Alamofire
 
 protocol ICChatAPI {
     func apiNewChat(guestID: Int) -> Single<Int?>
+    func apiGetMyChannel() -> Single<[ICChannel]>
 }
 
 class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
@@ -34,6 +35,23 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
                 })
                 .subscribe(onSuccess: { (channelID) in
                     single(.success(channelID))
+                }, onError: { (error) in
+                    single(.error(error))
+                })
+            return Disposables.create()
+        }
+    }
+    
+    func apiGetMyChannel() -> Single<[ICChannel]> {
+        let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+        return Single<[ICChannel]>.create { [unowned self] (single) -> Disposable in
+            let _ = self.sendRequest(medthod: .get, url: self.myChannelsURL, parameter: nil, headers: header)
+                .map ({ (result) -> [ICChannel] in
+                    let data = result.dictionary?["data"]?.array ?? []
+                    return self.dataDecoderArrayTransform(ICChannel.self, data)
+                })
+                .subscribe(onSuccess: { (channels) in
+                    single(.success(channels))
                 }, onError: { (error) in
                     single(.error(error))
                 })
