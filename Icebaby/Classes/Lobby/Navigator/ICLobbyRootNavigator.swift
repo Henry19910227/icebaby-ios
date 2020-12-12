@@ -26,8 +26,12 @@ extension ICLobbyRootNavigator {
     func toUser(userID: Int) {
         let navigator = ICUserNavigator(window, navigationController, storyboard)
         let lobbyAPIService = ICLobbyAPIService(userManager: ICUserManager())
+        let chatAPIService = ICChatAPIService(userManager: ICUserManager())
         let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: ICUserViewController.self)) as! ICUserViewController
-        vc.viewModel = ICUserViewModel(navigator: navigator, lobbyAPIService: lobbyAPIService, userID: userID)
+        vc.viewModel = ICUserViewModel(navigator: navigator,
+                                       lobbyAPIService: lobbyAPIService,
+                                       chatAPIService: chatAPIService,
+                                       userID: userID)
         navigationController?.pushViewController(vc, animated: true)
     }
 }
