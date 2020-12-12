@@ -18,6 +18,12 @@ protocol ICLobbyURL: ICBaseURL {
     var usersURL: URL { get }
     func userDetailURL(userID: Int) -> URL
 }
+protocol ICChatURL: ICBaseURL {
+    var newChatURL: URL { get }
+    var myChannelsURL: URL { get }
+}
+
+
 protocol ICCourtURL: ICBaseURL {
     var getLocationsURL: URL { get }
     var getLocationDetailURL: URL { get }
@@ -69,6 +75,17 @@ extension ICLobbyURL {
         return URL(string: "\(baseURL)/icebaby/v1/user/\(userID)/detail")!
     }
 }
+extension ICChatURL {
+    var newChatURL: URL {
+        return URL(string: "\(baseURL)/icebaby/v1/chat/new")!
+    }
+    
+    var myChannelsURL: URL {
+        return URL(string: "\(baseURL)/icebaby/v1/chat/mychannels")!
+    }
+}
+
+
 extension ICCourtURL {
     var getLocationsURL: URL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/GetLocations")!
@@ -123,16 +140,5 @@ extension ICMessageURL {
     }
     var deleteMessageURL: URL {
         return URL(string: "\(baseURL)/WebBridge/api/Court/DeleteMessage")!
-    }
-}
-extension ICFavoriteURL {
-    var getFavoriteCourtURL: URL {
-        return URL(string: "\(baseURL)/WebBridge/api/User/GetSelfFavoriteCourt")!
-    }
-    var addFavoriteURL: URL {
-        return URL(string: "\(baseURL)/WebBridge/api/Court/AddFavorite")!
-    }
-    var deleteFavoriteURL: URL {
-        return URL(string: "\(baseURL)/WebBridge/api/Court/DeleteFavorite")!
     }
 }

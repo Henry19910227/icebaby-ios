@@ -20,9 +20,4 @@ class ICMeRootNavigator: ICRootNavigator {
         self.storyboard = storyboard
         self.window = window
     }
-    
-    func toRoot() {
-        let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: ICMeViewController.self)) as! ICMeViewController
-        navigationController?.pushViewController(vc, animated: true)
-    }
 }

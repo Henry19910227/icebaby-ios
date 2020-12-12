@@ -1,13 +1,13 @@
 //
-//  ICUserNavigator.swift
+//  ICChatRootNavigator.swift
 //  Icebaby
 //
-//  Created by 廖冠翰 on 2020/12/3.
+//  Created by Henry.Liao on 2020/12/3.
 //
 
 import UIKit
 
-class ICUserNavigator: NSObject {
+class ICChatRootNavigator: ICRootNavigator {
     weak var window: UIWindow?
     weak var storyboard: UIStoryboard?
     weak var navigationController: UINavigationController?
@@ -18,12 +18,5 @@ class ICUserNavigator: NSObject {
         self.navigationController = navigationController
         self.storyboard = storyboard
         self.window = window
-    }
-}
-
-extension ICUserNavigator {
-    public func toChat(channelID: Int) {
-        let vc = UIStoryboard(name: "Chat", bundle: nil).instantiateViewController(identifier: String(describing:ICChatViewController.self)) as! ICChatViewController
-        navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		19BE90C95533D7C3DEEBF38E /* Pods_IcebabyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43CE1EAE08B454201DD00CB5 /* Pods_IcebabyTests.framework */; };
+		BA235B78257E906900A09280 /* ICChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA235B77257E906900A09280 /* ICChatManager.swift */; };
+		BA235B86257FCF6700A09280 /* ICUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA235B85257FCF6700A09280 /* ICUserManager.swift */; };
+		BA258F5E2583C42200AA88AB /* ICChatListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA258F5D2583C42200AA88AB /* ICChatListCell.swift */; };
+		BA258F662583C99000AA88AB /* ICChatListCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA258F652583C99000AA88AB /* ICChatListCellViewModel.swift */; };
+		BA258F6B2584805000AA88AB /* ICChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA258F6A2584805000AA88AB /* ICChatViewController.swift */; };
 		BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8A256ED34F00CC4917 /* AppDelegate.swift */; };
 		BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */; };
 		BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8E256ED34F00CC4917 /* ViewController.swift */; };
@@ -35,6 +40,8 @@
 		BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACE825780B2200D98060 /* ICUserNavigator.swift */; };
 		BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACED25780B2F00D98060 /* ICUserViewModel.swift */; };
 		BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADCACF52578150400D98060 /* ICUserDetail.swift */; };
+		C7082CF725836DAF00C49DCF /* ICChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7082CF625836DAF00C49DCF /* ICChannel.swift */; };
+		C7082CFF25836DC700C49DCF /* ICMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7082CFE25836DC700C49DCF /* ICMember.swift */; };
 		C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */; };
 		C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */; };
 		C74728B525776E2900FE8ED2 /* Lobby.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C74728B425776E2900FE8ED2 /* Lobby.storyboard */; };
@@ -46,6 +53,12 @@
 		C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */; };
 		C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */; };
 		C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */; };
+		C7CF3CD62578A5E300D34FFD /* ICChatListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CD52578A5E300D34FFD /* ICChatListViewController.swift */; };
+		C7CF3CDB2578A5F900D34FFD /* ICChatListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CDA2578A5F900D34FFD /* ICChatListViewModel.swift */; };
+		C7CF3CE02578A60800D34FFD /* ICChatRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CDF2578A60800D34FFD /* ICChatRootNavigator.swift */; };
+		C7CF3CE52578A61600D34FFD /* Chat.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C7CF3CE42578A61600D34FFD /* Chat.storyboard */; };
+		C7CF3D052578BCDD00D34FFD /* ICChatAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3D042578BCDD00D34FFD /* ICChatAPIService.swift */; };
+		C7E42044257F254B005403B4 /* ICMainTabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E42043257F254B005403B4 /* ICMainTabBarViewModel.swift */; };
 		CB51A212AE0F81CAA12F9A4A /* Pods_Icebaby_IcebabyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F78382CAEE24DC8903C4524 /* Pods_Icebaby_IcebabyUITests.framework */; };
 		EBE0E940E18A5A511A065279 /* Pods_Icebaby.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C69C71BB7EA6E97D8741473 /* Pods_Icebaby.framework */; };
 /* End PBXBuildFile section */
@@ -76,6 +89,11 @@
 		4C8340BB348C7C2F4487EA45 /* Pods-Icebaby-IcebabyUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.debug.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		A7653148BFE51172F96A9637 /* Pods-IcebabyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IcebabyTests.debug.xcconfig"; path = "Target Support Files/Pods-IcebabyTests/Pods-IcebabyTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A7C887AC17529F7F2E13B5B4 /* Pods-Icebaby.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby.debug.xcconfig"; path = "Target Support Files/Pods-Icebaby/Pods-Icebaby.debug.xcconfig"; sourceTree = "<group>"; };
+		BA235B77257E906900A09280 /* ICChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatManager.swift; sourceTree = "<group>"; };
+		BA235B85257FCF6700A09280 /* ICUserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserManager.swift; sourceTree = "<group>"; };
+		BA258F5D2583C42200AA88AB /* ICChatListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatListCell.swift; sourceTree = "<group>"; };
+		BA258F652583C99000AA88AB /* ICChatListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatListCellViewModel.swift; sourceTree = "<group>"; };
+		BA258F6A2584805000AA88AB /* ICChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatViewController.swift; sourceTree = "<group>"; };
 		BA353E87256ED34F00CC4917 /* Icebaby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Icebaby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA353E8A256ED34F00CC4917 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,6 +127,8 @@
 		BADCACE825780B2200D98060 /* ICUserNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserNavigator.swift; sourceTree = "<group>"; };
 		BADCACED25780B2F00D98060 /* ICUserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserViewModel.swift; sourceTree = "<group>"; };
 		BADCACF52578150400D98060 /* ICUserDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserDetail.swift; sourceTree = "<group>"; };
+		C7082CF625836DAF00C49DCF /* ICChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChannel.swift; sourceTree = "<group>"; };
+		C7082CFE25836DC700C49DCF /* ICMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMember.swift; sourceTree = "<group>"; };
 		C74728A525776BCC00FE8ED2 /* ICLobbyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewController.swift; sourceTree = "<group>"; };
 		C74728AE25776C3600FE8ED2 /* ICLobbyRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyRootNavigator.swift; sourceTree = "<group>"; };
 		C74728B425776E2900FE8ED2 /* Lobby.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Lobby.storyboard; sourceTree = "<group>"; };
@@ -120,6 +140,12 @@
 		C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyCell.swift; sourceTree = "<group>"; };
 		C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewModel.swift; sourceTree = "<group>"; };
 		C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyAPIService.swift; sourceTree = "<group>"; };
+		C7CF3CD52578A5E300D34FFD /* ICChatListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatListViewController.swift; sourceTree = "<group>"; };
+		C7CF3CDA2578A5F900D34FFD /* ICChatListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatListViewModel.swift; sourceTree = "<group>"; };
+		C7CF3CDF2578A60800D34FFD /* ICChatRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatRootNavigator.swift; sourceTree = "<group>"; };
+		C7CF3CE42578A61600D34FFD /* Chat.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Chat.storyboard; sourceTree = "<group>"; };
+		C7CF3D042578BCDD00D34FFD /* ICChatAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatAPIService.swift; sourceTree = "<group>"; };
+		C7E42043257F254B005403B4 /* ICMainTabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarViewModel.swift; sourceTree = "<group>"; };
 		CD0877986DD84F1EA7AB880F /* Pods-Icebaby-IcebabyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby-IcebabyUITests.release.xcconfig"; path = "Target Support Files/Pods-Icebaby-IcebabyUITests/Pods-Icebaby-IcebabyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -151,6 +177,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA235B76257E905100A09280 /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				BA235B77257E906900A09280 /* ICChatManager.swift */,
+				BA235B85257FCF6700A09280 /* ICUserManager.swift */,
+			);
+			path = Manager;
+			sourceTree = "<group>";
+		};
 		BA353E7E256ED34F00CC4917 = {
 			isa = PBXGroup;
 			children = (
@@ -178,6 +213,7 @@
 			children = (
 				BA353EE625700E2700CC4917 /* API */,
 				BA353EC6257005CD00CC4917 /* Protocol */,
+				BA235B76257E905100A09280 /* Manager */,
 				BADCACA22576C52300D98060 /* Tool */,
 				BA353F1E25701E3800CC4917 /* Service */,
 				BA353EF425700F0000CC4917 /* Classes */,
@@ -234,6 +270,7 @@
 				BA353EFD2570148800CC4917 /* Main */,
 				BA353EFF257014A400CC4917 /* Login */,
 				C74728A325776B3900FE8ED2 /* Lobby */,
+				C7CF3CD02578A4F300D34FFD /* Chat */,
 				BA353F2725701EE900CC4917 /* Me */,
 			);
 			path = Classes;
@@ -269,6 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				C77A256E2570D22F00FCFA8D /* Controller */,
+				C7E42042257F252A005403B4 /* ViewModel */,
 				C77A258F2570D6D000FCFA8D /* Navigator */,
 				BA353EFE2570149200CC4917 /* View */,
 			);
@@ -331,6 +369,7 @@
 			children = (
 				BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */,
 				C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */,
+				C7CF3D042578BCDD00D34FFD /* ICChatAPIService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -369,6 +408,15 @@
 				BADCACA32576C54A00D98060 /* ICLoadingProgressHUD.swift */,
 			);
 			path = Tool;
+			sourceTree = "<group>";
+		};
+		C7082CF525836D9A00C49DCF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C7082CF625836DAF00C49DCF /* ICChannel.swift */,
+				C7082CFE25836DC700C49DCF /* ICMember.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		C74728A325776B3900FE8ED2 /* Lobby */ = {
@@ -455,6 +503,61 @@
 				C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */,
 				BADCACDE2577FB5B00D98060 /* ICLobbyCellViewModel.swift */,
 				BADCACED25780B2F00D98060 /* ICUserViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		C7CF3CD02578A4F300D34FFD /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				C7CF3CD12578A50500D34FFD /* Controller */,
+				C7CF3CD32578A51300D34FFD /* ViewModel */,
+				C7082CF525836D9A00C49DCF /* Model */,
+				C7CF3CD42578A51900D34FFD /* Navigator */,
+				C7CF3CD22578A50E00D34FFD /* View */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		C7CF3CD12578A50500D34FFD /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				C7CF3CD52578A5E300D34FFD /* ICChatListViewController.swift */,
+				BA258F6A2584805000AA88AB /* ICChatViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		C7CF3CD22578A50E00D34FFD /* View */ = {
+			isa = PBXGroup;
+			children = (
+				BA258F5D2583C42200AA88AB /* ICChatListCell.swift */,
+				C7CF3CE42578A61600D34FFD /* Chat.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		C7CF3CD32578A51300D34FFD /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				C7CF3CDA2578A5F900D34FFD /* ICChatListViewModel.swift */,
+				BA258F652583C99000AA88AB /* ICChatListCellViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		C7CF3CD42578A51900D34FFD /* Navigator */ = {
+			isa = PBXGroup;
+			children = (
+				C7CF3CDF2578A60800D34FFD /* ICChatRootNavigator.swift */,
+			);
+			path = Navigator;
+			sourceTree = "<group>";
+		};
+		C7E42042257F252A005403B4 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				C7E42043257F254B005403B4 /* ICMainTabBarViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -590,6 +693,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7CF3CE52578A61600D34FFD /* Chat.storyboard in Resources */,
 				BA353F05257014CE00CC4917 /* Login.storyboard in Resources */,
 				BA353E97256ED35100CC4917 /* LaunchScreen.storyboard in Resources */,
 				C77A25792570D5DD00FCFA8D /* Me.storyboard in Resources */,
@@ -724,35 +828,47 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA353EC82570062D00CC4917 /* ICViewModel.swift in Sources */,
+				BA258F662583C99000AA88AB /* ICChatListCellViewModel.swift in Sources */,
+				BA235B78257E906900A09280 /* ICChatManager.swift in Sources */,
 				C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */,
+				C7082CFF25836DC700C49DCF /* ICMember.swift in Sources */,
 				BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */,
 				BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */,
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
+				BA258F6B2584805000AA88AB /* ICChatViewController.swift in Sources */,
 				BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */,
 				C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */,
+				C7CF3CDB2578A5F900D34FFD /* ICChatListViewModel.swift in Sources */,
 				C74728AF25776C3600FE8ED2 /* ICLobbyRootNavigator.swift in Sources */,
 				BADCACA42576C54A00D98060 /* ICLoadingProgressHUD.swift in Sources */,
+				C7E42044257F254B005403B4 /* ICMainTabBarViewModel.swift in Sources */,
 				BA353F14257016F200CC4917 /* ICLoginRootNavigator.swift in Sources */,
 				BA353ED02570066300CC4917 /* ICNavigator.swift in Sources */,
 				C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */,
 				BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */,
 				BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */,
 				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
+				C7CF3D052578BCDD00D34FFD /* ICChatAPIService.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
 				C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */,
+				BA235B86257FCF6700A09280 /* ICUserManager.swift in Sources */,
 				BADCACAF2576C5C900D98060 /* ICProgressHUD.swift in Sources */,
 				BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */,
 				BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */,
 				C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */,
 				BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */,
 				C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */,
+				C7CF3CD62578A5E300D34FFD /* ICChatListViewController.swift in Sources */,
 				BA353F0F2570168E00CC4917 /* ICLoginViewModel.swift in Sources */,
 				BA353EE825700E3E00CC4917 /* APIProtocol.swift in Sources */,
 				BADCACE425780ABD00D98060 /* ICUserViewController.swift in Sources */,
 				BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */,
+				C7CF3CE02578A60800D34FFD /* ICChatRootNavigator.swift in Sources */,
 				C77A25702570D26B00FCFA8D /* ICMainTabBarController.swift in Sources */,
 				BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */,
 				C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */,
+				C7082CF725836DAF00C49DCF /* ICChannel.swift in Sources */,
+				BA258F5E2583C42200AA88AB /* ICChatListCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

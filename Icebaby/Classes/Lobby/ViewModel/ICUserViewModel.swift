@@ -14,9 +14,10 @@ class ICUserViewModel: ICViewModel {
     //RX
     private let disposeBag = DisposeBag()
     
-    //Parameter
-    private let navigator: ICLobbyRootNavigator?
-    private let lobbyAPIService: ICLobbyAPI?
+    //Dependency Injection
+    private let navigator: ICUserNavigator?
+    private let lobbyAPIService: ICLobbyAPI
+    private let chatAPIService: ICChatAPI
     private let userID: Int
     
     //Subject
@@ -25,7 +26,7 @@ class ICUserViewModel: ICViewModel {
     private let uidSubject = PublishSubject<Int>()
     private let nicknameSubject = PublishSubject<String>()
     private let birthdaySubject = PublishSubject<String>()
-    
+    private let switchTabSubject = PublishSubject<Int>()
 
     struct Input {
         public let trigger: Driver<Void>
@@ -38,11 +39,16 @@ class ICUserViewModel: ICViewModel {
         public let uid: Driver<Int>
         public let nickname: Driver<String>
         public let birthday: Driver<String>
+        public let switchTab: Driver<Int>
     }
     
-    init(navigator: ICLobbyRootNavigator, lobbyAPIService: ICLobbyAPI, userID: Int) {
+    init(navigator: ICUserNavigator,
+         lobbyAPIService: ICLobbyAPI,
+         chatAPIService: ICChatAPI,
+         userID: Int) {
         self.navigator = navigator
         self.lobbyAPIService = lobbyAPIService
+        self.chatAPIService = chatAPIService
         self.userID = userID
     }
 }
@@ -56,7 +62,8 @@ extension ICUserViewModel {
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       uid: uidSubject.asDriver(onErrorJustReturn: 0),
                       nickname: nicknameSubject.asDriver(onErrorJustReturn: ""),
-                      birthday: birthdaySubject.asDriver(onErrorJustReturn: ""))
+                      birthday: birthdaySubject.asDriver(onErrorJustReturn: ""),
+                      switchTab: switchTabSubject.asDriver(onErrorJustReturn: 0))
     }
 }
 
@@ -73,12 +80,11 @@ extension ICUserViewModel {
     
     private func bindChatTap(chatTap: Driver<Void>) {
         chatTap
-            .do(onNext: { (_) in
-                print("start chat")
-            })
+            .do(onNext: { [unowned self] (_) in
+                self.apiNewChat(guestID: self.userID)
+            }) 
             .drive()
             .disposed(by: disposeBag)
-
     }
 }
 
@@ -86,7 +92,7 @@ extension ICUserViewModel {
 extension ICUserViewModel {
     private func apiGetUserDetail(userID: Int) {
         showLoadingSubject.onNext(true)
-        lobbyAPIService?
+        lobbyAPIService
             .apiGetUserDetail(userID: userID)
             .subscribe(onSuccess: { [unowned self] (userDetail) in
                 self.showLoadingSubject.onNext(false)
@@ -99,6 +105,22 @@ extension ICUserViewModel {
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func apiNewChat(guestID: Int) {
+        showLoadingSubject.onNext(true)
+        chatAPIService
+            .apiNewChat(guestID: guestID)
+            .subscribe { (channelID) in
+                self.showLoadingSubject.onNext(false)
+                self.navigator?.toChat(channelID: channelID ?? 0)
+            } onError: { (error) in
+                self.showLoadingSubject.onNext(false)
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            }
+            .disposed(by: disposeBag)
+
     }
 }
 

@@ -10,17 +10,26 @@ import RxSwift
 import RxCocoa
 import RxAlamofire
 import SwiftyJSON
+import Alamofire
 
 protocol ICLobbyAPI {
     func apiGetUserList() -> Single<[ICUser]>
     func apiGetUserDetail(userID: Int) -> Single<ICUserDetail?>
 }
 
-class ICLobbyAPIService: APIRequest, APIToken, APIDataTransform, ICLobbyAPI, ICLobbyURL {
+class ICLobbyAPIService: APIBaseRequest, APIDataTransform, ICLobbyAPI, ICLobbyURL {
+    
+    private let userManager: UserManager
+    
+    init(userManager: UserManager) {
+        self.userManager = userManager
+    }
+    
     func apiGetUserList() -> Single<[ICUser]> {
-        return Single<[ICUser]>.create { (single) -> Disposable in
+        return Single<[ICUser]>.create { [unowned self] (single) -> Disposable in
+            let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
             let parameter: [String: Any] = ["role": 2]
-            let _ = self.apiRequest(medthod: .get, url: self.usersURL, parameter: parameter)
+            let _ = self.sendRequest(medthod: .get, url: self.usersURL, parameter: parameter, headers: header)
                 .map({ (result) -> [ICUser] in
                     let data = result.dictionary?["data"]?.array ?? []
                     return self.dataDecoderArrayTransform(ICUser.self, data)
@@ -34,9 +43,10 @@ class ICLobbyAPIService: APIRequest, APIToken, APIDataTransform, ICLobbyAPI, ICL
     }
     
     func apiGetUserDetail(userID: Int) -> Single<ICUserDetail?> {
-        return Single<ICUserDetail?>.create { (single) -> Disposable in
+        return Single<ICUserDetail?>.create { [unowned self] (single) -> Disposable in
             let url = self.userDetailURL(userID: userID)
-            let _ = self.apiRequest(medthod: .get, url: url, parameter: nil)
+            let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+            let _ = self.sendRequest(medthod: .get, url: url, parameter: nil, headers: header)
                 .map({ (result) -> ICUserDetail? in
                     return self.dataDecoderTransform(ICUserDetail.self, result.dictionaryValue["data"] ?? JSON())
                 }).subscribe { (userDetail) in

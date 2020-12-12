@@ -42,7 +42,7 @@ extension ICLobbyCell {
     }
 }
 
-//MARK: - Life Cycle
+//MARK: - Bind
 extension ICLobbyCell {
     private func bindViewModel(_ viewModel: ICLobbyCellViewModel) {
         viewModel
