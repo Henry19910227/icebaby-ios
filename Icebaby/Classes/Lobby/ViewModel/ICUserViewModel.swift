@@ -76,8 +76,7 @@ extension ICUserViewModel {
     private func bindChatTap(chatTap: Driver<Void>) {
         chatTap
             .do(onNext: { [unowned self] (_) in
-                self.switchTabSubject.onNext(1)
-                self.post()
+                self.navigator?.toChat()
             }) 
             .drive()
             .disposed(by: disposeBag)
@@ -101,13 +100,6 @@ extension ICUserViewModel {
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
-    }
-}
-
-extension ICUserViewModel {
-    private func post() {
-        let name = Notification.Name(rawValue: "StartNewChat")
-        NotificationCenter.default.post(name: name, object: nil, userInfo: ["uid": self.userID])
     }
 }
 

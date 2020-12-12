@@ -56,7 +56,8 @@ extension ICMainTabBarNavigator {
         let chatVC = chatStoryboard.instantiateViewController(withIdentifier: String(describing: ICChatListViewController.self)) as! ICChatListViewController
         chatVC.viewModel = ICChatListViewModel(navigator: chatNavigator,
                                                chatAPIService: ICChatAPIService(userManager: ICUserManager()),
-                                               chatManager: ICChatManager.shard)
+                                               chatManager: ICChatManager.shard,
+                                               userManager: ICUserManager())
         chatNav.setViewControllers([chatVC], animated: true)
         chatVC.loadViewIfNeeded()
 

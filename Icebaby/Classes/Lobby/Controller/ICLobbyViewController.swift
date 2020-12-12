@@ -74,12 +74,12 @@ extension ICLobbyViewController {
 // MARK: - UITableViewDataSource
 extension ICLobbyViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.cellVMs.count
+        return cellVMs.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ICLobbyCell.self)) as! ICLobbyCell
-        cell.viewModel = self.cellVMs[indexPath.row]
+        cell.viewModel = cellVMs[indexPath.row]
         return cell
     }
 }

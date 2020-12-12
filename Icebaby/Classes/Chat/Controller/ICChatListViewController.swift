@@ -17,8 +17,14 @@ class ICChatListViewController: ICBaseViewController {
     
     // Rx
     private let disposeBag = DisposeBag()
+    private let trigger = PublishSubject<Void>()
     
-
+    // UI
+    @IBOutlet weak var tableView: UITableView!
+    
+    // Data
+    private var cellVMs: [ICChatListCellViewModel] = []
+    
 }
 
 //MARK: - Life Cycle
@@ -27,21 +33,45 @@ extension ICChatListViewController {
         super.viewDidLoad()
         bindViewModel()
     }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        trigger.onNext(())
+    }
 }
 
+//MARK: - UITableViewDataSource
+extension ICChatListViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return cellVMs.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: ICChatListCell.self)) as! ICChatListCell
+        cell.viewModel = cellVMs[indexPath.row]
+        return cell
+    }
+}
+
+//MARK: - UITableViewDelegate
+extension ICChatListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 70
+    }
+}
+
+//MARK: - Bind
 extension ICChatListViewController {
     func bindViewModel() {
-        let chatTrigger = NotificationCenter
-                    .default
-                    .rx
-                    .notification(Notification.Name(rawValue: "StartNewChat"))
-                    .takeUntil(self.rx.deallocated)
-                    .map({ (notification) -> [String: Any] in
-                        return notification.userInfo as? [String: Any] ?? [:]
-                    })
-                    .asDriver(onErrorJustReturn: [:])
-        let input = ICChatListViewModel.Input(chatTrigger: chatTrigger)
+        let input = ICChatListViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()))
         let output = viewModel?.transform(input: input)
+        
+        output?
+            .items
+            .drive(onNext: { [unowned self] (cellVMs) in
+                self.cellVMs = cellVMs
+                self.tableView.reloadData()
+            })
+            .disposed(by: disposeBag)
         
         output?
             .showLoading

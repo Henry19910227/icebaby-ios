@@ -20,3 +20,10 @@ class ICUserNavigator: NSObject {
         self.window = window
     }
 }
+
+extension ICUserNavigator {
+    public func toChat() {
+        let vc = UIStoryboard(name: "Chat", bundle: nil).instantiateViewController(identifier: String(describing:ICChatViewController.self)) as! ICChatViewController
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}

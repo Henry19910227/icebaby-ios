@@ -15,6 +15,7 @@ class ICChatListViewModel: ICViewModel {
     private let navigator: ICChatRootNavigator?
     private let chatAPIService: ICChatAPI?
     private let chatManager: ICChatManager
+    private let userManager: ICUserManager
     
     //RX
     private let disposeBag = DisposeBag()
@@ -22,21 +23,27 @@ class ICChatListViewModel: ICViewModel {
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
     private let showErrorMsgSubject = PublishSubject<String>()
+    private let itemsSubject = PublishSubject<[ICChatListCellViewModel]>()
     
     
     struct Input {
-        public let chatTrigger: Driver<[String: Any]>
+        public let trigger: Driver<Void>
     }
     
     struct Output {
         public let showLoading: Driver<Bool>
         public let showErrorMsg: Driver<String>
+        public let items: Driver<[ICChatListCellViewModel]>
     }
     
-    init(navigator: ICChatRootNavigator, chatAPIService: ICChatAPI, chatManager: ICChatManager) {
+    init(navigator: ICChatRootNavigator,
+         chatAPIService: ICChatAPI,
+         chatManager: ICChatManager,
+         userManager: ICUserManager) {
         self.navigator = navigator
         self.chatAPIService = chatAPIService
         self.chatManager = chatManager
+        self.userManager = userManager
         bindOnPublish(chatManager.onPublish.asDriver(onErrorJustReturn: nil))
         bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ""))
     }
@@ -45,19 +52,19 @@ class ICChatListViewModel: ICViewModel {
 //MARK: - transform
 extension ICChatListViewModel {
     @discardableResult func transform(input: Input) -> Output {
-        bindChatTrigger(trigger: input.chatTrigger)
+        bindTrigger(trigger: input.trigger)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
-                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
+                      items: itemsSubject.asDriver(onErrorJustReturn: []))
     }
 }
 
 //MARK: - bind
 extension ICChatListViewModel {
-    private func bindChatTrigger(trigger: Driver<[String: Any]>) {
+    private func bindTrigger(trigger: Driver<Void>) {
         trigger
-            .do(onNext: { [unowned self] (userinfo) in
-                let guestID = userinfo["uid"] as? Int ?? 0
-                self.apiNewChat(guestID: guestID)
+            .do(onNext: { [unowned self] (_) in
+                self.apiGetMyChannels()
             })
             .drive()
             .disposed(by: disposeBag)
@@ -70,7 +77,6 @@ extension ICChatListViewModel {
             })
             .drive(onNext: { [unowned self] (data) in
                 self.apiGetMyChannels()
-                self.chatManager.subscribeChannel(data?.content)
             })
             .disposed(by: disposeBag)
         
@@ -114,13 +120,23 @@ extension ICChatListViewModel {
         showLoadingSubject.onNext(true)
         chatAPIService?
             .apiGetMyChannel()
-            .subscribe(onSuccess: { [unowned self] (channels) in
-                self.showLoadingSubject.onNext(true)
+            .do(onSuccess: { (channels) in
                 for channel in channels {
-                    print("member : \(channel.members?.count ?? 0)")
+                    self.chatManager.subscribeChannel(String(channel.id ?? 0))
                 }
+            })
+            .map({ [unowned self] (channels) -> [ICChatListCellViewModel] in
+                return channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
+                    let vm = ICChatListCellViewModel(userID: self.userManager.uid())
+                    vm.model = channel
+                    return vm
+                }
+            })
+            .subscribe(onSuccess: { [unowned self] (items) in
+                self.showLoadingSubject.onNext(false)
+                self.itemsSubject.onNext(items)
             }, onError: { [unowned self] (error) in
-                self.showLoadingSubject.onNext(true)
+                self.showLoadingSubject.onNext(false)
                 guard let err = error as? ICError else { return }
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })

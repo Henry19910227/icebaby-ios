@@ -10,6 +10,9 @@
 		19BE90C95533D7C3DEEBF38E /* Pods_IcebabyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43CE1EAE08B454201DD00CB5 /* Pods_IcebabyTests.framework */; };
 		BA235B78257E906900A09280 /* ICChatManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA235B77257E906900A09280 /* ICChatManager.swift */; };
 		BA235B86257FCF6700A09280 /* ICUserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA235B85257FCF6700A09280 /* ICUserManager.swift */; };
+		BA258F5E2583C42200AA88AB /* ICChatListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA258F5D2583C42200AA88AB /* ICChatListCell.swift */; };
+		BA258F662583C99000AA88AB /* ICChatListCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA258F652583C99000AA88AB /* ICChatListCellViewModel.swift */; };
+		BA258F6B2584805000AA88AB /* ICChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA258F6A2584805000AA88AB /* ICChatViewController.swift */; };
 		BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8A256ED34F00CC4917 /* AppDelegate.swift */; };
 		BA353E8D256ED34F00CC4917 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */; };
 		BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA353E8E256ED34F00CC4917 /* ViewController.swift */; };
@@ -88,6 +91,9 @@
 		A7C887AC17529F7F2E13B5B4 /* Pods-Icebaby.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Icebaby.debug.xcconfig"; path = "Target Support Files/Pods-Icebaby/Pods-Icebaby.debug.xcconfig"; sourceTree = "<group>"; };
 		BA235B77257E906900A09280 /* ICChatManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatManager.swift; sourceTree = "<group>"; };
 		BA235B85257FCF6700A09280 /* ICUserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserManager.swift; sourceTree = "<group>"; };
+		BA258F5D2583C42200AA88AB /* ICChatListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatListCell.swift; sourceTree = "<group>"; };
+		BA258F652583C99000AA88AB /* ICChatListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatListCellViewModel.swift; sourceTree = "<group>"; };
+		BA258F6A2584805000AA88AB /* ICChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatViewController.swift; sourceTree = "<group>"; };
 		BA353E87256ED34F00CC4917 /* Icebaby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Icebaby.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA353E8A256ED34F00CC4917 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA353E8C256ED34F00CC4917 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -517,6 +523,7 @@
 			isa = PBXGroup;
 			children = (
 				C7CF3CD52578A5E300D34FFD /* ICChatListViewController.swift */,
+				BA258F6A2584805000AA88AB /* ICChatViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -524,6 +531,7 @@
 		C7CF3CD22578A50E00D34FFD /* View */ = {
 			isa = PBXGroup;
 			children = (
+				BA258F5D2583C42200AA88AB /* ICChatListCell.swift */,
 				C7CF3CE42578A61600D34FFD /* Chat.storyboard */,
 			);
 			path = View;
@@ -533,6 +541,7 @@
 			isa = PBXGroup;
 			children = (
 				C7CF3CDA2578A5F900D34FFD /* ICChatListViewModel.swift */,
+				BA258F652583C99000AA88AB /* ICChatListCellViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -819,12 +828,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA353EC82570062D00CC4917 /* ICViewModel.swift in Sources */,
+				BA258F662583C99000AA88AB /* ICChatListCellViewModel.swift in Sources */,
 				BA235B78257E906900A09280 /* ICChatManager.swift in Sources */,
 				C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */,
 				C7082CFF25836DC700C49DCF /* ICMember.swift in Sources */,
 				BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */,
 				BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */,
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
+				BA258F6B2584805000AA88AB /* ICChatViewController.swift in Sources */,
 				BA353F2A25701F1200CC4917 /* ICUser.swift in Sources */,
 				C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */,
 				C7CF3CDB2578A5F900D34FFD /* ICChatListViewModel.swift in Sources */,
@@ -857,6 +868,7 @@
 				BA353EF8257013E400CC4917 /* ICApplicationNavigator.swift in Sources */,
 				C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */,
 				C7082CF725836DAF00C49DCF /* ICChannel.swift in Sources */,
+				BA258F5E2583C42200AA88AB /* ICChatListCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -74,12 +74,5 @@ extension ICUserViewController {
             .birthday
             .drive(birthdayLabel.rx.text)
             .disposed(by: disposeBag)
-        
-        output?
-            .switchTab
-            .drive(onNext: { [unowned self] (index) in
-                self.tabBarController?.selectedIndex = index
-            })
-            .disposed(by: disposeBag)
     }
 }
