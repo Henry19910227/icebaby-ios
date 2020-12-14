@@ -17,7 +17,7 @@ class ICChatListViewController: ICBaseViewController {
     
     // Rx
     private let disposeBag = DisposeBag()
-    private let trigger = PublishSubject<Void>()
+    private let trigger = PublishSubject<Bool>()
     
     // UI
     @IBOutlet weak var tableView: UITableView!
@@ -35,7 +35,11 @@ extension ICChatListViewController {
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        trigger.onNext(())
+        trigger.onNext(true)
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        trigger.onNext(false)
     }
 }
 
@@ -62,7 +66,7 @@ extension ICChatListViewController: UITableViewDelegate {
 //MARK: - Bind
 extension ICChatListViewController {
     func bindViewModel() {
-        let input = ICChatListViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()))
+        let input = ICChatListViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: false))
         let output = viewModel?.transform(input: input)
         
         output?

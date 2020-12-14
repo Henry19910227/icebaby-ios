@@ -31,6 +31,7 @@ extension ICLobbyRootNavigator {
         vc.viewModel = ICUserViewModel(navigator: navigator,
                                        lobbyAPIService: lobbyAPIService,
                                        chatAPIService: chatAPIService,
+                                       chatManager: ICChatManager.shard,
                                        userID: userID)
         navigationController?.pushViewController(vc, animated: true)
     }

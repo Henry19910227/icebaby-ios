@@ -27,7 +27,7 @@ class ICChatListViewModel: ICViewModel {
     
     
     struct Input {
-        public let trigger: Driver<Void>
+        public let trigger: Driver<Bool>
     }
     
     struct Output {
@@ -44,15 +44,19 @@ class ICChatListViewModel: ICViewModel {
         self.chatAPIService = chatAPIService
         self.chatManager = chatManager
         self.userManager = userManager
-        bindOnPublish(chatManager.onPublish.asDriver(onErrorJustReturn: nil))
-        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ""))
     }
 }
 
 //MARK: - transform
 extension ICChatListViewModel {
     @discardableResult func transform(input: Input) -> Output {
+        let onPublish = Observable.combineLatest(chatManager.onPublish.asObservable(),
+                                          input.trigger.asObservable()).filter({ $1 })
+        let onSubscribe = Observable.combineLatest(chatManager.onSubscribeSuccess.asObservable(),
+                                                   input.trigger.asObservable()).filter({ $1 })
         bindTrigger(trigger: input.trigger)
+        bindOnPublish(onPublish)
+        bindOnSubscribeSuccess(onSubscribe)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
@@ -61,8 +65,9 @@ extension ICChatListViewModel {
 
 //MARK: - bind
 extension ICChatListViewModel {
-    private func bindTrigger(trigger: Driver<Void>) {
+    private func bindTrigger(trigger: Driver<Bool>) {
         trigger
+            .filter({ $0 })
             .do(onNext: { [unowned self] (_) in
                 self.apiGetMyChannels()
             })
@@ -70,59 +75,46 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindOnPublish(_ onPublish: Driver<ICChatData?>) {
+    private func bindOnPublish(_ onPublish: Observable<(ICChatData?, Bool)>) {
         onPublish
-            .filter({ (data) -> Bool in
+            .filter({ (data, _) -> Bool in
                 return data?.type == "subscribe"
             })
-            .drive(onNext: { [unowned self] (data) in
+            .subscribe(onNext: { [unowned self] (_,_) in
                 self.apiGetMyChannels()
             })
             .disposed(by: disposeBag)
+
         
         onPublish
-            .filter({ (data) -> Bool in
+            .filter({ (data, _) -> Bool in
                 return data?.type == "message"
             })
-            .drive(onNext: { (data) in
+            .subscribe(onNext: { (data,_) in
                 print("message : \(data?.content ?? "")")
             })
             .disposed(by: disposeBag)
     }
     
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<String>) {
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Observable<(String, Bool)>) {
         onSubscribeSuccess
-            .do(onNext: { (channel) in
+            .subscribe(onNext: { (channel, _) in
                 print("Subscribe channel : \(channel)")
-             })
-            .drive()
+            })
             .disposed(by: disposeBag)
     }
 }
 
 //MARK: - API
 extension ICChatListViewModel {
-    private func apiNewChat(guestID: Int) {
-        showLoadingSubject.onNext(true)
-        chatAPIService?
-            .apiNewChat(guestID: guestID)
-            .subscribe(onSuccess: { [unowned self] (channelID) in
-                self.showLoadingSubject.onNext(false)
-            }, onError: { [unowned self] (error) in
-                self.showLoadingSubject.onNext(false)
-                guard let err = error as? ICError else { return }
-                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-            })
-            .disposed(by: disposeBag)
-    }
     
     private func apiGetMyChannels() {
         showLoadingSubject.onNext(true)
         chatAPIService?
             .apiGetMyChannel()
-            .do(onSuccess: { (channels) in
+            .do(onSuccess: { [unowned self] (channels) in
                 for channel in channels {
-                    self.chatManager.subscribeChannel(String(channel.id ?? 0))
+                    self.chatManager.subscribeChannel(channel.id)
                 }
             })
             .map({ [unowned self] (channels) -> [ICChatListCellViewModel] in

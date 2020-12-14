@@ -59,7 +59,7 @@ extension ICMainTabBarNavigator {
                                                chatManager: ICChatManager.shard,
                                                userManager: ICUserManager())
         chatNav.setViewControllers([chatVC], animated: true)
-        chatVC.loadViewIfNeeded()
+//        chatVC.loadViewIfNeeded()
 
         // 我的 tabbar
         let meVC = meStoryboard.instantiateViewController(withIdentifier: String(describing: ICMeViewController.self)) as! ICMeViewController

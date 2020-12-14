@@ -31,6 +31,7 @@ class ICChatManager: NSObject {
     public let onPublish = PublishSubject<ICChatData?>()
     public let subscribe = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<String>()
+    public let onSubscribeError = PublishSubject<String>()
 }
 
 //MARK: - Public
@@ -59,25 +60,33 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     }
     
     func onSubscribeSuccess(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeSuccessEvent) {
+        print("subscribe channel : \(sub.channel) success")
+        currentSubscribe[sub.channel] = sub
         onSubscribeSuccess.onNext(sub.channel)
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
-        print("Subscribe \(sub.channel) error" )
+        onSubscribeError.onNext("Subscribe \(sub.channel) error")
     }
 }
 
 //MARK: - Other
 extension ICChatManager {
     public func subscribeChannel(_ channel: String?) {
-        guard let channel = channel, currentSubscribe[channel] == nil else { return }
+        guard let channel = channel else { return }
+        //已訂閱此channel
+        if currentSubscribe[channel] != nil {
+            print("\(channel) 已訂閱!")
+            onSubscribeSuccess.onNext(channel)
+            return
+        }
         var subscribeItem: CentrifugeSubscription?
         do {
             subscribeItem = try client.newSubscription(channel: channel, delegate: self)
         } catch {
-            print("subscribe error!")
+            onSubscribeError.onNext(error.localizedDescription)
         }
         subscribeItem?.subscribe()
-        currentSubscribe[channel] = subscribeItem
+        
     }
 }

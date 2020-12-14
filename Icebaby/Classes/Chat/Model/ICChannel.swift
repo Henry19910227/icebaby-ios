@@ -8,7 +8,7 @@
 import UIKit
 
 class ICChannel: Codable {
-    var id: Int?
+    var id: String?
     var status: Int?
     var members: [ICMember]?
     var type: Int?

@@ -18,6 +18,7 @@ class ICUserViewModel: ICViewModel {
     private let navigator: ICUserNavigator?
     private let lobbyAPIService: ICLobbyAPI
     private let chatAPIService: ICChatAPI
+    private let chatManager: ICChatManager
     private let userID: Int
     
     //Subject
@@ -29,7 +30,7 @@ class ICUserViewModel: ICViewModel {
     private let switchTabSubject = PublishSubject<Int>()
 
     struct Input {
-        public let trigger: Driver<Void>
+        public let trigger: Driver<Bool>
         public let chatTap: Driver<Void>
     }
     
@@ -45,10 +46,12 @@ class ICUserViewModel: ICViewModel {
     init(navigator: ICUserNavigator,
          lobbyAPIService: ICLobbyAPI,
          chatAPIService: ICChatAPI,
+         chatManager: ICChatManager,
          userID: Int) {
         self.navigator = navigator
         self.lobbyAPIService = lobbyAPIService
         self.chatAPIService = chatAPIService
+        self.chatManager = chatManager
         self.userID = userID
     }
 }
@@ -56,8 +59,14 @@ class ICUserViewModel: ICViewModel {
 //MARK: - Transform
 extension ICUserViewModel {
     @discardableResult func transform(input: Input) -> Output {
+        let onPublish = Observable.zip(chatManager.onPublish.asObservable(),
+                                          input.trigger.asObservable()).filter({ $1 })
+        let onSubscribe = Observable.zip(chatManager.onSubscribeSuccess.asObservable(),
+                                         input.trigger.asObservable()).filter({ $1 }).asDriver(onErrorJustReturn: ("", false))
         bindTrigger(trigger: input.trigger)
         bindChatTap(chatTap: input.chatTap)
+        bindOnPublish(onPublish)
+        bindOnSubscribeSuccess(onSubscribe)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       uid: uidSubject.asDriver(onErrorJustReturn: 0),
@@ -69,8 +78,9 @@ extension ICUserViewModel {
 
 //MARK: - Bind
 extension ICUserViewModel {
-    private func bindTrigger(trigger: Driver<Void>) {
+    private func bindTrigger(trigger: Driver<Bool>) {
         trigger
+            .filter({ $0 })
             .do(onNext: { [unowned self] (_) in
                 self.apiGetUserDetail(userID: self.userID)
             })
@@ -84,6 +94,38 @@ extension ICUserViewModel {
                 self.apiNewChat(guestID: self.userID)
             }) 
             .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindOnPublish(_ onPublish: Observable<(ICChatData?, Bool)>) {
+        onPublish
+            .filter({ (data, _) -> Bool in
+                return data?.type == "subscribe"
+            })
+            .map({ (data,_) -> String in
+                return data?.content ?? ""
+            })
+            .subscribe(onNext: { [unowned self] (channelID) in
+                self.chatManager.subscribeChannel(channelID)
+            })
+            .disposed(by: disposeBag)
+
+        
+//        onPublish
+//            .filter({ (data, _) -> Bool in
+//                return data?.type == "message"
+//            })
+//            .subscribe(onNext: { (data,_) in
+//                print("message : \(data?.content ?? "")")
+//            })
+//            .disposed(by: disposeBag)
+    }
+    
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, Bool)>) {
+        onSubscribeSuccess
+            .drive(onNext: { [unowned self] (channel, _) in
+                self.navigator?.toChat(channelID: channel)
+            })
             .disposed(by: disposeBag)
     }
 }
@@ -113,7 +155,6 @@ extension ICUserViewModel {
             .apiNewChat(guestID: guestID)
             .subscribe { (channelID) in
                 self.showLoadingSubject.onNext(false)
-                self.navigator?.toChat(channelID: channelID ?? 0)
             } onError: { (error) in
                 self.showLoadingSubject.onNext(false)
                 guard let err = error as? ICError else { return }
