@@ -27,10 +27,12 @@ class ICChatListViewModel: ICViewModel {
     
     //Status
     private var allowChat = false
+    private var channels: [ICChannel] = []
     
     struct Input {
         public let trigger: Driver<Void>
         public let allowChat: Driver<Bool>
+        public let itemSelected: Driver<IndexPath>
     }
     
     struct Output {
@@ -55,6 +57,7 @@ extension ICChatListViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(input.trigger)
         bindAllowChat(input.allowChat)
+        bindItemSelected(input.itemSelected)
         bindOnPublish(chatManager.onPublish.asObservable())
         bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ""))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
@@ -69,6 +72,18 @@ extension ICChatListViewModel {
         trigger
             .do(onNext: { [unowned self] (_) in
                 self.apiGetMyChannels()
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindItemSelected(_ itemSelected: Driver<IndexPath>) {
+        itemSelected
+            .map({ [unowned self] (indexPath) -> String in
+                return self.channels[indexPath.row].id ?? ""
+            })
+            .do (onNext:{ [unowned self] (channelID) in
+                self.navigator?.toChat(channelID: channelID)
             })
             .drive()
             .disposed(by: disposeBag)
@@ -116,7 +131,7 @@ extension ICChatListViewModel {
                 return self.allowChat
             })
             .drive(onNext: { (channelID) in
-               
+                
             })
             .disposed(by: disposeBag)
     }
@@ -130,6 +145,7 @@ extension ICChatListViewModel {
         chatAPIService?
             .apiGetMyChannel()
             .do(onSuccess: { [unowned self] (channels) in
+                self.channels = channels
                 for channel in channels {
                     self.chatManager.subscribeChannel(channel.id)
                 }

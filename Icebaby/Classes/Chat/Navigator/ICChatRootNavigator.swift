@@ -20,3 +20,10 @@ class ICChatRootNavigator: ICRootNavigator {
         self.window = window
     }
 }
+
+extension ICChatRootNavigator {
+    public func toChat(channelID: String) {
+        let vc = storyboard?.instantiateViewController(identifier: String(describing:ICChatViewController.self)) as! ICChatViewController
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
