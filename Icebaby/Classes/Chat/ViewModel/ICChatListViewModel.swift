@@ -25,9 +25,12 @@ class ICChatListViewModel: ICViewModel {
     private let showErrorMsgSubject = PublishSubject<String>()
     private let itemsSubject = PublishSubject<[ICChatListCellViewModel]>()
     
+    //Status
+    private var allowChat = false
     
     struct Input {
-        public let trigger: Driver<Bool>
+        public let trigger: Driver<Void>
+        public let allowChat: Driver<Bool>
     }
     
     struct Output {
@@ -50,13 +53,10 @@ class ICChatListViewModel: ICViewModel {
 //MARK: - transform
 extension ICChatListViewModel {
     @discardableResult func transform(input: Input) -> Output {
-        let onPublish = Observable.combineLatest(chatManager.onPublish.asObservable(),
-                                          input.trigger.asObservable()).filter({ $1 })
-        let onSubscribe = Observable.combineLatest(chatManager.onSubscribeSuccess.asObservable(),
-                                                   input.trigger.asObservable()).filter({ $1 })
-        bindTrigger(trigger: input.trigger)
-        bindOnPublish(onPublish)
-        bindOnSubscribeSuccess(onSubscribe)
+        bindTrigger(input.trigger)
+        bindAllowChat(input.allowChat)
+        bindOnPublish(chatManager.onPublish.asObservable())
+        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ""))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
@@ -65,9 +65,8 @@ extension ICChatListViewModel {
 
 //MARK: - bind
 extension ICChatListViewModel {
-    private func bindTrigger(trigger: Driver<Bool>) {
+    private func bindTrigger(_ trigger: Driver<Void>) {
         trigger
-            .filter({ $0 })
             .do(onNext: { [unowned self] (_) in
                 self.apiGetMyChannels()
             })
@@ -75,31 +74,49 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindOnPublish(_ onPublish: Observable<(ICChatData?, Bool)>) {
+    private func bindAllowChat(_ allowChat: Driver<Bool>) {
+        allowChat
+            .do(onNext: { [unowned self] (isAllow) in
+                self.allowChat = isAllow
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindOnPublish(_ onPublish: Observable<ICChatData?>) {
         onPublish
-            .filter({ (data, _) -> Bool in
+            .filter({ [unowned self] (_) -> Bool in
+                return self.allowChat
+            })
+            .filter({ (data) -> Bool in
                 return data?.type == "subscribe"
             })
-            .subscribe(onNext: { [unowned self] (_,_) in
+            .subscribe(onNext: { [unowned self] (_) in
                 self.apiGetMyChannels()
             })
             .disposed(by: disposeBag)
 
         
         onPublish
-            .filter({ (data, _) -> Bool in
+            .filter({ [unowned self] (_) -> Bool in
+                return self.allowChat
+            })
+            .filter({ (data) -> Bool in
                 return data?.type == "message"
             })
-            .subscribe(onNext: { (data,_) in
+            .subscribe(onNext: { (data) in
                 print("message : \(data?.content ?? "")")
             })
             .disposed(by: disposeBag)
     }
     
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Observable<(String, Bool)>) {
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<String>) {
         onSubscribeSuccess
-            .subscribe(onNext: { (channel, _) in
-                print("Subscribe channel : \(channel)")
+            .filter({ [unowned self] (_) -> Bool in
+                return self.allowChat
+            })
+            .drive(onNext: { (channelID) in
+               
             })
             .disposed(by: disposeBag)
     }
