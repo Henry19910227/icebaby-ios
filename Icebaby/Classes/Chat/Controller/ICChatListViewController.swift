@@ -68,8 +68,10 @@ extension ICChatListViewController: UITableViewDelegate {
 //MARK: - Bind
 extension ICChatListViewController {
     func bindViewModel() {
+        let itemSelected = tableView.rx.itemSelected.asDriver(onErrorJustReturn: IndexPath())
         let input = ICChatListViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()),
-                                              allowChat: allowChat.asDriver(onErrorJustReturn: false))
+                                              allowChat: allowChat.asDriver(onErrorJustReturn: false),
+                                              itemSelected: itemSelected)
         let output = viewModel?.transform(input: input)
         
         output?

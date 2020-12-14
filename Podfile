@@ -17,6 +17,7 @@ target 'Icebaby' do
   pod 'IQKeyboardManagerSwift'
   pod 'SwiftCentrifuge'
   pod 'Toast-Swift', '~> 5.0.1'
+  pod 'MessageKit', '~> 3.3.0'
 
   target 'IcebabyTests' do
     inherit! :search_paths

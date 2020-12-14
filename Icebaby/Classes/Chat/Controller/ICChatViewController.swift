@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import MessageKit
 
-class ICChatViewController: UIViewController {
+class ICChatViewController: MessagesViewController {
 
     
 
@@ -17,6 +18,24 @@ class ICChatViewController: UIViewController {
 extension ICChatViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-
+//        messagesCollectionView.messagesDataSource = self
+//        messagesCollectionView.messagesLayoutDelegate = self
+//        messagesCollectionView.messagesDisplayDelegate = self
     }
 }
+
+//extension ICChatViewController: MessagesDataSource {
+//    func currentSender() -> SenderType {
+//        <#code#>
+//    }
+//    
+//    func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
+//        
+//    }
+//    
+//    func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
+//        return 0
+//    }
+//    
+//}
+

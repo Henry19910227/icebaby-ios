@@ -50,6 +50,8 @@
 		C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A257E2570D61100FCFA8D /* ICMeViewController.swift */; };
 		C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */; };
 		C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */; };
+		C7CECA392587729800018054 /* ICMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA382587729800018054 /* ICMessage.swift */; };
+		C7CECA3E2587734E00018054 /* ICSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA3D2587734E00018054 /* ICSender.swift */; };
 		C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */; };
 		C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */; };
 		C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */; };
@@ -137,6 +139,8 @@
 		C77A257E2570D61100FCFA8D /* ICMeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeViewController.swift; sourceTree = "<group>"; };
 		C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeRootNavigator.swift; sourceTree = "<group>"; };
 		C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarNavigator.swift; sourceTree = "<group>"; };
+		C7CECA382587729800018054 /* ICMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMessage.swift; sourceTree = "<group>"; };
+		C7CECA3D2587734E00018054 /* ICSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICSender.swift; sourceTree = "<group>"; };
 		C7CF3CAF257776D300D34FFD /* ICLobbyCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyCell.swift; sourceTree = "<group>"; };
 		C7CF3CBB257792D400D34FFD /* ICLobbyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyViewModel.swift; sourceTree = "<group>"; };
 		C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICLobbyAPIService.swift; sourceTree = "<group>"; };
@@ -415,6 +419,8 @@
 			children = (
 				C7082CF625836DAF00C49DCF /* ICChannel.swift */,
 				C7082CFE25836DC700C49DCF /* ICMember.swift */,
+				C7CECA382587729800018054 /* ICMessage.swift */,
+				C7CECA3D2587734E00018054 /* ICSender.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -832,6 +838,8 @@
 				BA235B78257E906900A09280 /* ICChatManager.swift in Sources */,
 				C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */,
 				C7082CFF25836DC700C49DCF /* ICMember.swift in Sources */,
+				C7CECA392587729800018054 /* ICMessage.swift in Sources */,
+				C7CECA3E2587734E00018054 /* ICSender.swift in Sources */,
 				BA353E8F256ED34F00CC4917 /* ViewController.swift in Sources */,
 				BA353F2025701E4E00CC4917 /* ICLoginAPIService.swift in Sources */,
 				BA353E8B256ED34F00CC4917 /* AppDelegate.swift in Sources */,
