@@ -14,6 +14,7 @@ class ICLoginViewModel: ICViewModel {
     //DI Param
     private let navigator: ICLoginRootNavigator
     private let loginAPIService: ICLoginAPI
+    private let userManager: UserManager
     
     //RX
     private let disposeBag = DisposeBag()
@@ -38,9 +39,12 @@ class ICLoginViewModel: ICViewModel {
         public let showErrorMsg: Driver<String>
     }
     
-    init(navigator: ICLoginRootNavigator, loginAPIService: ICLoginAPI) {
+    init(navigator: ICLoginRootNavigator,
+         loginAPIService: ICLoginAPI,
+         userManager: UserManager) {
         self.navigator = navigator
         self.loginAPIService = loginAPIService
+        self.userManager = userManager
     }
     
     @discardableResult func transform(input: Input) -> Output {
@@ -89,8 +93,11 @@ extension ICLoginViewModel {
         showLoadingSubject.onNext(true)
         loginAPIService
             .apiUserLogin(identifier: identifier, password: password)
-            .subscribe(onSuccess: { [unowned self] (uid) in
-                print("Login UID : \(uid)")
+            .subscribe(onSuccess: { [unowned self] (uid, token, nickname) in
+                print("Login uid:\(uid), nickname:\(nickname)")
+                self.userManager.saveToken(token)
+                self.userManager.saveUID(uid)
+                self.userManager.saveNickname(nickname)
                 self.showLoadingSubject.onNext(false)
                 self.navigator.presendToMain()
             }) { [unowned self] (error) in

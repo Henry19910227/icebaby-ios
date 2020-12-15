@@ -17,14 +17,13 @@ class ICChatManager: NSObject {
         let client = CentrifugeClient(url: url, config: CentrifugeClientConfig(), delegate: self)
         return client
     }()
-    private var uid: Int = 0
     private var currentSubscribe: [String: CentrifugeSubscription] = [:]
     
     //Rx
     private let disposeBag = DisposeBag()
     
     //Input
-    public let sendMessage = PublishSubject<Data?>()
+    public let sendMessage = PublishSubject<(String, Data?)>()
     
     //Output
     public let onPublish = PublishSubject<ICChatData?>()
@@ -34,7 +33,7 @@ class ICChatManager: NSObject {
     
     override init() {
         super.init()
-        bindSendMessage(sendMessage.asDriver(onErrorJustReturn: nil))
+        bindSendMessage(sendMessage.asDriver(onErrorJustReturn: ("", nil)))
     }
 }
 
@@ -49,10 +48,21 @@ extension ICChatManager {
 
 //MARK: - Bind
 extension ICChatManager {
-    private func bindSendMessage(_ sendMessage: Driver<Data?>) {
+    private func bindSendMessage(_ sendMessage: Driver<(String, Data?)>) {
         sendMessage
-            .drive(onNext: { (data) in
-                
+            .filter({ [unowned self] (channelID, data) -> Bool in
+                return data != nil && self.currentSubscribe[channelID] != nil
+            })
+            .map({ [unowned self] (channelID, data) -> (CentrifugeSubscription, Data) in
+                return (self.currentSubscribe[channelID]!, data!)
+            })
+            .drive(onNext: { (sub, data) in
+                sub.publish(data: data) { (error) in
+                    guard let error = error else {
+                        return
+                    }
+                    print("publish error: \(error.localizedDescription)")
+                }
             })
             .disposed(by: disposeBag)
     }

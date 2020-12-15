@@ -24,8 +24,12 @@ class ICChatViewModel: ICViewModel {
     //RX
     private let disposeBag = DisposeBag()
     
+    //Status
+    private var allowChat = false
+    
     struct Input {
         public let sendMessage: Driver<String>
+        public let allowChat: Driver<Bool>
     }
     
     struct Output {
@@ -50,21 +54,52 @@ class ICChatViewModel: ICViewModel {
 //MARK: - Transform
 extension ICChatViewModel {
     @discardableResult func transform(input: Input) -> Output {
+        bindAllowChat(input.allowChat)
         bindSendMessage(input.sendMessage)
+        bindOnPublish(chatManager.onPublish)
         return Output()
     }
 }
 
 //MARK: - Bind
 extension ICChatViewModel {
+    
+    private func bindAllowChat(_ allowChat: Driver<Bool>) {
+        allowChat
+            .do(onNext: { [unowned self] (isAllow) in
+                self.allowChat = isAllow
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
     private func bindSendMessage(_ sendMessage: Driver<String>) {
         sendMessage
-            .map({ (text) -> ICChatData in
-                
-                return ICChatData()
+            .map({ [unowned self] (text) -> Data? in
+                return self.getChatData(text: text)
             })
-            .drive(onNext: { (_) in
-                
+            .filter({ (data) -> Bool in
+                return data != nil
+            })
+            .drive(onNext: { [unowned self] (data) in
+                self.chatManager.sendMessage.onNext((self.channelID, data))
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindOnPublish(_ onPublish: Observable<ICChatData?>) {
+        onPublish
+            .filter({ [unowned self] (_) -> Bool in
+                return self.allowChat
+            })
+            .filter({ (data) -> Bool in
+                return data?.type == "message"
+            })
+            .subscribe(onNext: { [unowned self] (data) in
+                if self.channelID == data?.channelId ?? ""{
+                    let message = ICMessage(data: data?.message ?? ICChatMsg())
+                    print("date: \(message.sentDate), name: \(message.sender.displayName)")
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -73,18 +108,18 @@ extension ICChatViewModel {
 //MARK: - Other
 extension ICChatViewModel {
     private func getChatData(text: String) -> Data? {
-        let date = dateFormatter.dateToDateString(Date(), "yyyy-mm-dd HH:mm:ss") ?? ""
-        let msdId = "\(userManager.uid())-" + date
-        let chatMsg = ICChatMsg(id: msdId,
-                                date: date,
-                                uid: userManager.uid(),
-                                nickname: userManager.nickname(),
-                                msg: text)
-        let chatData = ICChatData(type: "message",
-                                  channelId: channelID,
-                                  message: chatMsg)
+        let date = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") ?? ""
+        let msdId = "\(userManager.uid())-" + (dateFormatter.dateToDateString(Date(), "yyyyMMddHHmmss") ?? "")
+        let msgDict: [String: Any] = ["id": msdId,
+                                      "date": date,
+                                      "uid": userManager.uid(),
+                                      "nickname": userManager.nickname(),
+                                      "msg": text]
+        let dataDict: [String: Any] = ["type": "message",
+                                       "channel_id": channelID,
+                                       "message": msgDict]
         do {
-            let data = try JSONSerialization.data(withJSONObject: chatData, options: .prettyPrinted)
+            let data = try JSONSerialization.data(withJSONObject: dataDict, options: .prettyPrinted)
             return data
         } catch  {
             return nil

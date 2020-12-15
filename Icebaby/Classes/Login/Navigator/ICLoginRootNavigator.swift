@@ -9,7 +9,6 @@ import UIKit
 
 class ICLoginRootNavigator {
     private var loginStoryboard: UIStoryboard?
-    private var mainStoryboard: UIStoryboard?
     weak var navigationController: UINavigationController?
     weak var window: UIWindow?
     
@@ -17,25 +16,25 @@ class ICLoginRootNavigator {
     
     init(_ window: UIWindow?,
          _ navigationController: UINavigationController?,
-         _ loginStoryboard: UIStoryboard?, _ mainStoryboard: UIStoryboard?) {
+         _ loginStoryboard: UIStoryboard?) {
         self.navigationController = navigationController
         self.loginStoryboard = loginStoryboard
-        self.mainStoryboard = mainStoryboard
         self.window = window
     }
 }
 
 extension ICLoginRootNavigator: ICRootNavigator {
     func toRoot() {
-        let loginAPIService = ICLoginAPIService(userManager: ICUserManager())
         let vc = loginStoryboard?.instantiateViewController(withIdentifier: "ICLoginViewController") as! ICLoginViewController
-        vc.viewModel = ICLoginViewModel(navigator: self, loginAPIService: loginAPIService)
+        vc.viewModel = ICLoginViewModel(navigator: self,
+                                        loginAPIService: ICLoginAPIService(),
+                                        userManager: ICUserManager())
         navigationController?.pushViewController(vc, animated: true)
     }
     
     func presendToMain() {
         let navigator = ICMainTabBarNavigator(window)
-        let tabbarVC = mainStoryboard?.instantiateViewController(withIdentifier: "ICMainTabBarController") as! ICMainTabBarController
+        let tabbarVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ICMainTabBarController") as! ICMainTabBarController
         tabbarVC.modalPresentationStyle = .fullScreen
         tabbarVC.modalTransitionStyle = .flipHorizontal
         tabbarVC.viewModel = ICMainTabBarViewModel(navigator: navigator,

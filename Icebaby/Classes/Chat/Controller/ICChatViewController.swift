@@ -8,8 +8,18 @@
 import UIKit
 import MessageKit
 import InputBarAccessoryView
+import RxCocoa
+import RxSwift
 
 class ICChatViewController: MessagesViewController {
+    
+    // Public
+    public var viewModel: ICChatViewModel?
+    
+    // Rx
+    private let disposeBag = DisposeBag()
+    private let allowChat = PublishSubject<Bool>()
+    private let sendMsg = PublishSubject<String>()
 
     private var messages: [MessageType] = {
         
@@ -46,6 +56,26 @@ extension ICChatViewController {
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         initUI()
+        bindViewModel()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        allowChat.onNext(true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        allowChat.onNext(false)
+    }
+}
+
+//MARK: - Bind
+extension ICChatViewController {
+    private func bindViewModel() {
+        let input = ICChatViewModel.Input(sendMessage: sendMsg.asDriver(onErrorJustReturn: ""),
+                                          allowChat: allowChat.asDriver(onErrorJustReturn: false))
+        viewModel?.transform(input: input)
     }
 }
 
@@ -108,7 +138,7 @@ extension ICChatViewController: MessagesLayoutDelegate {
 extension ICChatViewController: InputBarAccessoryViewDelegate {
 
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        print("send - \(text)")
+        sendMsg.onNext(text)
     }
 }
 

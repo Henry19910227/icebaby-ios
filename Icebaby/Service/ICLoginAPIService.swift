@@ -13,17 +13,10 @@ import SwiftyJSON
 
 protocol ICLoginAPI {
     func apiUserRegister(parameter: [String: Any]?) -> Single<ICUser>
-    func apiUserLogin(identifier: String, password: String) -> Single<Int>
+    func apiUserLogin(identifier: String, password: String) -> Single<(Int, String, String)>
 }
 
 class ICLoginAPIService: ICLoginAPI, APIBaseRequest, ICLoginURL, APIDataTransform {
-    
-    private let userManager: UserManager
-    
-    init(userManager: UserManager) {
-        self.userManager = userManager
-    }
-    
     func apiUserRegister(parameter: [String: Any]?) -> Single<ICUser>  {
         return Single<ICUser>.create { [unowned self] (single) -> Disposable in
             let _ = self.sendRequest(medthod: .post, url: self.registerURL, parameter: parameter, headers: nil)
@@ -43,21 +36,18 @@ class ICLoginAPIService: ICLoginAPI, APIBaseRequest, ICLoginURL, APIDataTransfor
         }
     }
     
-    func apiUserLogin(identifier: String, password: String) -> Single<Int> {
-        return Single<Int>.create { [unowned self] (single) -> Disposable in
+    func apiUserLogin(identifier: String, password: String) -> Single<(Int, String, String)> {
+        return Single<(Int, String, String)>.create { [unowned self] (single) -> Disposable in
             let parameter: [String: Any] = ["identifier": identifier, "password": password]
             let _ = self.sendRequest(medthod: .post, url: self.loginURL, parameter: parameter, headers: nil)
-                .do(onSuccess: { [unowned self] (result) in
-                    self.userManager.saveToken(result["token"].string ?? "")
+                .map({ (result) -> (Int, String, String) in
+                    let uid = result.dictionaryValue["data"]?.dictionaryValue["id"]?.int ?? 0
+                    let token = result["token"].string ?? ""
+                    let nickname = result.dictionaryValue["data"]?.dictionaryValue["nickname"]?.string ?? ""
+                    return (uid, token, nickname)
                 })
-                .map({ (result) -> Int in
-                    return result.dictionaryValue["data"]?.int ?? 0
-                })
-                .do(onSuccess: { [unowned self] (uid) in
-                    self.userManager.saveUID(uid)
-                })
-                .subscribe(onSuccess: { (uid) in
-                    single(.success(uid))
+                .subscribe(onSuccess: { (uid, token, nickname) in
+                    single(.success((uid, token, nickname)))
                 }) { (error) in
                     single(.error(error))
                 }
