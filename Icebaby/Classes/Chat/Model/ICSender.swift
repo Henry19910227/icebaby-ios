@@ -8,7 +8,7 @@
 import UIKit
 import MessageKit
 
-class ICSender: SenderType {
+struct ICSender: SenderType {
     var senderId: String = ""
     var displayName: String = ""
 }

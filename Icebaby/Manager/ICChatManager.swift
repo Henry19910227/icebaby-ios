@@ -10,13 +10,6 @@ import SwiftCentrifuge
 import RxCocoa
 import RxSwift
 
-struct ICChatData: Codable {
-    var channel: String?
-    var type: String?
-    var uid: Int?
-    var content: String?
-}
-
 class ICChatManager: NSObject {
     static let shard = ICChatManager()
     private lazy var client: CentrifugeClient = {
@@ -27,11 +20,22 @@ class ICChatManager: NSObject {
     private var uid: Int = 0
     private var currentSubscribe: [String: CentrifugeSubscription] = [:]
     
-    //RX
+    //Rx
+    private let disposeBag = DisposeBag()
+    
+    //Input
+    public let sendMessage = PublishSubject<Data?>()
+    
+    //Output
     public let onPublish = PublishSubject<ICChatData?>()
     public let subscribe = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<String>()
     public let onSubscribeError = PublishSubject<String>()
+    
+    override init() {
+        super.init()
+        bindSendMessage(sendMessage.asDriver(onErrorJustReturn: nil))
+    }
 }
 
 //MARK: - Public
@@ -43,12 +47,25 @@ extension ICChatManager {
     }
 }
 
+//MARK: - Bind
+extension ICChatManager {
+    private func bindSendMessage(_ sendMessage: Driver<Data?>) {
+        sendMessage
+            .drive(onNext: { (data) in
+                
+            })
+            .disposed(by: disposeBag)
+    }
+}
+ 
+//MARK: - CentrifugeClientDelegate
 extension ICChatManager: CentrifugeClientDelegate {
     func onConnect(_ client: CentrifugeClient, _ event: CentrifugeConnectEvent) {
     
     }
 }
 
+//MARK: - CentrifugeSubscriptionDelegate
 extension ICChatManager: CentrifugeSubscriptionDelegate {
     func onPublish(_ sub: CentrifugeSubscription, _ event: CentrifugePublishEvent) {
         do {

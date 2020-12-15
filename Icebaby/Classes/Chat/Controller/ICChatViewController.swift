@@ -7,6 +7,7 @@
 
 import UIKit
 import MessageKit
+import InputBarAccessoryView
 
 class ICChatViewController: MessagesViewController {
 
@@ -14,21 +15,17 @@ class ICChatViewController: MessagesViewController {
         
         var messages: [MessageType] = []
         
-        let sender1 = ICSender()
-        sender1.displayName = "Henry"
-        sender1.senderId = "10001"
+        let sender1 = ICSender(senderId: "10001", displayName: "Henry")
         
-        let sender2 = ICSender()
-        sender2.displayName = "Jeff"
-        sender2.senderId = "10002"
+        let sender2 = ICSender(senderId: "10002", displayName: "Jeff")
         
-        let msg1 = ICMessage()
+        let msg1 = ICMessage(data: nil)
         msg1.messageId = "1"
         msg1.kind = .text("你好喔!!!")
         msg1.sentDate = Date()
         msg1.sender = sender1
         
-        let msg2 = ICMessage()
+        let msg2 = ICMessage(data: nil)
         msg2.messageId = "2"
         msg2.kind = .text("HI~~~~~~~~~")
         msg2.sentDate = Date()
@@ -45,20 +42,39 @@ class ICChatViewController: MessagesViewController {
 extension ICChatViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
+        initUI()
+    }
+}
 
+//MARK: - UI
+extension ICChatViewController {
+    private func initUI() {
+        messageInputBar.delegate = self
+        setupMessageAvatar()
+        setupMessageTopLabel()
+    }
+    
+    private func setupMessageAvatar() {
+        messagesCollectionView.messagesCollectionViewFlowLayout.setMessageIncomingAvatarSize(CGSize(width: 40, height: 40))
+        messagesCollectionView.messagesCollectionViewFlowLayout.setMessageIncomingAvatarPosition(AvatarPosition(vertical: .messageBottom))
+        messagesCollectionView.messagesCollectionViewFlowLayout.setMessageOutgoingAvatarSize(CGSize(width: 40, height: 40))
+        messagesCollectionView.messagesCollectionViewFlowLayout.setMessageOutgoingAvatarPosition(AvatarPosition(vertical: .messageBottom))
+    }
+    
+    private func setupMessageTopLabel() {
+        let incomingAlignment = LabelAlignment(textAlignment: .left, textInsets: UIEdgeInsets(top: 0, left: 50, bottom: 0, right: 0))
+        messagesCollectionView.messagesCollectionViewFlowLayout.setMessageIncomingMessageTopLabelAlignment(incomingAlignment)
+        let outgoingAlignment = LabelAlignment(textAlignment: .right, textInsets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 50))
+        messagesCollectionView.messagesCollectionViewFlowLayout.setMessageOutgoingMessageTopLabelAlignment(outgoingAlignment)
     }
 }
 
 extension ICChatViewController: MessagesDataSource {
     func currentSender() -> SenderType {
-        let sender = ICSender()
-        sender.displayName = "Henry"
-        sender.senderId = "10001"
-        return sender
+        return ICSender(senderId: "10001", displayName: "Henry")
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
@@ -76,14 +92,23 @@ extension ICChatViewController: MessagesDataSource {
     
 }
 
+//MARK: - MessagesDisplayDelegate
 extension ICChatViewController: MessagesDisplayDelegate {
     
 }
 
-
+//MARK: - MessagesLayoutDelegate
 extension ICChatViewController: MessagesLayoutDelegate {
     func messageTopLabelHeight(for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> CGFloat {
         return 20
+    }
+}
+
+//MARK: - InputBarAccessoryViewDelegate
+extension ICChatViewController: InputBarAccessoryViewDelegate {
+
+    func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
+        print("send - \(text)")
     }
 }
 

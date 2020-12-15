@@ -120,7 +120,8 @@ extension ICChatListViewModel {
                 return data?.type == "message"
             })
             .subscribe(onNext: { (data) in
-                print("message : \(data?.content ?? "")")
+                let message = ICMessage(data: data?.message ?? ICChatMsg())
+                print(message.messageId)
             })
             .disposed(by: disposeBag)
     }

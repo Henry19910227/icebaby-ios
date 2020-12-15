@@ -115,7 +115,7 @@ extension ICUserViewModel {
                 return data?.type == "subscribe"
             })
             .map({ (data) -> String in
-                return data?.content ?? ""
+                return data?.channelId ?? ""
             })
             .subscribe(onNext: { [unowned self] (channelID) in
                 self.chatManager.subscribeChannel(channelID)
