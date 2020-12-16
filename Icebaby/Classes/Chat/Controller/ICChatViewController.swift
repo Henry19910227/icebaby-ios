@@ -18,33 +18,13 @@ class ICChatViewController: MessagesViewController {
     
     // Rx
     private let disposeBag = DisposeBag()
+    private let trigger = PublishSubject<Void>()
     private let allowChat = PublishSubject<Bool>()
     private let sendMsg = PublishSubject<String>()
 
-    private var messages: [MessageType] = {
-        
-        var messages: [MessageType] = []
-        
-        let sender1 = ICSender(senderId: "10001", displayName: "Henry")
-        
-        let sender2 = ICSender(senderId: "10002", displayName: "Jeff")
-        
-        let msg1 = ICMessage(data: nil)
-        msg1.messageId = "1"
-        msg1.kind = .text("你好喔!!!")
-        msg1.sentDate = Date()
-        msg1.sender = sender1
-        
-        let msg2 = ICMessage(data: nil)
-        msg2.messageId = "2"
-        msg2.kind = .text("HI~~~~~~~~~")
-        msg2.sentDate = Date()
-        msg2.sender = sender2
-        
-        messages.append(msg1)
-        messages.append(msg2)
-        return messages
-    }()
+    // Data
+    private var messages: [MessageType] = []
+    private var sender: SenderType?
 
 }
 
@@ -61,6 +41,7 @@ extension ICChatViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        trigger.onNext(())
         allowChat.onNext(true)
     }
     
@@ -73,9 +54,27 @@ extension ICChatViewController {
 //MARK: - Bind
 extension ICChatViewController {
     private func bindViewModel() {
-        let input = ICChatViewModel.Input(sendMessage: sendMsg.asDriver(onErrorJustReturn: ""),
+        let input = ICChatViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()),
+                                          sendMessage: sendMsg.asDriver(onErrorJustReturn: ""),
                                           allowChat: allowChat.asDriver(onErrorJustReturn: false))
-        viewModel?.transform(input: input)
+        let output = viewModel?.transform(input: input)
+        
+        output?
+            .sender
+            .drive(onNext: { (sender) in
+                self.sender = sender
+            })
+            .disposed(by: disposeBag)
+        
+        output?
+            .messages
+            .do(onNext: { [unowned self] (messages) in
+                self.messages = messages
+            })
+            .drive(onNext: { [unowned self] (_) in
+                self.reload()
+            })
+            .disposed(by: disposeBag)
     }
 }
 
@@ -104,7 +103,7 @@ extension ICChatViewController {
 
 extension ICChatViewController: MessagesDataSource {
     func currentSender() -> SenderType {
-        return ICSender(senderId: "10001", displayName: "Henry")
+        return sender ?? ICSender()
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
@@ -142,3 +141,13 @@ extension ICChatViewController: InputBarAccessoryViewDelegate {
     }
 }
 
+//MARK: -
+extension ICChatViewController {
+    func reload() {
+        self.messagesCollectionView.performBatchUpdates {
+            self.messagesCollectionView.insertSections([messages.count - 1])
+        } completion: { (isFinish) in
+            
+        }
+    }
+}

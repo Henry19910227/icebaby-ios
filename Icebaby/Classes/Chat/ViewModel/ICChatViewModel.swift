@@ -8,6 +8,7 @@
 import UIKit
 import RxCocoa
 import RxSwift
+import MessageKit
 
 class ICChatViewModel: ICViewModel {
     
@@ -23,17 +24,25 @@ class ICChatViewModel: ICViewModel {
     
     //RX
     private let disposeBag = DisposeBag()
+    private let messageSubject = PublishSubject<[ICMessage]>()
+    private var senderSubject = PublishSubject<SenderType>()
     
     //Status
     private var allowChat = false
     
+    //Data
+    private var messages: [ICMessage] = []
+    
+    
     struct Input {
+        public let trigger: Driver<Void>
         public let sendMessage: Driver<String>
         public let allowChat: Driver<Bool>
     }
     
     struct Output {
-        
+        public let sender: Driver<SenderType>
+        public let messages: Driver<[ICMessage]>
     }
     
     init(navigator: ICChatNavigator,
@@ -54,15 +63,27 @@ class ICChatViewModel: ICViewModel {
 //MARK: - Transform
 extension ICChatViewModel {
     @discardableResult func transform(input: Input) -> Output {
+        bindTrigger(input.trigger)
         bindAllowChat(input.allowChat)
         bindSendMessage(input.sendMessage)
         bindOnPublish(chatManager.onPublish)
-        return Output()
+        return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
+                      messages: messageSubject.asDriver(onErrorJustReturn: []))
     }
 }
 
 //MARK: - Bind
 extension ICChatViewModel {
+    
+    private func bindTrigger(_ trigger: Driver<Void>) {
+        trigger
+            .do(onNext: { [unowned self] (_) in
+                self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
+                                                   displayName: self.userManager.nickname()))
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
     
     private func bindAllowChat(_ allowChat: Driver<Bool>) {
         allowChat
@@ -98,7 +119,8 @@ extension ICChatViewModel {
             .subscribe(onNext: { [unowned self] (data) in
                 if self.channelID == data?.channelId ?? ""{
                     let message = ICMessage(data: data?.message ?? ICChatMsg())
-                    print("date: \(message.sentDate), name: \(message.sender.displayName)")
+                    self.messages.append(message)
+                    self.messageSubject.onNext(self.messages)
                 }
             })
             .disposed(by: disposeBag)
