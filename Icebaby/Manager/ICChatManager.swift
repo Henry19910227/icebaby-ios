@@ -9,6 +9,7 @@ import UIKit
 import SwiftCentrifuge
 import RxCocoa
 import RxSwift
+import SwiftyJSON
 
 class ICChatManager: NSObject {
     static let shard = ICChatManager()
@@ -43,6 +44,20 @@ extension ICChatManager {
         client.setToken(token)
         client.connect()
         subscribeChannel(String(uid))
+    }
+    
+    public func history(channelID: String, completion: @escaping ([ICChatData]) -> Void) {
+        let sub = currentSubscribe[channelID]
+        sub?.history(completion: { (pubs, error) in
+            guard let pubs = pubs else {
+                return
+            }
+            let chatDatas = pubs.map { (pub) -> ICChatData in
+                let json = try! JSON(data: pub.data)
+                return ICChatData()
+            }
+            completion([ICChatData]())
+        })
     }
 }
 
@@ -90,6 +105,10 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
         print("subscribe channel : \(sub.channel) success")
         currentSubscribe[sub.channel] = sub
         onSubscribeSuccess.onNext(sub.channel)
+        
+//        sub.history { (pubs, error) in
+//            pubs?.first.
+//        }
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
