@@ -81,7 +81,9 @@ extension ICChatViewModel {
                 self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
                                                    displayName: self.userManager.nickname()))
             })
-            .drive()
+            .drive(onNext: { [unowned self] (_) in
+                self.getHistory()
+            })
             .disposed(by: disposeBag)
     }
     
@@ -145,6 +147,15 @@ extension ICChatViewModel {
             return data
         } catch  {
             return nil
+        }
+    }
+    
+    private func getHistory() {
+        chatManager.history(channelID: channelID) { [unowned self] (datas) in
+            self.messages = datas.map { (data) -> ICMessage in
+                return ICMessage(data: data.message)
+            }
+            self.messageSubject.onNext(self.messages)
         }
     }
 }

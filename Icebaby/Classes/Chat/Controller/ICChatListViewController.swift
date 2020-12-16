@@ -83,11 +83,6 @@ extension ICChatListViewController {
             .disposed(by: disposeBag)
         
         output?
-            .showLoading
-            .drive(rx.isShowLoading)
-            .disposed(by: disposeBag)
-        
-        output?
             .showErrorMsg
             .drive(onNext: { [unowned self] (msg) in
                 self.view.makeToast(msg, duration: 1.0, position: .top)

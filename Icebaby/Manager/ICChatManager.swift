@@ -39,7 +39,7 @@ class ICChatManager: NSObject {
 }
 
 //MARK: - Public
-extension ICChatManager {
+extension ICChatManager: APIDataTransform {
     public func connect(token: String, uid: Int) {
         client.setToken(token)
         client.connect()
@@ -52,11 +52,10 @@ extension ICChatManager {
             guard let pubs = pubs else {
                 return
             }
-            let chatDatas = pubs.map { (pub) -> ICChatData in
-                let json = try! JSON(data: pub.data)
-                return ICChatData()
+            let jsons = pubs.map { (pub) -> JSON in
+                return try! JSON(data: pub.data)
             }
-            completion([ICChatData]())
+            completion(self.dataDecoderArrayTransform(ICChatData.self, jsons))
         })
     }
 }
@@ -105,10 +104,6 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
         print("subscribe channel : \(sub.channel) success")
         currentSubscribe[sub.channel] = sub
         onSubscribeSuccess.onNext(sub.channel)
-        
-//        sub.history { (pubs, error) in
-//            pubs?.first.
-//        }
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
@@ -122,7 +117,6 @@ extension ICChatManager {
         guard let channel = channel else { return }
         //已訂閱此channel
         if currentSubscribe[channel] != nil {
-            print("\(channel) 已訂閱!")
             onSubscribeSuccess.onNext(channel)
             return
         }
