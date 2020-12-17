@@ -8,6 +8,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import MessageKit
 
 class ICChatListViewModel: ICViewModel {
     
@@ -27,7 +28,10 @@ class ICChatListViewModel: ICViewModel {
     
     //Status
     private var allowChat = false
+    
+    //Data
     private var channels: [ICChannel] = []
+    private var items: [ICChatListCellViewModel] = []
     
     struct Input {
         public let trigger: Driver<Void>
@@ -132,7 +136,9 @@ extension ICChatListViewModel {
                 return self.allowChat
             })
             .drive(onNext: { (channelID) in
-                
+//                self.chatManager.history(channelID: channelID) { [unowned self] (datas) in
+//                    self.chatDatas[channelID] = datas
+//                }
             })
             .disposed(by: disposeBag)
     }
@@ -145,7 +151,7 @@ extension ICChatListViewModel {
         showLoadingSubject.onNext(true)
         chatAPIService?
             .apiGetMyChannel()
-            .do(onSuccess: { [unowned self] (channels) in
+            .do(afterSuccess: { [unowned self] (channels) in
                 self.channels = channels
                 for channel in channels {
                     self.chatManager.subscribeChannel(channel.id)
@@ -153,7 +159,8 @@ extension ICChatListViewModel {
             })
             .map({ [unowned self] (channels) -> [ICChatListCellViewModel] in
                 return channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
-                    let vm = ICChatListCellViewModel(userID: self.userManager.uid())
+                    let vm = ICChatListCellViewModel(userID: self.userManager.uid(),
+                                                     chatManager: ICChatManager.shard)
                     vm.model = channel
                     return vm
                 }

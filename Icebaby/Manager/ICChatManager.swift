@@ -18,6 +18,8 @@ class ICChatManager: NSObject {
         let client = CentrifugeClient(url: url, config: CentrifugeClientConfig(), delegate: self)
         return client
     }()
+    
+    //Data
     private var currentSubscribe: [String: CentrifugeSubscription] = [:]
     
     //Rx
@@ -48,12 +50,17 @@ extension ICChatManager: APIDataTransform {
     
     public func history(channelID: String, completion: @escaping ([ICChatData]) -> Void) {
         let sub = currentSubscribe[channelID]
-        sub?.history(completion: { (pubs, error) in
+        sub?.history(completion: { [unowned self] (pubs, error) in
             guard let pubs = pubs else {
+                completion([ICChatData]())
                 return
             }
             let jsons = pubs.map { (pub) -> JSON in
-                return try! JSON(data: pub.data)
+                do {
+                    return try JSON(data: pub.data)
+                } catch {
+                    return JSON()
+                }
             }
             completion(self.dataDecoderArrayTransform(ICChatData.self, jsons))
         })
@@ -101,13 +108,13 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     }
     
     func onSubscribeSuccess(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeSuccessEvent) {
-        print("subscribe channel : \(sub.channel) success")
+        print("subscribe channel \(sub.channel) success")
         currentSubscribe[sub.channel] = sub
         onSubscribeSuccess.onNext(sub.channel)
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
-        onSubscribeError.onNext("Subscribe \(sub.channel) error")
+        onSubscribeError.onNext("subscribe channel \(sub.channel) error")
     }
 }
 

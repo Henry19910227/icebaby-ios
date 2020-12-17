@@ -34,6 +34,12 @@ extension ICChatListCell {
         super.awakeFromNib()
         
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+        viewModel?.clear()
+    }
 }
 
 //MARK: Bind
