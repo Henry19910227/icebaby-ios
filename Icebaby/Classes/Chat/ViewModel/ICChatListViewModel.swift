@@ -32,6 +32,8 @@ class ICChatListViewModel: ICViewModel {
     //Data
     private var channels: [ICChannel] = []
     private var items: [ICChatListCellViewModel] = []
+    private var historyDict: [String: [ICChatData]] = [:]
+    private var cellVMs: [ICChatListCellViewModel] = []
     
     struct Input {
         public let trigger: Driver<Void>
@@ -117,15 +119,14 @@ extension ICChatListViewModel {
 
         
         onPublish
-            .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat
-            })
             .filter({ (data) -> Bool in
                 return data?.type == "message"
             })
-            .subscribe(onNext: { (data) in
-                let message = ICMessage(data: data?.message ?? ICChatMsg())
-                print(message.messageId)
+            .subscribe(onNext: { [unowned self] (data) in
+                guard let data = data else { return }
+                guard let channelID = data.channelId else { return }
+                self.historyDict[channelID]?.append(data)
+                self.setCellVMLatestText(channelID: channelID, msg: data.message?.msg ?? "")
             })
             .disposed(by: disposeBag)
     }
@@ -135,10 +136,22 @@ extension ICChatListViewModel {
             .filter({ [unowned self] (_) -> Bool in
                 return self.allowChat
             })
-            .drive(onNext: { (channelID) in
-//                self.chatManager.history(channelID: channelID) { [unowned self] (datas) in
-//                    self.chatDatas[channelID] = datas
-//                }
+            .drive(onNext: { [unowned self] (channelID) in
+                
+                //有拉過資料的狀態
+                if let chatDatas = self.historyDict[channelID] {
+                    let msg = chatDatas.last?.message?.msg ?? ""
+                    self.setCellVMLatestText(channelID: channelID, msg: msg)
+                    return
+                }
+                
+                //沒拉過資料的狀態
+                self.chatManager.history(channelID: channelID) { [unowned self] (datas) in
+                    self.historyDict[channelID] = datas
+                    let msg = datas.last?.message?.msg ?? ""
+                    self.setCellVMLatestText(channelID: channelID, msg: msg)
+                }
+                
             })
             .disposed(by: disposeBag)
     }
@@ -159,14 +172,14 @@ extension ICChatListViewModel {
             })
             .map({ [unowned self] (channels) -> [ICChatListCellViewModel] in
                 return channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
-                    let vm = ICChatListCellViewModel(userID: self.userManager.uid(),
-                                                     chatManager: ICChatManager.shard)
+                    let vm = ICChatListCellViewModel(userID: self.userManager.uid())
                     vm.model = channel
                     return vm
                 }
             })
             .subscribe(onSuccess: { [unowned self] (items) in
                 self.showLoadingSubject.onNext(false)
+                self.cellVMs = items
                 self.itemsSubject.onNext(items)
             }, onError: { [unowned self] (error) in
                 self.showLoadingSubject.onNext(false)
@@ -174,5 +187,16 @@ extension ICChatListViewModel {
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
+    }
+}
+
+//MARK: - Other
+extension ICChatListViewModel {
+    private func setCellVMLatestText(channelID: String, msg: String) {
+        for vm in cellVMs {
+            if vm.model?.id ?? "" == channelID {
+                vm.message.onNext(msg)
+            }
+        }
     }
 }

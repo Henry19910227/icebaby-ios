@@ -24,6 +24,7 @@ class ICChatListCell: UITableViewCell {
     
     //UI
     @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var msgLabel: UILabel!
     
     
 }
@@ -48,6 +49,11 @@ extension ICChatListCell {
         viewModel
             .nickname?
             .drive(nameLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .latestMsg?
+            .drive(msgLabel.rx.text)
             .disposed(by: disposeBag)
     }
 }
