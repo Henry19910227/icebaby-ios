@@ -21,6 +21,7 @@ class ICChatManager: NSObject {
     
     //Data
     private var currentSubscribe: [String: CentrifugeSubscription] = [:]
+    private var history:[String: [ICChatData]] = [:]
     
     //Rx
     private let disposeBag = DisposeBag()
@@ -49,6 +50,10 @@ extension ICChatManager: APIDataTransform {
     }
     
     public func history(channelID: String, completion: @escaping ([ICChatData]) -> Void) {
+        if let chatDatas = history[channelID] {
+            completion(chatDatas)
+            return
+        }
         let sub = currentSubscribe[channelID]
         sub?.history(completion: { [unowned self] (pubs, error) in
             guard let pubs = pubs else {
@@ -62,7 +67,9 @@ extension ICChatManager: APIDataTransform {
                     return JSON()
                 }
             }
-            completion(self.dataDecoderArrayTransform(ICChatData.self, jsons))
+            let chatDatas = dataDecoderArrayTransform(ICChatData.self, jsons)
+            history[channelID] = chatDatas
+            completion(chatDatas)
         })
     }
 }
@@ -79,9 +86,7 @@ extension ICChatManager {
             })
             .drive(onNext: { (sub, data) in
                 sub.publish(data: data) { (error) in
-                    guard let error = error else {
-                        return
-                    }
+                    guard let error = error else { return }
                     print("publish error: \(error.localizedDescription)")
                 }
             })
@@ -101,6 +106,9 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     func onPublish(_ sub: CentrifugeSubscription, _ event: CentrifugePublishEvent) {
         do {
             let data = try JSONDecoder().decode(ICChatData.self, from: event.data)
+            if data.type == "message" {
+                history[data.channelId ?? ""]?.append(data)
+            }
             onPublish.onNext(data)
         } catch {
             print("Error!")
