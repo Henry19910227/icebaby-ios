@@ -27,15 +27,18 @@ class ICChatListCellViewModel: NSObject {
     
     //Input
     public var message = PublishSubject<String>()
+    public var unreadCount = PublishSubject<Int>()
     
     //Output
     public var nickname: Driver<String>?
     public var latestMsg: Driver<String>?
+    public var unread: Driver<Int>?
     
     init(userID: Int) {
         self.userID = userID
         super.init()
         bindMessage(message.asDriver(onErrorJustReturn: ""))
+        bindUnread(unreadCount.asDriver(onErrorJustReturn: 0))
     }
     
 }
@@ -48,6 +51,10 @@ extension ICChatListCellViewModel {
     
     private func bindMessage(_ message: Driver<String>) {
         latestMsg = message
+    }
+    
+    private func bindUnread(_ unreadCount: Driver<Int>) {
+        unread = unreadCount
     }
 }
 

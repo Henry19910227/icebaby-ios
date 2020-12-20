@@ -43,4 +43,8 @@ class ICDateFormatter: NSObject {
         if timeInterval < 0 { timeInterval = -timeInterval }
         return timeInterval
     }
+    
+    public func date(_ firstDate: Date, earlierThan secondDate: Date) -> Bool {
+        return firstDate.timeIntervalSince(secondDate) < 0
+    }
 }

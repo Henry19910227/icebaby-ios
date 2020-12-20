@@ -31,8 +31,12 @@ class ICChatListViewModel: ICViewModel {
     
     //Data
     private var channels: [ICChannel] = []
+    private var lastRead: Date?
     private var items: [ICChatListCellViewModel] = []
     private var cellVMs: [ICChatListCellViewModel] = []
+    
+    //Tool
+    private var dateFormatter = ICDateFormatter()
     
     struct Input {
         public let trigger: Driver<Void>
@@ -135,20 +139,14 @@ extension ICChatListViewModel {
                 return self.allowChat
             })
             .drive(onNext: { [unowned self] (channelID) in
-                
-//                //有拉過資料的狀態
-//                if let chatDatas = self.historyDict[channelID] {
-//                    let msg = chatDatas.last?.message?.msg ?? ""
-//                    self.setCellVMLatestText(channelID: channelID, msg: msg)
-//                    return
-//                }
-//
-                //沒拉過資料的狀態
                 self.chatManager.history(channelID: channelID) { [unowned self] (datas) in
+                    let myLastRead = self.getMyLastRead(channelID: channelID)
+                    let unreadCount = self.getUnreadCount(lastRead: myLastRead,
+                                                          chatDatas: datas)
                     let msg = datas.last?.message?.msg ?? ""
                     self.setCellVMLatestText(channelID: channelID, msg: msg)
+                    self.setCellVMUnread(channelID: channelID, count: unreadCount)
                 }
-                
             })
             .disposed(by: disposeBag)
     }
@@ -195,5 +193,40 @@ extension ICChatListViewModel {
                 vm.message.onNext(msg)
             }
         }
+    }
+    
+    private func setCellVMUnread(channelID: String, count: Int) {
+        for vm in cellVMs {
+            if vm.model?.id ?? "" == channelID {
+                vm.unreadCount.onNext(count)
+            }
+        }
+    }
+    
+    private func getUnreadCount(lastRead: Date?, chatDatas: [ICChatData]) -> Int {
+        var unreadCount = 0
+        guard let lastReadDate = lastRead else { return 0 }
+        for chatData in chatDatas {
+            if userManager.uid() != chatData.message?.uid ?? 0 {
+                let date = dateFormatter.dateStringToDate(chatData.message?.date ?? "", "YYYY-MM-dd HH:mm:ss") ?? Date()
+                if dateFormatter.date(lastReadDate, earlierThan: date) {
+                    unreadCount += 1
+                }
+            }
+        }
+        return unreadCount
+    }
+    
+    private func getMyLastRead(channelID: String) -> Date? {
+        var readTime: String?
+        for channel in self.channels {
+            for member in channel.members ?? [] {
+                if self.userManager.uid() == member.userID {
+                    readTime = member.readAt
+                }
+            }
+        }
+        guard let read = readTime else { return nil }
+        return dateFormatter.dateStringToDate(read, "YYYY-MM-dd HH:mm:ss")
     }
 }
