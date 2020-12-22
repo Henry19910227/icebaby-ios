@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -43,7 +43,7 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="你好喔" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lhJ-v4-v8k">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lhJ-v4-v8k">
                                                     <rect key="frame" x="84" y="38" width="315" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="MQM-DH-xhf"/>
@@ -59,9 +59,16 @@
                                                         <constraint firstAttribute="height" constant="1" id="LQe-87-z56"/>
                                                     </constraints>
                                                 </view>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4bE-8h-coc">
+                                                    <rect key="frame" x="391.5" y="24.5" width="7.5" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="Wx1-ap-VMZ" secondAttribute="trailing" id="AcK-hC-Te4"/>
+                                                <constraint firstAttribute="trailing" secondItem="4bE-8h-coc" secondAttribute="trailing" constant="15" id="Gjk-Lf-ZKE"/>
                                                 <constraint firstItem="Yn2-Vr-lNO" firstAttribute="leading" secondItem="Us4-5a-D5F" secondAttribute="trailing" constant="15" id="NgL-h1-8T7"/>
                                                 <constraint firstItem="lhJ-v4-v8k" firstAttribute="trailing" secondItem="Yn2-Vr-lNO" secondAttribute="trailing" id="SXV-Yq-emO"/>
                                                 <constraint firstItem="Wx1-ap-VMZ" firstAttribute="leading" secondItem="jvh-Vz-UJ5" secondAttribute="leading" id="SlK-Kz-yhs"/>
@@ -69,6 +76,7 @@
                                                 <constraint firstItem="lhJ-v4-v8k" firstAttribute="top" secondItem="Yn2-Vr-lNO" secondAttribute="bottom" constant="5" id="cSg-DA-6eo"/>
                                                 <constraint firstAttribute="bottom" secondItem="Wx1-ap-VMZ" secondAttribute="bottom" id="kbf-gp-0UB"/>
                                                 <constraint firstAttribute="trailing" secondItem="Yn2-Vr-lNO" secondAttribute="trailing" constant="15" id="naU-jR-bvf"/>
+                                                <constraint firstItem="4bE-8h-coc" firstAttribute="centerY" secondItem="jvh-Vz-UJ5" secondAttribute="centerY" id="pwX-yB-uZn"/>
                                                 <constraint firstItem="Yn2-Vr-lNO" firstAttribute="top" secondItem="Us4-5a-D5F" secondAttribute="top" id="qM9-3P-8Uu"/>
                                                 <constraint firstItem="lhJ-v4-v8k" firstAttribute="leading" secondItem="Yn2-Vr-lNO" secondAttribute="leading" id="tlN-sT-BDz"/>
                                                 <constraint firstItem="Us4-5a-D5F" firstAttribute="top" secondItem="jvh-Vz-UJ5" secondAttribute="top" constant="8" id="uA4-kS-Aza"/>
@@ -76,7 +84,9 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
+                                            <outlet property="msgLabel" destination="lhJ-v4-v8k" id="nNP-Td-iAB"/>
                                             <outlet property="nameLabel" destination="Yn2-Vr-lNO" id="w5q-AU-qfF"/>
+                                            <outlet property="unreadLabel" destination="4bE-8h-coc" id="ZOS-LE-QxO"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

@@ -24,7 +24,8 @@ class ICChatListCell: UITableViewCell {
     
     //UI
     @IBOutlet weak var nameLabel: UILabel!
-    
+    @IBOutlet weak var msgLabel: UILabel!
+    @IBOutlet weak var unreadLabel: UILabel!
     
 }
 
@@ -34,6 +35,12 @@ extension ICChatListCell {
         super.awakeFromNib()
         
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+        viewModel?.clear()
+    }
 }
 
 //MARK: Bind
@@ -42,6 +49,19 @@ extension ICChatListCell {
         viewModel
             .nickname?
             .drive(nameLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .latestMsg?
+            .drive(msgLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .unread?
+            .map({ (count) -> String in
+                return "\(count)"
+            })
+            .drive(unreadLabel.rx.text)
             .disposed(by: disposeBag)
     }
 }

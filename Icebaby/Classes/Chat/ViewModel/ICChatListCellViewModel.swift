@@ -25,11 +25,20 @@ class ICChatListCellViewModel: NSObject {
     //Rx
     private var disposeBag = DisposeBag()
     
+    //Input
+    public var message = PublishSubject<String>()
+    public var unreadCount = PublishSubject<Int>()
+    
     //Output
     public var nickname: Driver<String>?
+    public var latestMsg: Driver<String>?
+    public var unread: Driver<Int>?
     
     init(userID: Int) {
         self.userID = userID
+        super.init()
+        bindMessage(message.asDriver(onErrorJustReturn: ""))
+        bindUnread(unreadCount.asDriver(onErrorJustReturn: 0))
     }
     
 }
@@ -38,6 +47,14 @@ class ICChatListCellViewModel: NSObject {
 extension ICChatListCellViewModel {
     private func bindModel(_ model: ICChannel) {
         nickname = nicknameObservable(model).asDriver(onErrorJustReturn: "")
+    }
+    
+    private func bindMessage(_ message: Driver<String>) {
+        latestMsg = message
+    }
+    
+    private func bindUnread(_ unreadCount: Driver<Int>) {
+        unread = unreadCount
     }
 }
 
@@ -55,5 +72,12 @@ extension ICChatListCellViewModel {
                     }
                     return nickname
                 })
+    }
+}
+
+//MARK: - Other
+extension ICChatListCellViewModel {
+    public func clear() {
+        disposeBag = DisposeBag()
     }
 }

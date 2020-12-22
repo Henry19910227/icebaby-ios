@@ -16,6 +16,8 @@ class ICUserViewController: ICBaseViewController {
     
     // Rx
     private let disposeBag = DisposeBag()
+    private let trigger = PublishSubject<Void>()
+    private let allowChat = PublishSubject<Bool>()
     
     // UI
     @IBOutlet weak var uidLabel: UILabel!
@@ -31,17 +33,23 @@ extension ICUserViewController {
         super.viewDidLoad()
         bindViewModel()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        trigger.onNext(())
+        allowChat.onNext(true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        allowChat.onNext(false)
+    }
 }
 
 extension ICUserViewController {
     private func bindViewModel() {
-        let trigger = rx
-            .sentMessage(#selector(viewDidAppear(_:)))
-            .take(1)
-            .map ({ _ in })
-            .asDriver(onErrorJustReturn: ())
-        
-        let input = ICUserViewModel.Input(trigger: trigger,
+        let input = ICUserViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()),
+                                          allowChat: allowChat.asDriver(onErrorJustReturn: false),
                                           chatTap: chatButton.rx.tap.asDriver())
         let output = viewModel?.transform(input: input)
         

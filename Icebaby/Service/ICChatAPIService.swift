@@ -13,7 +13,7 @@ import SwiftyJSON
 import Alamofire
 
 protocol ICChatAPI {
-    func apiNewChat(guestID: Int) -> Single<Int?>
+    func apiNewChat(guestID: Int) -> Single<String?>
     func apiGetMyChannel() -> Single<[ICChannel]>
 }
 
@@ -25,13 +25,13 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         self.userManager = userManager
     }
     
-    func apiNewChat(guestID: Int) -> Single<Int?> {
-        return Single<Int?>.create { [unowned self] (single) -> Disposable in
+    func apiNewChat(guestID: Int) -> Single<String?> {
+        return Single<String?>.create { [unowned self] (single) -> Disposable in
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
             let parameter: [String: Any] = ["guest_id": guestID]
             let _ = self.sendRequest(medthod: .post, url: self.newChatURL, parameter: parameter, headers: header)
-                .map({ (result) -> Int? in
-                    return result.dictionaryValue["data"]?.int
+                .map({ (result) -> String? in
+                    return result.dictionaryValue["data"]?.string
                 })
                 .subscribe(onSuccess: { (channelID) in
                     single(.success(channelID))
