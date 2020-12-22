@@ -28,8 +28,8 @@ class ICLobbyAPIService: APIBaseRequest, APIDataTransform, ICLobbyAPI, ICLobbyUR
     func apiGetUserList() -> Single<[ICUser]> {
         return Single<[ICUser]>.create { [unowned self] (single) -> Disposable in
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-            let parameter: [String: Any] = ["role": 2]
-            let _ = self.sendRequest(medthod: .get, url: self.usersURL, parameter: parameter, headers: header)
+//            let parameter: [String: Any] = ["role": 2]
+            let _ = self.sendRequest(medthod: .get, url: self.usersURL, parameter: nil, headers: header)
                 .map({ (result) -> [ICUser] in
                     let data = result.dictionary?["data"]?.array ?? []
                     return self.dataDecoderArrayTransform(ICUser.self, data)

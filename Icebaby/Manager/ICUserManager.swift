@@ -11,9 +11,11 @@ protocol UserManager {
     func saveToken(_ token: String)
     func saveUID(_ uid: Int)
     func saveNickname(_ nickname: String)
+    func saveMobile(_ mobile: String)
     func token() -> String?
     func uid() -> Int
     func nickname() -> String
+    func mobile() -> String
     func clearToken()
     func clearUID()
 }
@@ -32,6 +34,10 @@ class ICUserManager: UserManager {
         UserDefaults.standard.set(nickname, forKey: "Nickname")
     }
     
+    func saveMobile(_ mobile: String) {
+        UserDefaults.standard.set(mobile, forKey: "Mobile")
+    }
+    
     func token() -> String? {
         return UserDefaults.standard.value(forKey: "APIToken") as? String
     }
@@ -42,6 +48,10 @@ class ICUserManager: UserManager {
     
     func nickname() -> String {
         return UserDefaults.standard.value(forKey: "Nickname") as? String ?? ""
+    }
+    
+    func mobile() -> String {
+        return UserDefaults.standard.value(forKey: "Mobile") as? String ?? ""
     }
     
     func clearToken() {

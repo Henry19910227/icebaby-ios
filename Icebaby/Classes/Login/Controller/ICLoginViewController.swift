@@ -11,8 +11,15 @@ import RxCocoa
 import Toast_Swift
 
 class ICLoginViewController: ICBaseViewController {
+    
+    //Public
     public var viewModel: ICLoginViewModel?
+    
+    //Rx
     private let disposeBag = DisposeBag()
+    private let trigger = PublishSubject<Void>()
+    
+    //UI
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var mobileTextField: UITextField!
     @IBOutlet weak var pwdTextField: UITextField!
@@ -23,16 +30,23 @@ extension ICLoginViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bindViewModel()
+        trigger.onNext(())
     }
 }
 
 //MARK: - Bind
 extension ICLoginViewController {
     private func bindViewModel() {
-        let input = ICLoginViewModel.Input(loginTap: loginButton.rx.tap.asDriver(),
+        let input = ICLoginViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()),
+                                           loginTap: loginButton.rx.tap.asDriver(),
                                            identifier: mobileTextField.rx.text.asDriver(),
                                            password: pwdTextField.rx.text.asDriver())
         let output = viewModel?.transform(input: input)
+        
+        output?
+            .defaultMobile
+            .drive(mobileTextField.rx.text)
+            .disposed(by: disposeBag)
         
         output?
             .showLoading
