@@ -22,6 +22,7 @@ class ICLoginViewModel: ICViewModel {
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
     private let showErrorMsgSubject = PublishSubject<String>()
+    private let defaultMobileSubject = PublishSubject<String>()
     
     //Param
     private var identifier = ""
@@ -29,12 +30,14 @@ class ICLoginViewModel: ICViewModel {
     
     
     struct Input {
+        public let trigger: Driver<Void>
         public let loginTap: Driver<Void>
         public let identifier: Driver<String?>
         public let password: Driver<String?>
     }
     
     struct Output {
+        public let defaultMobile: Driver<String>
         public let showLoading: Driver<Bool>
         public let showErrorMsg: Driver<String>
     }
@@ -48,17 +51,29 @@ class ICLoginViewModel: ICViewModel {
     }
     
     @discardableResult func transform(input: Input) -> Output {
+        bindTrigger(input.trigger)
         bindIdentifierDriver(input.identifier)
         bindPasswordDriver(input.password)
         bindLoginTap(input.loginTap)
         
-        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
+        return Output(defaultMobile: defaultMobileSubject.asDriver(onErrorJustReturn: ""),
+                      showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
     }
 }
 
 //MARK: - Bind
 extension ICLoginViewModel {
+    private func bindTrigger(_ trigger: Driver<Void>) {
+        trigger
+            .do(onNext: { [unowned self] (_) in
+                self.defaultMobileSubject.onNext(self.userManager.mobile())
+                self.identifier = self.userManager.mobile()
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
     private func bindLoginTap(_ loginTap: Driver<Void>) {
         loginTap
             .do(onNext: { [unowned self] (_) in
@@ -93,6 +108,9 @@ extension ICLoginViewModel {
         showLoadingSubject.onNext(true)
         loginAPIService
             .apiUserLogin(identifier: identifier, password: password)
+            .do(onSuccess: { [unowned self] (_) in
+                self.userManager.saveMobile(self.identifier)
+            })
             .subscribe(onSuccess: { [unowned self] (uid, token, nickname) in
                 print("Login uid:\(uid), nickname:\(nickname)")
                 self.userManager.saveToken(token)
