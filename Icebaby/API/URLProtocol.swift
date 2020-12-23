@@ -77,7 +77,7 @@ extension ICLobbyURL {
 }
 extension ICChatURL {
     var newChatURL: URL {
-        return URL(string: "\(baseURL)/icebaby/v1/chat/new")!
+        return URL(string: "\(baseURL)/icebaby/v1/chat/channel")!
     }
     
     var myChannelsURL: URL {
