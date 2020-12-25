@@ -92,8 +92,6 @@ extension ICChatListViewModel {
                 return self.channels[indexPath.row].id ?? ""
             })
             .do (onNext:{ [unowned self] (channelID) in
-                //更新該頻道已讀時間
-                self.chatManager.updateReadDate(Date(), channelID: channelID)
                 self.navigator?.toChat(channelID: channelID)
             })
             .drive()

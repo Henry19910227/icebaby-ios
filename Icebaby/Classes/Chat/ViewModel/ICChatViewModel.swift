@@ -80,6 +80,7 @@ extension ICChatViewModel {
             .do(onNext: { [unowned self] (_) in
                 self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
                                                    displayName: self.userManager.nickname()))
+                self.updateReadDate()
             })
             .drive(onNext: { [unowned self] (_) in
                 self.getHistory()
@@ -157,5 +158,11 @@ extension ICChatViewModel {
             }
             self.messageSubject.onNext(self.messages)
         }
+    }
+    
+    // 更新該頻道已讀時間
+    private func updateReadDate() {
+        //本地
+        chatManager.updateReadDate(Date(), channelID: channelID)
     }
 }

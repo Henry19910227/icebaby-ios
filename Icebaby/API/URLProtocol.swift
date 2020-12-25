@@ -21,7 +21,7 @@ protocol ICLobbyURL: ICBaseURL {
 protocol ICChatURL: ICBaseURL {
     var newChatURL: URL { get }
     var myChannelsURL: URL { get }
-    func updateMemberURL(memberID: Int) -> URL
+    var updateMemberURL: URL { get }
 }
 
 
@@ -56,7 +56,7 @@ extension ICChatURL {
         return URL(string: "\(baseURL)/icebaby/v1/chat/mychannels")!
     }
     
-    func updateMemberURL(memberID: Int) -> URL {
-        return URL(string: "\(baseURL)/icebaby/v1/chat/member/\(memberID)")!
+    var updateMemberURL: URL {
+        return URL(string: "\(baseURL)/icebaby/v1/chat/member")!
     }
 }
