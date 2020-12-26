@@ -15,7 +15,7 @@ import Alamofire
 protocol ICChatAPI {
     func apiNewChat(guestID: Int) -> Single<String?>
     func apiGetMyChannel() -> Single<[ICChannel]>
-    func apiUpdateReadDate(channelID: String, userID: Int, date: Date) -> Single<ICMember?>
+    func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
 }
 
 class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
@@ -60,12 +60,12 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         }
     }
     
-    func apiUpdateReadDate(channelID: String, userID: Int, date: Date) -> Single<ICMember?> {
+    func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?> {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-        let parameter: [String: Any] = ["channel_id": channelID, "user_id": userID]
+        let parameter: [String: Any] = ["user_id": userID, "read_at": date]
         return Single<ICMember?>.create { [unowned self] (single) -> Disposable in
-            let _ = self.sendRequest(medthod: .get,
-                                     url: self.updateMemberURL,
+            let _ = self.sendRequest(medthod: .patch,
+                                     url: self.updateReadDateURL(channelID: channelID),
                                      parameter: parameter,
                                      headers: header)
                 .map ({ (result) -> ICMember? in
