@@ -24,8 +24,11 @@ class ICChatViewModel: ICViewModel {
     
     //RX
     private let disposeBag = DisposeBag()
+    
+    //Subject
     private let messageSubject = PublishSubject<[ICMessage]>()
     private var senderSubject = PublishSubject<SenderType>()
+    private let showErrorMsgSubject = PublishSubject<String>()
     
     //Status
     private var allowChat = false
@@ -43,6 +46,7 @@ class ICChatViewModel: ICViewModel {
     struct Output {
         public let sender: Driver<SenderType>
         public let messages: Driver<[ICMessage]>
+        public let showErrorMsg: Driver<String>
     }
     
     init(navigator: ICChatNavigator,
@@ -68,7 +72,8 @@ extension ICChatViewModel {
         bindSendMessage(input.sendMessage)
         bindOnPublish(chatManager.onPublish)
         return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
-                      messages: messageSubject.asDriver(onErrorJustReturn: []))
+                      messages: messageSubject.asDriver(onErrorJustReturn: []),
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -80,6 +85,7 @@ extension ICChatViewModel {
             .do(onNext: { [unowned self] (_) in
                 self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
                                                    displayName: self.userManager.nickname()))
+                self.updateReadDate()
             })
             .drive(onNext: { [unowned self] (_) in
                 self.getHistory()
@@ -132,7 +138,7 @@ extension ICChatViewModel {
 //MARK: - Other
 extension ICChatViewModel {
     private func getChatData(text: String) -> Data? {
-        let date = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") ?? ""
+        let date = dateFormatter.dateToDateString(Date(), "YYYY-MM-dd HH:mm:ss") ?? ""
         let msdId = "\(userManager.uid())-" + (dateFormatter.dateToDateString(Date(), "yyyyMMddHHmmss") ?? "")
         let msgDict: [String: Any] = ["id": msdId,
                                       "date": date,
@@ -157,5 +163,31 @@ extension ICChatViewModel {
             }
             self.messageSubject.onNext(self.messages)
         }
+    }
+    
+    // 更新該頻道已讀時間
+    private func updateReadDate() {
+        //本地
+        chatManager.updateReadDate(Date(), channelID: channelID)
+        
+        //Server
+        guard let dateStr = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") else { return }
+        apiUpdateReadDate(dateStr, channelID: channelID, userID: userManager.uid())
+    }
+}
+
+//MARK: - API
+extension ICChatViewModel {
+    private func apiUpdateReadDate(_ dateString: String, channelID: String, userID: Int) {
+        chatAPIService
+            .apiUpdateReadDate(channelID: channelID, userID: userID, date: dateString)
+            .subscribe(onSuccess: { (member) in
+                
+            }, onError: { (error) in
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                print(error.localizedDescription)
+            })
+            .disposed(by: disposeBag)
     }
 }

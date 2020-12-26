@@ -31,7 +31,6 @@ class ICChatListViewModel: ICViewModel {
     
     //Data
     private var channels: [ICChannel] = []
-    private var lastRead: Date?
     private var items: [ICChatListCellViewModel] = []
     private var cellVMs: [ICChatListCellViewModel] = []
     
@@ -68,7 +67,8 @@ extension ICChatListViewModel {
         bindAllowChat(input.allowChat)
         bindItemSelected(input.itemSelected)
         bindOnPublish(chatManager.onPublish.asObservable())
-        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ""))
+        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [ICChatData]())))
+        bindUnreadCount(chatManager.unreadCount.asDriver(onErrorJustReturn: ("", 0)))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
@@ -133,59 +133,54 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<String>) {
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICChatData])>) {
         onSubscribeSuccess
             .filter({ [unowned self] (_) -> Bool in
                 return self.allowChat
             })
-            .drive(onNext: { [unowned self] (channelID) in
-                self.chatManager.history(channelID: channelID) { [unowned self] (datas) in
-                    let myLastRead = self.getMyLastRead(channelID: channelID)
-                    let unreadCount = self.getUnreadCount(lastRead: myLastRead,
-                                                          chatDatas: datas)
-                    let msg = datas.last?.message?.msg ?? ""
-                    self.setCellVMLatestText(channelID: channelID, msg: msg)
-                    self.setCellVMUnread(channelID: channelID, count: unreadCount)
-                }
+            .drive(onNext: { [unowned self] (channelID, chatDatas) in
+                self.setCellVMLatestText(channelID: channelID, msg: chatDatas.last?.message?.msg ?? "")
             })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindUnreadCount(_ unreadCount: Driver<(String, Int)>) {
+        unreadCount
+            .do(onNext: { [unowned self] (channelID, count) in
+                self.setCellVMUnread(channelID: channelID, count: count)
+            })
+            .drive()
             .disposed(by: disposeBag)
     }
 }
 
 //MARK: - API
 extension ICChatListViewModel {
-    
     private func apiGetMyChannels() {
-        showLoadingSubject.onNext(true)
-        chatAPIService?
-            .apiGetMyChannel()
-            .do(afterSuccess: { [unowned self] (channels) in
-                self.channels = channels
-                for channel in channels {
-                    self.chatManager.subscribeChannel(channel.id)
-                }
-            })
-            .map({ [unowned self] (channels) -> [ICChatListCellViewModel] in
-                return channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
-                    let vm = ICChatListCellViewModel(userID: self.userManager.uid())
-                    vm.model = channel
-                    return vm
-                }
-            })
-            .subscribe(onSuccess: { [unowned self] (items) in
-                self.showLoadingSubject.onNext(false)
-                self.cellVMs = items
-                self.itemsSubject.onNext(items)
-            }, onError: { [unowned self] (error) in
-                self.showLoadingSubject.onNext(false)
-                guard let err = error as? ICError else { return }
-                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-            })
-            .disposed(by: disposeBag)
+        chatManager.mychannels { [unowned self] (channels) in
+            self.channels = channels
+            
+            //訂閱所有頻道ID
+            for channel in channels {
+                self.chatManager.subscribeChannel(channel.id)
+            }
+            
+            //初始化vm
+            self.cellVMs = channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
+                let vm = ICChatListCellViewModel(userID: self.userManager.uid())
+                vm.model = channel
+                return vm
+            }
+            self.itemsSubject.onNext(self.cellVMs)
+        } onError: { [unowned self] (error) in
+            self.showLoadingSubject.onNext(false)
+            guard let err = error as? ICError else { return }
+            self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+        }
     }
 }
 
-//MARK: - Other
+//MARK: - Setup VM
 extension ICChatListViewModel {
     private func setCellVMLatestText(channelID: String, msg: String) {
         for vm in cellVMs {
@@ -201,32 +196,5 @@ extension ICChatListViewModel {
                 vm.unreadCount.onNext(count)
             }
         }
-    }
-    
-    private func getUnreadCount(lastRead: Date?, chatDatas: [ICChatData]) -> Int {
-        var unreadCount = 0
-        guard let lastReadDate = lastRead else { return 0 }
-        for chatData in chatDatas {
-            if userManager.uid() != chatData.message?.uid ?? 0 {
-                let date = dateFormatter.dateStringToDate(chatData.message?.date ?? "", "YYYY-MM-dd HH:mm:ss") ?? Date()
-                if dateFormatter.date(lastReadDate, earlierThan: date) {
-                    unreadCount += 1
-                }
-            }
-        }
-        return unreadCount
-    }
-    
-    private func getMyLastRead(channelID: String) -> Date? {
-        var readTime: String?
-        for channel in self.channels {
-            for member in channel.members ?? [] {
-                if self.userManager.uid() == member.userID {
-                    readTime = member.readAt
-                }
-            }
-        }
-        guard let read = readTime else { return nil }
-        return dateFormatter.dateStringToDate(read, "YYYY-MM-dd HH:mm:ss")
     }
 }

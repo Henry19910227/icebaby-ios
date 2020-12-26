@@ -17,7 +17,7 @@ class ICMessage: MessageType {
     init(data: ICChatMsg?) {
         messageId = data?.id ?? ""
         sender = ICSender(senderId: String(data?.uid ?? 0), displayName: data?.nickname ?? "")
-        sentDate = ICDateFormatter().dateStringToDate(data?.date ?? "", "yyyy-MM-dd HH:mm:ss") ?? Date()
+        sentDate = ICDateFormatter().dateStringToDate(data?.date ?? "", "YYYY-MM-dd HH:mm:ss") ?? Date()
         kind = .text(data?.msg ?? "")
     }
 }

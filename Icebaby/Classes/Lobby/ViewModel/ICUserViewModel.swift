@@ -67,7 +67,7 @@ extension ICUserViewModel {
         bindChatTap(input.chatTap)
         bindAllowChat(input.allowChat)
         bindOnPublish(chatManager.onPublish.asObservable())
-        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ""))
+        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [ICChatData]())))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       uid: uidSubject.asDriver(onErrorJustReturn: 0),
@@ -133,12 +133,12 @@ extension ICUserViewModel {
 //            .disposed(by: disposeBag)
     }
     
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<String>) {
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICChatData])>) {
         onSubscribeSuccess
             .filter({ [unowned self] (_) -> Bool in
                 return self.allowChat
             })
-            .drive(onNext: { [unowned self] (channelID) in
+            .drive(onNext: { [unowned self] (channelID, _) in
                 self.navigator?.toChat(channelID: channelID)
             })
             .disposed(by: disposeBag)
