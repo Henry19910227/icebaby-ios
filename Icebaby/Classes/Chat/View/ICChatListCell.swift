@@ -26,6 +26,7 @@ class ICChatListCell: UITableViewCell {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var msgLabel: UILabel!
     @IBOutlet weak var unreadLabel: UILabel!
+    @IBOutlet weak var dotView: UIView!
     
 }
 
@@ -33,13 +34,20 @@ class ICChatListCell: UITableViewCell {
 extension ICChatListCell {
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        initUI()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
         viewModel?.clear()
+    }
+}
+
+extension ICChatListCell {
+    private func initUI() {
+        dotView.layer.masksToBounds = true
+        dotView.layer.cornerRadius = dotView.bounds.height * 0.5
     }
 }
 
@@ -62,6 +70,14 @@ extension ICChatListCell {
                 return "\(count)"
             })
             .drive(unreadLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        viewModel
+            .unread?
+            .map({ (count) -> Bool in
+                return count == 0
+            })
+            .drive(dotView.rx.isHidden)
             .disposed(by: disposeBag)
     }
 }
