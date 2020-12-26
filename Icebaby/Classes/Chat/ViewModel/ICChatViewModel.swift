@@ -39,6 +39,7 @@ class ICChatViewModel: ICViewModel {
     
     struct Input {
         public let trigger: Driver<Void>
+        public let exit: Driver<Void>
         public let sendMessage: Driver<String>
         public let allowChat: Driver<Bool>
     }
@@ -68,6 +69,7 @@ class ICChatViewModel: ICViewModel {
 extension ICChatViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(input.trigger)
+        bindExit(input.exit)
         bindAllowChat(input.allowChat)
         bindSendMessage(input.sendMessage)
         bindOnPublish(chatManager.onPublish)
@@ -90,6 +92,15 @@ extension ICChatViewModel {
             .drive(onNext: { [unowned self] (_) in
                 self.getHistory()
             })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindExit(_ exit: Driver<Void>) {
+        exit
+            .do(onNext: { [unowned self] (_) in
+                self.updateReadDate()
+            })
+            .drive()
             .disposed(by: disposeBag)
     }
     
@@ -182,7 +193,7 @@ extension ICChatViewModel {
         chatAPIService
             .apiUpdateReadDate(channelID: channelID, userID: userID, date: dateString)
             .subscribe(onSuccess: { (member) in
-                
+                print("update \(channelID) ReadDate to \(member?.readAt ?? "")")
             }, onError: { (error) in
                 guard let err = error as? ICError else { return }
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
