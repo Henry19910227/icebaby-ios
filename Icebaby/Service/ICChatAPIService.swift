@@ -16,6 +16,7 @@ protocol ICChatAPI {
     func apiNewChat(guestID: Int) -> Single<String?>
     func apiGetMyChannel() -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
+    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]>
 }
 
 class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
@@ -72,11 +73,31 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
                     let data = result.dictionary?["data"] ?? JSON()
                     return self.dataDecoderTransform(ICMember.self, data)
                 })
-                .subscribe(onSuccess: { (channels) in
-                    single(.success(channels))
+                .subscribe(onSuccess: { (member) in
+                    single(.success(member))
                 }, onError: { (error) in
                     single(.error(error))
                 })
+            return Disposables.create()
+        }
+    }
+    
+    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]> {
+        let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+        let parameter: [String: Any] = ["offset": offset, "count": count]
+        return Single<[ICChatData]>.create { [unowned self] (single) -> Disposable in
+            let _ = self.sendRequest(medthod: .get,
+                             url: self.historyURL(channelID: channelID),
+                             parameter: parameter,
+                             headers: header)
+                .map ({ (result) -> [ICChatData] in
+                    let data = result.dictionary?["data"]?.array ?? []
+                    return self.dataDecoderArrayTransform(ICChatData.self, data)
+                }).subscribe { (datas) in
+                    single(.success(datas))
+                } onError: { (error) in
+                    single(.error(error))
+                }
             return Disposables.create()
         }
     }

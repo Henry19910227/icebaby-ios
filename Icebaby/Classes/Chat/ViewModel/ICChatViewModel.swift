@@ -149,7 +149,7 @@ extension ICChatViewModel {
 //MARK: - Other
 extension ICChatViewModel {
     private func getChatData(text: String) -> Data? {
-        let date = dateFormatter.dateToDateString(Date(), "YYYY-MM-dd HH:mm:ss") ?? ""
+        let date = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") ?? ""
         let msdId = "\(userManager.uid())-" + (dateFormatter.dateToDateString(Date(), "yyyyMMddHHmmss") ?? "")
         let msgDict: [String: Any] = ["id": msdId,
                                       "date": date,
@@ -193,7 +193,7 @@ extension ICChatViewModel {
         chatAPIService
             .apiUpdateReadDate(channelID: channelID, userID: userID, date: dateString)
             .subscribe(onSuccess: { (member) in
-                print("update \(channelID) ReadDate to \(member?.readAt ?? "")")
+                
             }, onError: { (error) in
                 guard let err = error as? ICError else { return }
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")

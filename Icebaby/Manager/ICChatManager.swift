@@ -98,28 +98,34 @@ extension ICChatManager: APIDataTransform {
         self.subscribeChannel(channelID)
     }
     
+    // 獲取歷史訊息
     public func history(channelID: String, completion: @escaping ([ICChatData]) -> Void) {
         if let chatDatas = history[channelID] {
             completion(chatDatas)
             return
         }
-        let sub = currentSubscribe[channelID]
-        sub?.history(completion: { [unowned self] (pubs, error) in
-            guard let pubs = pubs else {
-                completion([ICChatData]())
-                return
-            }
-            let jsons = pubs.map { (pub) -> JSON in
-                do {
-                    return try JSON(data: pub.data)
-                } catch {
-                    return JSON()
-                }
-            }
-            let chatDatas = dataDecoderArrayTransform(ICChatData.self, jsons)
-            history[channelID] = chatDatas
-            completion(chatDatas)
-        })
+        apiHistory(channelID: channelID) { [unowned self] (datas) in
+            self.history[channelID] = datas
+            completion(datas)
+        }
+        
+//        let sub = currentSubscribe[channelID]
+//        sub?.history(completion: { [unowned self] (pubs, error) in
+//            guard let pubs = pubs else {
+//                completion([ICChatData]())
+//                return
+//            }
+//            let jsons = pubs.map { (pub) -> JSON in
+//                do {
+//                    return try JSON(data: pub.data)
+//                } catch {
+//                    return JSON()
+//                }
+//            }
+//            let chatDatas = dataDecoderArrayTransform(ICChatData.self, jsons)
+//            history[channelID] = chatDatas
+//            completion(chatDatas)
+//        })
     }
 }
 
@@ -185,6 +191,8 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                                                   lastReadDate: myLastReadDate,
                                                   chatDatas: datas)
             self.unreadDict[sub.channel] = unreadCount
+            
+            //發送未讀數量訊號
             self.unreadCount.onNext((sub.channel, unreadCount))
             
             //第一次成功訂閱通知
@@ -220,7 +228,7 @@ extension ICChatManager {
     }
 }
 
-//MARK: - Other
+//MARK: - Unread
 extension ICChatManager {
     /** 計算並獲取未讀訊息個數*/
     private func getUnreadCount(channelID: String, lastReadDate: Date?, chatDatas: [ICChatData]) -> Int {
@@ -228,7 +236,7 @@ extension ICChatManager {
         guard let lastReadDate = lastReadDate else { return 0 }
         for chatData in chatDatas {
             if userManager.uid() != chatData.message?.uid ?? 0 {
-                let date = dateFormatter.dateStringToDate(chatData.message?.date ?? "", "YYYY-MM-dd HH:mm:ss") ?? Date()
+                let date = dateFormatter.dateStringToDate(chatData.message?.date ?? "", "yyyy-MM-dd HH:mm:ss") ?? Date()
                 if dateFormatter.date(lastReadDate, earlierThan: date) {
                     unreadCount += 1
                 }
@@ -250,8 +258,22 @@ extension ICChatManager {
             }
         }
         guard let read = readTime else { return nil }
-        let lastReadDate = dateFormatter.dateStringToDate(read, "YYYY-MM-dd HH:mm:ss")
+        let lastReadDate = dateFormatter.dateStringToDate(read, "yyyy-MM-dd HH:mm:ss")
         readDateDict[channelID] = lastReadDate
         return lastReadDate
+    }
+}
+
+//MARK: - API
+extension ICChatManager {
+    private func apiHistory(channelID: String, completion: @escaping ([ICChatData]) -> ()) {
+        chatAPIService
+            .apiHistory(channelID: channelID, offset: 0, count: 100)
+            .subscribe { (datas) in
+                completion(datas)
+            } onError: { (error) in
+                
+            }
+            .disposed(by: disposeBag)
     }
 }
