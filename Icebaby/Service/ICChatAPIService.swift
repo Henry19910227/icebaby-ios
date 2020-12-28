@@ -91,7 +91,8 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
                              parameter: parameter,
                              headers: header)
                 .map ({ (result) -> [ICChatData] in
-                    let data = result.dictionary?["data"]?.array ?? []
+                    var data = result.dictionary?["data"]?.array ?? []
+                    data.reverse()
                     return self.dataDecoderArrayTransform(ICChatData.self, data)
                 }).subscribe { (datas) in
                     single(.success(datas))

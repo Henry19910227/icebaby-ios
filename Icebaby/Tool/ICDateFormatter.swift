@@ -45,8 +45,6 @@ class ICDateFormatter: NSObject {
     }
     
     public func date(_ firstDate: Date, earlierThan secondDate: Date) -> Bool {
-        print("firstDate \(ICDateFormatter().dateToDateString(firstDate, "yyyy-MM-dd HH:mm:ss") ?? "none")")
-        print("secondDate \(ICDateFormatter().dateToDateString(secondDate, "yyyy-MM-dd HH:mm:ss") ?? "none")")
         return firstDate.timeIntervalSince(secondDate) < 0
     }
 }
