@@ -14,9 +14,10 @@ import Alamofire
 
 protocol ICChatAPI {
     func apiNewChat(guestID: Int) -> Single<String?>
-    func apiGetMyChannel() -> Single<[ICChannel]>
+    func apiGetMyChannels() -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
     func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]>
+    func apiGetChannel(guestID: Int) -> Single<ICChannel?>
 }
 
 class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
@@ -44,7 +45,7 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         }
     }
     
-    func apiGetMyChannel() -> Single<[ICChannel]> {
+    func apiGetMyChannels() -> Single<[ICChannel]> {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
         return Single<[ICChannel]>.create { [unowned self] (single) -> Disposable in
             let _ = self.sendRequest(medthod: .get, url: self.myChannelsURL, parameter: nil, headers: header)
@@ -96,6 +97,26 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
                     return self.dataDecoderArrayTransform(ICChatData.self, data)
                 }).subscribe { (datas) in
                     single(.success(datas))
+                } onError: { (error) in
+                    single(.error(error))
+                }
+            return Disposables.create()
+        }
+    }
+    
+    func apiGetChannel(guestID: Int) -> Single<ICChannel?> {
+        return Single<ICChannel?>.create { [unowned self] (single) -> Disposable in
+            let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+            let parameter: [String: Any] = ["guest_id": guestID]
+            let _ = self.sendRequest(medthod: .get,
+                             url: self.getChannel,
+                             parameter: parameter,
+                             headers: header)
+                .map ({ [unowned self] (result) -> ICChannel? in
+                    let data = result.dictionary?["data"] ?? JSON()
+                    return self.dataDecoderTransform(ICChannel.self, data)
+                }).subscribe { (channel) in
+                    single(.success(channel))
                 } onError: { (error) in
                     single(.error(error))
                 }

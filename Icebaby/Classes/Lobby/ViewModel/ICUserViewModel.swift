@@ -91,7 +91,8 @@ extension ICUserViewModel {
     private func bindChatTap(_ chatTap: Driver<Void>) {
         chatTap
             .do(onNext: { [unowned self] (_) in
-                self.apiNewChat(guestID: self.userID)
+//                self.apiNewChat(guestID: self.userID)
+                self.apiGetChannel(guestID: self.userID)
             }) 
             .drive()
             .disposed(by: disposeBag)
@@ -160,6 +161,17 @@ extension ICUserViewModel {
                 self.showLoadingSubject.onNext(false)
                 guard let err = error as? ICError else { return }
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func apiGetChannel(guestID: Int) {
+        chatAPIService
+            .apiGetChannel(guestID: guestID)
+            .subscribe(onSuccess: { (channel) in
+                
+            }, onError: { (error) in
+                
             })
             .disposed(by: disposeBag)
     }
