@@ -80,7 +80,7 @@
         <!--User View Controller-->
         <scene sceneID="rUK-v1-JhX">
             <objects>
-                <viewController storyboardIdentifier="ICUserViewController" id="iRU-ZR-qIM" customClass="ICUserViewController" customModule="Icebaby" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ICUserViewController" hidesBottomBarWhenPushed="YES" id="iRU-ZR-qIM" customClass="ICUserViewController" customModule="Icebaby" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="ERs-au-VVA">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

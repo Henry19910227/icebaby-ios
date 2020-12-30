@@ -31,6 +31,7 @@ class ICUserViewModel: ICViewModel {
     
     //Status
     private var allowChat = false
+    private var needToChat = false
 
     struct Input {
         public let trigger: Driver<Void>
@@ -91,6 +92,7 @@ extension ICUserViewModel {
     private func bindChatTap(_ chatTap: Driver<Void>) {
         chatTap
             .do(onNext: { [unowned self] (_) in
+                self.needToChat = true
                 self.apiNewChat(guestID: self.userID)
             }) 
             .drive()
@@ -126,9 +128,10 @@ extension ICUserViewModel {
     private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICChatData])>) {
         onSubscribeSuccess
             .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat
+                return self.allowChat && self.needToChat
             })
             .drive(onNext: { [unowned self] (channelID, _) in
+                self.needToChat = false
                 self.navigator?.toChat(channelID: channelID)
             })
             .disposed(by: disposeBag)
