@@ -91,8 +91,7 @@ extension ICUserViewModel {
     private func bindChatTap(_ chatTap: Driver<Void>) {
         chatTap
             .do(onNext: { [unowned self] (_) in
-//                self.apiNewChat(guestID: self.userID)
-                self.apiGetChannel(guestID: self.userID)
+                self.apiNewChat(guestID: self.userID)
             }) 
             .drive()
             .disposed(by: disposeBag)
@@ -122,16 +121,6 @@ extension ICUserViewModel {
                 self.chatManager.subscribeChannel(channelID)
             })
             .disposed(by: disposeBag)
-
-        
-//        onPublish
-//            .filter({ (data, _) -> Bool in
-//                return data?.type == "message"
-//            })
-//            .subscribe(onNext: { (data,_) in
-//                print("message : \(data?.content ?? "")")
-//            })
-//            .disposed(by: disposeBag)
     }
     
     private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICChatData])>) {
@@ -161,17 +150,6 @@ extension ICUserViewModel {
                 self.showLoadingSubject.onNext(false)
                 guard let err = error as? ICError else { return }
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func apiGetChannel(guestID: Int) {
-        chatAPIService
-            .apiGetChannel(guestID: guestID)
-            .subscribe(onSuccess: { (channel) in
-                
-            }, onError: { (error) in
-                
             })
             .disposed(by: disposeBag)
     }
