@@ -82,7 +82,7 @@ extension ICChatManager: APIDataTransform {
     public func mychannels(onSuccess: @escaping ([ICChannel]) -> Void,
                            onError: @escaping (Error) -> Void) {
         chatAPIService
-            .apiGetMyChannels()
+            .apiGetChannels(userID: userManager.uid())
             .do(afterSuccess: { [unowned self] (channels) in
                 self.channels = channels
             })

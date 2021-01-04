@@ -93,7 +93,7 @@ extension ICUserViewModel {
         chatTap
             .do(onNext: { [unowned self] (_) in
                 self.needToChat = true
-                self.apiNewChat(guestID: self.userID)
+                self.apiCreateChannel(reciverID: self.userID)
             }) 
             .drive()
             .disposed(by: disposeBag)
@@ -157,10 +157,10 @@ extension ICUserViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func apiNewChat(guestID: Int) {
+    private func apiCreateChannel(reciverID: Int) {
         showLoadingSubject.onNext(true)
         chatAPIService
-            .apiNewChat(guestID: guestID)
+            .apiCreateChannel(reciverID: reciverID)
             .subscribe { (channelID) in
                 self.showLoadingSubject.onNext(false)
             } onError: { (error) in
