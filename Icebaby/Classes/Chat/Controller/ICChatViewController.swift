@@ -19,6 +19,7 @@ class ICChatViewController: MessagesViewController {
     // Rx
     private let disposeBag = DisposeBag()
     private let trigger = PublishSubject<Void>()
+    private let exit = PublishSubject<Void>()
     private let allowChat = PublishSubject<Bool>()
     private let sendMsg = PublishSubject<String>()
 
@@ -42,6 +43,11 @@ extension ICChatViewController {
         bindViewModel()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        exit.onNext(())
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         trigger.onNext(())
@@ -58,6 +64,7 @@ extension ICChatViewController {
 extension ICChatViewController {
     private func bindViewModel() {
         let input = ICChatViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()),
+                                          exit: exit.asDriver(onErrorJustReturn: ()),
                                           sendMessage: sendMsg.asDriver(onErrorJustReturn: ""),
                                           allowChat: allowChat.asDriver(onErrorJustReturn: false))
         let output = viewModel?.transform(input: input)

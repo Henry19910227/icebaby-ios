@@ -39,6 +39,7 @@ class ICChatViewModel: ICViewModel {
     
     struct Input {
         public let trigger: Driver<Void>
+        public let exit: Driver<Void>
         public let sendMessage: Driver<String>
         public let allowChat: Driver<Bool>
     }
@@ -68,6 +69,7 @@ class ICChatViewModel: ICViewModel {
 extension ICChatViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(input.trigger)
+        bindExit(input.exit)
         bindAllowChat(input.allowChat)
         bindSendMessage(input.sendMessage)
         bindOnPublish(chatManager.onPublish)
@@ -90,6 +92,15 @@ extension ICChatViewModel {
             .drive(onNext: { [unowned self] (_) in
                 self.getHistory()
             })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindExit(_ exit: Driver<Void>) {
+        exit
+            .do(onNext: { [unowned self] (_) in
+                self.updateReadDate()
+            })
+            .drive()
             .disposed(by: disposeBag)
     }
     
@@ -138,7 +149,7 @@ extension ICChatViewModel {
 //MARK: - Other
 extension ICChatViewModel {
     private func getChatData(text: String) -> Data? {
-        let date = dateFormatter.dateToDateString(Date(), "YYYY-MM-dd HH:mm:ss") ?? ""
+        let date = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") ?? ""
         let msdId = "\(userManager.uid())-" + (dateFormatter.dateToDateString(Date(), "yyyyMMddHHmmss") ?? "")
         let msgDict: [String: Any] = ["id": msdId,
                                       "date": date,

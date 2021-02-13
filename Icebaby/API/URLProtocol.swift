@@ -21,7 +21,9 @@ protocol ICLobbyURL: ICBaseURL {
 protocol ICChatURL: ICBaseURL {
     var newChatURL: URL { get }
     var myChannelsURL: URL { get }
+    var getChannel: URL { get }
     func updateReadDateURL(channelID: String) -> URL
+    func historyURL(channelID: String) -> URL
 }
 
 
@@ -44,7 +46,7 @@ extension ICLobbyURL {
     }
     
     func userDetailURL(userID: Int) -> URL {
-        return URL(string: "\(baseURL)/icebaby/v1/user/\(userID)/detail")!
+        return URL(string: "\(baseURL)/icebaby/v1/user/\(userID)")!
     }
 }
 extension ICChatURL {
@@ -53,10 +55,18 @@ extension ICChatURL {
     }
     
     var myChannelsURL: URL {
-        return URL(string: "\(baseURL)/icebaby/v1/chat/mychannels")!
+        return URL(string: "\(baseURL)/icebaby/v1/chat/channels")!
+    }
+    
+    var getChannel: URL {
+        return URL(string: "\(baseURL)/icebaby/v1/chat/channel")!
     }
     
     func updateReadDateURL(channelID: String) -> URL {
         return URL(string: "\(baseURL)/icebaby/v1/chat/read_date/\(channelID)")!
+    }
+    
+    func historyURL(channelID: String) -> URL {
+        return URL(string: "\(baseURL)/icebaby/v1/chat/history/\(channelID)")!
     }
 }

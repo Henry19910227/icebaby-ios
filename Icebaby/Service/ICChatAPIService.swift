@@ -13,9 +13,11 @@ import SwiftyJSON
 import Alamofire
 
 protocol ICChatAPI {
-    func apiNewChat(guestID: Int) -> Single<String?>
-    func apiGetMyChannel() -> Single<[ICChannel]>
+    func apiCreateChannel(reciverID: Int) -> Single<String?>
+    func apiGetChannels(userID: Int) -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
+    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]>
+    func apiGetChannel(reciverID: Int) -> Single<ICChannel?>
 }
 
 class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
@@ -26,10 +28,10 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         self.userManager = userManager
     }
     
-    func apiNewChat(guestID: Int) -> Single<String?> {
+    func apiCreateChannel(reciverID: Int) -> Single<String?> {
         return Single<String?>.create { [unowned self] (single) -> Disposable in
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-            let parameter: [String: Any] = ["guest_id": guestID]
+            let parameter: [String: Any] = ["reciver_id": reciverID]
             let _ = self.sendRequest(medthod: .post, url: self.newChatURL, parameter: parameter, headers: header)
                 .map({ (result) -> String? in
                     return result.dictionaryValue["data"]?.string
@@ -43,10 +45,11 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         }
     }
     
-    func apiGetMyChannel() -> Single<[ICChannel]> {
+    func apiGetChannels(userID: Int) -> Single<[ICChannel]> {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+        let parameter: [String: Any] = ["user_id": userID, "status": 1]
         return Single<[ICChannel]>.create { [unowned self] (single) -> Disposable in
-            let _ = self.sendRequest(medthod: .get, url: self.myChannelsURL, parameter: nil, headers: header)
+            let _ = self.sendRequest(medthod: .get, url: self.myChannelsURL, parameter: parameter, headers: header)
                 .map ({ (result) -> [ICChannel] in
                     let data = result.dictionary?["data"]?.array ?? []
                     return self.dataDecoderArrayTransform(ICChannel.self, data)
@@ -72,11 +75,52 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
                     let data = result.dictionary?["data"] ?? JSON()
                     return self.dataDecoderTransform(ICMember.self, data)
                 })
-                .subscribe(onSuccess: { (channels) in
-                    single(.success(channels))
+                .subscribe(onSuccess: { (member) in
+                    single(.success(member))
                 }, onError: { (error) in
                     single(.error(error))
                 })
+            return Disposables.create()
+        }
+    }
+    
+    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]> {
+        let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+        let parameter: [String: Any] = ["offset": offset, "count": count]
+        return Single<[ICChatData]>.create { [unowned self] (single) -> Disposable in
+            let _ = self.sendRequest(medthod: .get,
+                             url: self.historyURL(channelID: channelID),
+                             parameter: parameter,
+                             headers: header)
+                .map ({ (result) -> [ICChatData] in
+                    var data = result.dictionary?["data"]?.array ?? []
+                    data.reverse()
+                    return self.dataDecoderArrayTransform(ICChatData.self, data)
+                }).subscribe { (datas) in
+                    single(.success(datas))
+                } onError: { (error) in
+                    single(.error(error))
+                }
+            return Disposables.create()
+        }
+    }
+    
+    func apiGetChannel(reciverID: Int) -> Single<ICChannel?> {
+        return Single<ICChannel?>.create { [unowned self] (single) -> Disposable in
+            let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+            let parameter: [String: Any] = ["reciver_id": reciverID]
+            let _ = self.sendRequest(medthod: .get,
+                             url: self.getChannel,
+                             parameter: parameter,
+                             headers: header)
+                .map ({ [unowned self] (result) -> ICChannel? in
+                    let data = result.dictionary?["data"] ?? JSON()
+                    return self.dataDecoderTransform(ICChannel.self, data)
+                }).subscribe { (channel) in
+                    single(.success(channel))
+                } onError: { (error) in
+                    single(.error(error))
+                }
             return Disposables.create()
         }
     }

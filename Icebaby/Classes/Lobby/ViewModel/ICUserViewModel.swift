@@ -31,6 +31,7 @@ class ICUserViewModel: ICViewModel {
     
     //Status
     private var allowChat = false
+    private var needToChat = false
 
     struct Input {
         public let trigger: Driver<Void>
@@ -91,7 +92,8 @@ extension ICUserViewModel {
     private func bindChatTap(_ chatTap: Driver<Void>) {
         chatTap
             .do(onNext: { [unowned self] (_) in
-                self.apiNewChat(guestID: self.userID)
+                self.needToChat = true
+                self.apiCreateChannel(reciverID: self.userID)
             }) 
             .drive()
             .disposed(by: disposeBag)
@@ -121,24 +123,15 @@ extension ICUserViewModel {
                 self.chatManager.subscribeChannel(channelID)
             })
             .disposed(by: disposeBag)
-
-        
-//        onPublish
-//            .filter({ (data, _) -> Bool in
-//                return data?.type == "message"
-//            })
-//            .subscribe(onNext: { (data,_) in
-//                print("message : \(data?.content ?? "")")
-//            })
-//            .disposed(by: disposeBag)
     }
     
     private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICChatData])>) {
         onSubscribeSuccess
             .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat
+                return self.allowChat && self.needToChat
             })
             .drive(onNext: { [unowned self] (channelID, _) in
+                self.needToChat = false
                 self.navigator?.toChat(channelID: channelID)
             })
             .disposed(by: disposeBag)
@@ -164,10 +157,10 @@ extension ICUserViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func apiNewChat(guestID: Int) {
+    private func apiCreateChannel(reciverID: Int) {
         showLoadingSubject.onNext(true)
         chatAPIService
-            .apiNewChat(guestID: guestID)
+            .apiCreateChannel(reciverID: reciverID)
             .subscribe { (channelID) in
                 self.showLoadingSubject.onNext(false)
             } onError: { (error) in
