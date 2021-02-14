@@ -21,6 +21,7 @@ class ICLoginViewController: ICBaseViewController {
     
     //UI
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var fbLoginButton: UIButton!
     @IBOutlet weak var mobileTextField: UITextField!
     @IBOutlet weak var pwdTextField: UITextField!
 }
@@ -39,6 +40,7 @@ extension ICLoginViewController {
     private func bindViewModel() {
         let input = ICLoginViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()),
                                            loginTap: loginButton.rx.tap.asDriver(),
+                                           fbLoginTap: fbLoginButton.rx.tap.asDriver(),
                                            identifier: mobileTextField.rx.text.asDriver(),
                                            password: pwdTextField.rx.text.asDriver())
         let output = viewModel?.transform(input: input)

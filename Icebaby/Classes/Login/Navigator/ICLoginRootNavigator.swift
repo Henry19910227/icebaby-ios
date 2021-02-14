@@ -28,6 +28,7 @@ extension ICLoginRootNavigator: ICRootNavigator {
         let vc = loginStoryboard?.instantiateViewController(withIdentifier: "ICLoginViewController") as! ICLoginViewController
         vc.viewModel = ICLoginViewModel(navigator: self,
                                         loginAPIService: ICLoginAPIService(),
+                                        fbLoginManager: ICFBLoginManager(target: vc),
                                         userManager: ICUserManager())
         navigationController?.pushViewController(vc, animated: true)
     }
