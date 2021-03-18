@@ -19,7 +19,7 @@ class ICLobbyViewModel: ICViewModel {
     private let lobbyAPIService: ICLobbyAPI?
     
     //Data
-    private var users: [ICUser] = []
+    private var users: [ICUserBrief] = []
     
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
