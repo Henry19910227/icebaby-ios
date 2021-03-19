@@ -62,6 +62,13 @@ extension ICLobbyViewController {
             .disposed(by: disposeBag)
         
         output?
+            .nickname
+            .drive(onNext: { [unowned self] (nickname) in
+                self.title = nickname
+            })
+            .disposed(by: disposeBag)
+        
+        output?
             .items
             .drive(onNext: { [unowned self] (cellVMs) in
                 self.cellVMs = cellVMs

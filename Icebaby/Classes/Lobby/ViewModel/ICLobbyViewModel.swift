@@ -17,13 +17,15 @@ class ICLobbyViewModel: ICViewModel {
     //Param
     private let navigator: ICLobbyRootNavigator?
     private let lobbyAPIService: ICLobbyAPI?
+    private let userManager: UserManager?
     
     //Data
-    private var users: [ICUser] = []
+    private var users: [ICUserBrief] = []
     
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
     private let showErrorMsgSubject = PublishSubject<String>()
+    private let nicknameSubject = PublishSubject<String>()
     private let itemsSubject = PublishSubject<[ICLobbyCellViewModel]>()
     
     struct Input {
@@ -34,12 +36,14 @@ class ICLobbyViewModel: ICViewModel {
     struct Output {
         public let showLoading: Driver<Bool>
         public let showErrorMsg: Driver<String>
+        public let nickname: Driver<String>
         public let items: Driver<[ICLobbyCellViewModel]>
     }
 
-    init(navigator: ICLobbyRootNavigator, lobbyAPIService: ICLobbyAPI) {
+    init(navigator: ICLobbyRootNavigator, lobbyAPIService: ICLobbyAPI, userManager: UserManager) {
         self.navigator = navigator
         self.lobbyAPIService = lobbyAPIService
+        self.userManager = userManager
     }
 }
 
@@ -50,6 +54,7 @@ extension ICLobbyViewModel {
         itemSelected(itemSelected: input.itemSelected)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
+                      nickname: nicknameSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
     }
 }
@@ -60,6 +65,7 @@ extension ICLobbyViewModel {
         trigger
             .do(onNext: { [unowned self] (_) in
                 self.apiGetUserList()
+                self.nicknameSubject.onNext(self.userManager?.nickname() ?? "")
             })
             .drive()
             .disposed(by: disposeBag)

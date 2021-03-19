@@ -12,7 +12,7 @@ import RxSwift
 class ICLobbyCellViewModel: NSObject {
     
     //Model
-    public var model: ICUser? {
+    public var model: ICUserBrief? {
         didSet {
             guard let model = model else { return }
             bindModel(model)
@@ -34,8 +34,8 @@ class ICLobbyCellViewModel: NSObject {
 
 //MARK: - Bind Model
 extension ICLobbyCellViewModel {
-    private func bindModel(_ model: ICUser) {
-        nameSubject.onNext(model.nickname ?? "")
+    private func bindModel(_ model: ICUserBrief) {
+        nameSubject.onNext(model.info?.nickname ?? "")
     }
 }
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -27,7 +27,7 @@
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SSe-aJ-2de">
                                 <rect key="frame" x="20" y="364" width="374" height="45"/>
-                                <color key="backgroundColor" name="AccentColor"/>
+                                <color key="backgroundColor" red="0.80000000000000004" green="0.41568627450000001" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="45" id="ghp-zS-vCv"/>
                                 </constraints>
@@ -44,6 +44,16 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad" textContentType="tel"/>
                             </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqa-5z-uyl">
+                                <rect key="frame" x="20" y="449" width="374" height="45"/>
+                                <color key="backgroundColor" name="AccentColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="45" id="diI-a8-M9F"/>
+                                </constraints>
+                                <state key="normal" title="FB Login">
+                                    <color key="titleColor" white="0.98087007709999996" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="skn-r3-9nq"/>
                         <color key="backgroundColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -52,14 +62,19 @@
                             <constraint firstItem="lX2-En-4Hj" firstAttribute="top" secondItem="skn-r3-9nq" secondAttribute="top" constant="150" id="AiY-Sr-dB9"/>
                             <constraint firstItem="kca-p0-GPI" firstAttribute="top" secondItem="lX2-En-4Hj" secondAttribute="bottom" constant="30" id="Gmi-TL-AKV"/>
                             <constraint firstItem="lX2-En-4Hj" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="It7-3i-TNE"/>
+                            <constraint firstItem="Qqa-5z-uyl" firstAttribute="centerX" secondItem="skn-r3-9nq" secondAttribute="centerX" id="K7J-R7-UW1"/>
                             <constraint firstItem="SSe-aJ-2de" firstAttribute="top" secondItem="kca-p0-GPI" secondAttribute="bottom" constant="50" id="Opn-iA-S2D"/>
                             <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="SSe-aJ-2de" secondAttribute="trailing" constant="20" id="Xvr-jq-38s"/>
+                            <constraint firstItem="Qqa-5z-uyl" firstAttribute="top" secondItem="SSe-aJ-2de" secondAttribute="bottom" constant="40" id="Y9S-uQ-g5X"/>
                             <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="lX2-En-4Hj" secondAttribute="trailing" constant="20" id="YEF-1b-U8A"/>
+                            <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="Qqa-5z-uyl" secondAttribute="trailing" constant="20" id="eHU-TE-cEo"/>
                             <constraint firstItem="SSe-aJ-2de" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="iTA-uT-rKa"/>
                             <constraint firstItem="kca-p0-GPI" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="maf-91-jcT"/>
+                            <constraint firstItem="Qqa-5z-uyl" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="nXh-np-3Dn"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="fbLoginButton" destination="Qqa-5z-uyl" id="HF9-2f-x5E"/>
                         <outlet property="loginButton" destination="SSe-aJ-2de" id="CsJ-Kg-Yxi"/>
                         <outlet property="mobileTextField" destination="lX2-En-4Hj" id="tex-o4-kNv"/>
                         <outlet property="pwdTextField" destination="kca-p0-GPI" id="poQ-W3-css"/>

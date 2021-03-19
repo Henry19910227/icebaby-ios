@@ -147,8 +147,8 @@ extension ICUserViewModel {
             .subscribe(onSuccess: { [unowned self] (userDetail) in
                 self.showLoadingSubject.onNext(false)
                 self.uidSubject.onNext(userDetail?.id ?? 0)
-                self.nicknameSubject.onNext(userDetail?.nickname ?? "")
-                self.birthdaySubject.onNext(userDetail?.birthday ?? "")
+                self.nicknameSubject.onNext(userDetail?.info?.nickname ?? "")
+                self.birthdaySubject.onNext(userDetail?.info?.birthday ?? "")
             }, onError: { [unowned self] (error) in
                 self.showLoadingSubject.onNext(false)
                 guard let err = error as? ICError else { return }

@@ -13,7 +13,7 @@ import SwiftyJSON
 import Alamofire
 
 protocol ICLobbyAPI {
-    func apiGetUserList() -> Single<[ICUser]>
+    func apiGetUserList() -> Single<[ICUserBrief]>
     func apiGetUserDetail(userID: Int) -> Single<ICUserDetail?>
 }
 
@@ -25,14 +25,13 @@ class ICLobbyAPIService: APIBaseRequest, APIDataTransform, ICLobbyAPI, ICLobbyUR
         self.userManager = userManager
     }
     
-    func apiGetUserList() -> Single<[ICUser]> {
-        return Single<[ICUser]>.create { [unowned self] (single) -> Disposable in
+    func apiGetUserList() -> Single<[ICUserBrief]> {
+        return Single<[ICUserBrief]>.create { [unowned self] (single) -> Disposable in
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-//            let parameter: [String: Any] = ["role": 2]
-            let _ = self.sendRequest(medthod: .get, url: self.usersURL, parameter: nil, headers: header)
-                .map({ (result) -> [ICUser] in
+            let _ = self.sendRequest(medthod: .get, url: self.girlsURL, parameter: nil, headers: header)
+                .map({ (result) -> [ICUserBrief] in
                     let data = result.dictionary?["data"]?.array ?? []
-                    return self.dataDecoderArrayTransform(ICUser.self, data)
+                    return self.dataDecoderArrayTransform(ICUserBrief.self, data)
                 }).subscribe { (users) in
                     single(.success(users))
                 } onError: { (error) in

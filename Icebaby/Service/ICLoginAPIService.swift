@@ -38,12 +38,15 @@ class ICLoginAPIService: ICLoginAPI, APIBaseRequest, ICLoginURL, APIDataTransfor
     
     func apiUserLogin(identifier: String, password: String) -> Single<(Int, String, String)> {
         return Single<(Int, String, String)>.create { [unowned self] (single) -> Disposable in
-            let parameter: [String: Any] = ["identifier": identifier, "password": password]
+            let parameter: [String: Any] = ["mobile": identifier, "password": password]
             let _ = self.sendRequest(medthod: .post, url: self.loginURL, parameter: parameter, headers: nil)
                 .map({ (result) -> (Int, String, String) in
                     let uid = result.dictionaryValue["data"]?.dictionaryValue["id"]?.int ?? 0
                     let token = result["token"].string ?? ""
-                    let nickname = result.dictionaryValue["data"]?.dictionaryValue["nickname"]?.string ?? ""
+                    let nickname = result.dictionaryValue["data"]?
+                        .dictionaryValue["info"]?
+                        .dictionaryValue["nickname"]?
+                        .string ?? ""
                     return (uid, token, nickname)
                 })
                 .subscribe(onSuccess: { (uid, token, nickname) in

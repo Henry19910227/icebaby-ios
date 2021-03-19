@@ -15,7 +15,7 @@ protocol ICLoginURL: ICBaseURL {
     var loginURL: URL { get }
 }
 protocol ICLobbyURL: ICBaseURL {
-    var usersURL: URL { get }
+    var girlsURL: URL { get }
     func userDetailURL(userID: Int) -> URL
 }
 protocol ICChatURL: ICBaseURL {
@@ -29,24 +29,25 @@ protocol ICChatURL: ICBaseURL {
 
 extension ICBaseURL {
     var baseURL: URL {
-        return URL(string: "http://127.0.0.1:9090")!
+//        return URL(string: "https://www.icebaby.tk/api/v1")!
+        return URL(string: "http://127.0.0.1:9090/api/v1")!
     }
 }
 extension ICLoginURL {
     var registerURL: URL {
-        return URL(string: "\(baseURL)/icebaby/v1/register")!
+        return URL(string: "\(baseURL)/register")!
     }
     var loginURL: URL {
-        return URL(string: "\(baseURL)/icebaby/v1/login")!
+        return URL(string: "\(baseURL)/account/login/mobile")!
     }
 }
 extension ICLobbyURL {
-    var usersURL: URL {
-        return URL(string: "\(baseURL)/icebaby/v1/users")!
+    var girlsURL: URL {
+        return URL(string: "\(baseURL)/user/girls/brief")!
     }
     
     func userDetailURL(userID: Int) -> URL {
-        return URL(string: "\(baseURL)/icebaby/v1/user/\(userID)")!
+        return URL(string: "\(baseURL)/user/detail/\(userID)")!
     }
 }
 extension ICChatURL {

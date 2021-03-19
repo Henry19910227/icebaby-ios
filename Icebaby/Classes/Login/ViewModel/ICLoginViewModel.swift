@@ -8,6 +8,8 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import FBSDKCoreKit
+import FBSDKLoginKit
 
 class ICLoginViewModel: ICViewModel {
 
@@ -15,6 +17,7 @@ class ICLoginViewModel: ICViewModel {
     private let navigator: ICLoginRootNavigator
     private let loginAPIService: ICLoginAPI
     private let userManager: UserManager
+    private let fbLoginManager: FBLoginManager
     
     //RX
     private let disposeBag = DisposeBag()
@@ -32,6 +35,7 @@ class ICLoginViewModel: ICViewModel {
     struct Input {
         public let trigger: Driver<Void>
         public let loginTap: Driver<Void>
+        public let fbLoginTap: Driver<Void>
         public let identifier: Driver<String?>
         public let password: Driver<String?>
     }
@@ -44,10 +48,12 @@ class ICLoginViewModel: ICViewModel {
     
     init(navigator: ICLoginRootNavigator,
          loginAPIService: ICLoginAPI,
+         fbLoginManager: FBLoginManager,
          userManager: UserManager) {
         self.navigator = navigator
         self.loginAPIService = loginAPIService
         self.userManager = userManager
+        self.fbLoginManager = fbLoginManager
     }
     
     @discardableResult func transform(input: Input) -> Output {
@@ -55,6 +61,7 @@ class ICLoginViewModel: ICViewModel {
         bindIdentifierDriver(input.identifier)
         bindPasswordDriver(input.password)
         bindLoginTap(input.loginTap)
+        bindFbLoginTap(input.fbLoginTap)
         
         return Output(defaultMobile: defaultMobileSubject.asDriver(onErrorJustReturn: ""),
                       showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
@@ -78,6 +85,21 @@ extension ICLoginViewModel {
         loginTap
             .do(onNext: { [unowned self] (_) in
                 self.apiUserLogin()
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindFbLoginTap(_ fbLoginTap: Driver<Void>) {
+        fbLoginTap
+            .do(onNext: { [unowned self] (_) in
+                print("!!!!")
+                self.fbLoginManager
+                    .login()
+                    .drive(onNext: { (result) in
+                        print(result["token"] as! String)
+                    })
+                    .disposed(by: self.disposeBag)
             })
             .drive()
             .disposed(by: disposeBag)
