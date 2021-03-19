@@ -48,7 +48,9 @@ extension ICMainTabBarNavigator {
         let lobbyNavgator = ICLobbyRootNavigator(window, lobbyNav, lobbyStoryboard)
         let lobbyAPIService = ICLobbyAPIService(userManager: ICUserManager())
         let lobbyVC = lobbyStoryboard.instantiateViewController(withIdentifier: String(describing: ICLobbyViewController.self)) as! ICLobbyViewController
-        lobbyVC.viewModel = ICLobbyViewModel(navigator: lobbyNavgator, lobbyAPIService: lobbyAPIService)
+        lobbyVC.viewModel = ICLobbyViewModel(navigator: lobbyNavgator,
+                                             lobbyAPIService: lobbyAPIService,
+                                             userManager: ICUserManager())
         lobbyNav.setViewControllers([lobbyVC], animated: true)
         
         // 聊天 tabbar
