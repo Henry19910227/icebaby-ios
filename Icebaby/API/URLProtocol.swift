@@ -52,11 +52,11 @@ extension ICLobbyURL {
 }
 extension ICChatURL {
     var newChatURL: URL {
-        return URL(string: "\(baseURL)/icebaby/v1/chat/channel")!
+        return URL(string: "\(baseURL)/chat/channel")!
     }
     
     var myChannelsURL: URL {
-        return URL(string: "\(baseURL)/icebaby/v1/chat/channels")!
+        return URL(string: "\(baseURL)/chat/channels")!
     }
     
     var getChannel: URL {
