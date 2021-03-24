@@ -67,7 +67,7 @@ extension ICChatListCellViewModel {
                     var nickname = ""
                     for member in model.members ?? [] {
                         if (member.userID != self.userID) {
-                            nickname = member.nickname ?? ""
+                            nickname = member.info?.nickname ?? ""
                         }
                     }
                     return nickname

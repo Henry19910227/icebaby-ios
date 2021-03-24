@@ -10,15 +10,25 @@ import UIKit
 class ICMember: Codable {
     var userID: Int?
     var type: Int?
-    var nickname: String?
-    var avatar: String?
     var readAt: String?
+    var info: ICMemberInfo?
     
     enum CodingKeys : String, CodingKey {
         case userID = "user_id"
         case type = "type"
+        case readAt = "read_at"
+        case info = "info"
+    }
+}
+
+class ICMemberInfo: Codable {
+    var userID: Int?
+    var nickname: String?
+    var avatar: String?
+    
+    enum CodingKeys : String, CodingKey {
+        case userID = "user_id"
         case nickname = "nickname"
         case avatar = "avatar"
-        case readAt = "read_at"
     }
 }
