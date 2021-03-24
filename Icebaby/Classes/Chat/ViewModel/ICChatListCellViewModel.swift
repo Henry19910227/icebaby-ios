@@ -66,7 +66,7 @@ extension ICChatListCellViewModel {
                 .map ({ [unowned self] (channel) -> String in
                     var nickname = ""
                     for member in model.members ?? [] {
-                        if (member.userID != self.userID) {
+                        if (member.info?.userID != self.userID) {
                             nickname = member.info?.nickname ?? ""
                         }
                     }

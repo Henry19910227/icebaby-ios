@@ -136,7 +136,7 @@ extension ICChatManager {
 //MARK: - CentrifugeClientDelegate
 extension ICChatManager: CentrifugeClientDelegate {
     func onConnect(_ client: CentrifugeClient, _ event: CentrifugeConnectEvent) {
-    
+        print("連線成功!!!!!")
     }
 }
 
@@ -245,7 +245,7 @@ extension ICChatManager {
         var readTime: String?
         for channel in self.channels {
             for member in channel.members ?? [] {
-                if self.userManager.uid() == member.userID {
+                if self.userManager.uid() == member.info?.userID {
                     readTime = member.readAt
                 }
             }

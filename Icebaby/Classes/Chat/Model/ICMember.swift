@@ -8,13 +8,11 @@
 import UIKit
 
 class ICMember: Codable {
-    var userID: Int?
     var type: Int?
     var readAt: String?
     var info: ICMemberInfo?
     
     enum CodingKeys : String, CodingKey {
-        case userID = "user_id"
         case type = "type"
         case readAt = "read_at"
         case info = "info"
