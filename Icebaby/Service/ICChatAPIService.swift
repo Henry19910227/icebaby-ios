@@ -67,7 +67,7 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
         let parameter: [String: Any] = ["user_id": userID, "read_at": date]
         return Single<ICMember?>.create { [unowned self] (single) -> Disposable in
-            let _ = self.sendRequest(medthod: .patch,
+            let _ = self.sendRequest(medthod: .put,
                                      url: self.updateReadDateURL(channelID: channelID),
                                      parameter: parameter,
                                      headers: header)
