@@ -55,6 +55,10 @@ extension ICChatURL {
         return URL(string: "\(baseURL)/chat/my/channel")!
     }
     
+    func activateChatURL(channelID: String) -> URL {
+        return URL(string: "\(baseURL)/chat/my/channel/\(channelID)/activate")!
+    }
+    
     var myChannelsURL: URL {
         return URL(string: "\(baseURL)/chat/my/channels")!
     }

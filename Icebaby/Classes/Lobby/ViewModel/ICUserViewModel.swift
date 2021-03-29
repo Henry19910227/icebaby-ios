@@ -93,7 +93,7 @@ extension ICUserViewModel {
         chatTap
             .do(onNext: { [unowned self] (_) in
                 self.needToChat = true
-                self.apiCreateChannel(reciverID: self.userID)
+                self.apiCreateAndActivateChannel(friendID: self.userID)
             }) 
             .drive()
             .disposed(by: disposeBag)
@@ -157,19 +157,22 @@ extension ICUserViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func apiCreateChannel(reciverID: Int) {
+    private func apiCreateAndActivateChannel(friendID: Int) {
         showLoadingSubject.onNext(true)
         chatAPIService
-            .apiCreateChannel(reciverID: reciverID)
-            .subscribe { (channelID) in
+            .apiCreateChannel(friendID: friendID)
+            .flatMap ({ [unowned self] (channelID) -> Single<String?> in
+                return self.chatAPIService.apiActivateChannel(channelID: channelID ?? "")
+            })
+            .subscribe { [unowned self] (channelID) in
                 self.showLoadingSubject.onNext(false)
-            } onError: { (error) in
+                print("創建並激活 \(channelID ?? "") 頻道!")
+            } onError: { [unowned self] (error) in
                 self.showLoadingSubject.onNext(false)
                 guard let err = error as? ICError else { return }
                 self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
-
     }
 }
 
