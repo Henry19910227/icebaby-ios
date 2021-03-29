@@ -163,7 +163,6 @@ extension ICChatViewController: MessagesLayoutDelegate {
 
 //MARK: - InputBarAccessoryViewDelegate
 extension ICChatViewController: InputBarAccessoryViewDelegate {
-
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
         sendMsg.onNext(text)
         inputBar.inputTextView.text = ""

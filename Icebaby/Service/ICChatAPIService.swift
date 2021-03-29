@@ -15,6 +15,7 @@ import Alamofire
 protocol ICChatAPI {
     func apiCreateChannel(friendID: Int) -> Single<String?>
     func apiActivateChannel(channelID: String) -> Single<String?>
+    func apiShutdownChannel(channelID: String) -> Single<String?>
     func apiGetChannels(userID: Int) -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
     func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]>
@@ -51,6 +52,23 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
             let parameter: [String: Any] = ["channel_id": channelID]
             let _ = self.sendRequest(medthod: .post, url: self.activateChatURL(channelID: channelID), parameter: parameter, headers: header)
+                .map({ (result) -> String? in
+                    return result.dictionaryValue["data"]?.dictionaryValue["channel_id"]?.string
+                })
+                .subscribe(onSuccess: { (channelID) in
+                    single(.success(channelID))
+                }, onError: { (error) in
+                    single(.error(error))
+                })
+            return Disposables.create()
+        }
+    }
+    
+    func apiShutdownChannel(channelID: String) -> Single<String?> {
+        return Single<String?>.create { [unowned self] (single) -> Disposable in
+            let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+            let parameter: [String: Any] = ["channel_id": channelID]
+            let _ = self.sendRequest(medthod: .post, url: self.shutdownChatURL(channelID: channelID), parameter: parameter, headers: header)
                 .map({ (result) -> String? in
                     return result.dictionaryValue["data"]?.dictionaryValue["channel_id"]?.string
                 })
