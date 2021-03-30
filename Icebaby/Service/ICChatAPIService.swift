@@ -19,6 +19,7 @@ protocol ICChatAPI {
     func apiGetChannels(userID: Int) -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
     func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]>
+    func apiHistories(channelIDs: [String], page: Int, size: Int) -> Single<JSON>
     func apiGetChannel(reciverID: Int) -> Single<ICChannel?>
 }
 
@@ -132,6 +133,25 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
                     var data = result.dictionary?["data"]?.array ?? []
                     data.reverse()
                     return self.dataDecoderArrayTransform(ICChatData.self, data)
+                }).subscribe { (datas) in
+                    single(.success(datas))
+                } onError: { (error) in
+                    single(.error(error))
+                }
+            return Disposables.create()
+        }
+    }
+    
+    func apiHistories(channelIDs: [String], page: Int, size: Int) -> Single<JSON> {
+        let header = HTTPHeaders(["Token": self.userManager.token() ?? ""])
+        let parameter: [String: Any] = ["channel_ids": channelIDs, "page": page, "size": size]
+        return Single<JSON>.create { [unowned self] (single) -> Disposable in
+            let _ = self.sendRequest(medthod: .post,
+                             url: URL(fileURLWithPath: ""),
+                             parameter: parameter,
+                             headers: header)
+                .map ({ (result) -> JSON in
+                    return result
                 }).subscribe { (datas) in
                     single(.success(datas))
                 } onError: { (error) in

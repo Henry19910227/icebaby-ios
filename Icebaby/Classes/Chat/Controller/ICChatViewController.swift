@@ -30,6 +30,12 @@ class ICChatViewController: MessagesViewController {
     // Tool
     private let dateFormatter = ICDateFormatter()
 
+    // UI
+    private lazy var statusBarButtonItem: UIBarButtonItem = {
+        let statusButton = UIBarButtonItem()
+        statusButton.title = "test"
+        return statusButton
+    }()
 }
 
 //MARK: - Life Cycle
@@ -95,6 +101,7 @@ extension ICChatViewController {
         setupMessageAvatar()
         setupMessageTopLabel()
         setupMessageBottomLabel()
+        navigationItem.rightBarButtonItem = statusBarButtonItem
     }
     
     private func setupMessageAvatar() {

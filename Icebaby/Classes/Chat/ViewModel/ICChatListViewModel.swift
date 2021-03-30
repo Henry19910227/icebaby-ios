@@ -178,6 +178,19 @@ extension ICChatListViewModel {
             self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
         }
     }
+    
+    private func apiGetHistories() {
+        chatAPIService?
+            .apiHistories(channelIDs: [String](), page: 1, size: 1)
+            .subscribe(onSuccess: { (result) in
+                print(result)
+            }, onError: { (error) in
+                self.showLoadingSubject.onNext(false)
+                guard let err = error as? ICError else { return }
+                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            })
+            .disposed(by: disposeBag)
+    }
 }
 
 //MARK: - Setup VM
