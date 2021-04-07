@@ -64,7 +64,7 @@ extension ICChatURL {
     }
     
     var myChannelsURL: URL {
-        return URL(string: "\(baseURL)/chat/my/channels")!
+        return URL(string: "\(baseURL)/chat/my/channels/list")!
     }
     
     var getChannel: URL {

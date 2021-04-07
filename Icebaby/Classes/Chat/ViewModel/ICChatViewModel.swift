@@ -87,7 +87,7 @@ extension ICChatViewModel {
             .do(onNext: { [unowned self] (_) in
                 self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
                                                    displayName: self.userManager.nickname()))
-                self.updateReadDate()
+//                self.updateReadDate()
             })
             .drive(onNext: { [unowned self] (_) in
                 self.getHistory()
@@ -98,7 +98,7 @@ extension ICChatViewModel {
     private func bindExit(_ exit: Driver<Void>) {
         exit
             .do(onNext: { [unowned self] (_) in
-                self.updateReadDate()
+//                self.updateReadDate()
             })
             .drive()
             .disposed(by: disposeBag)
@@ -176,15 +176,15 @@ extension ICChatViewModel {
         }
     }
     
-    // 更新該頻道已讀時間
-    private func updateReadDate() {
-        //本地
-        chatManager.updateReadDate(Date(), channelID: channelID)
-        
-        //Server
-        guard let dateStr = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") else { return }
-        apiUpdateReadDate(dateStr, channelID: channelID, userID: userManager.uid())
-    }
+//    // 更新該頻道已讀時間
+//    private func updateReadDate() {
+//        //本地
+//        chatManager.updateReadDate(Date(), channelID: channelID)
+//
+//        //Server
+//        guard let dateStr = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") else { return }
+//        apiUpdateReadDate(dateStr, channelID: channelID, userID: userManager.uid())
+//    }
 }
 
 //MARK: - API

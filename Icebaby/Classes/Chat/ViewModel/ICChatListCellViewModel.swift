@@ -12,7 +12,7 @@ import RxSwift
 class ICChatListCellViewModel: NSObject {
     
     //Model
-    public var model: ICChannel? {
+    public var model: ICChannelListItem? {
         didSet {
             guard let model = model else { return }
             bindModel(model)
@@ -24,10 +24,11 @@ class ICChatListCellViewModel: NSObject {
     
     //Rx
     private var disposeBag = DisposeBag()
+    private var nicknameSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     //Input
-    public var message = PublishSubject<String>()
-    public var unreadCount = PublishSubject<Int>()
+    public var message = ReplaySubject<String>.create(bufferSize: 1)
+    public var unreadCount = ReplaySubject<Int>.create(bufferSize: 1)
     
     //Output
     public var nickname: Driver<String>?
@@ -37,41 +38,19 @@ class ICChatListCellViewModel: NSObject {
     init(userID: Int) {
         self.userID = userID
         super.init()
-        bindMessage(message.asDriver(onErrorJustReturn: ""))
-        bindUnread(unreadCount.asDriver(onErrorJustReturn: 0))
+        nickname = nicknameSubject.asDriver(onErrorJustReturn: "")
+        latestMsg = message.asDriver(onErrorJustReturn: "")
+        unread = unreadCount.asDriver(onErrorJustReturn: 0)
     }
     
 }
 
 //MARK: - Bind Model
 extension ICChatListCellViewModel {
-    private func bindModel(_ model: ICChannel) {
-        nickname = nicknameObservable(model).asDriver(onErrorJustReturn: "")
-    }
-    
-    private func bindMessage(_ message: Driver<String>) {
-        latestMsg = message
-    }
-    
-    private func bindUnread(_ unreadCount: Driver<Int>) {
-        unread = unreadCount
-    }
-}
-
-//MARK: - Observable
-extension ICChatListCellViewModel {
-    private func nicknameObservable(_ model: ICChannel) -> Observable<String> {
-        return Observable<ICChannel>
-                .just(model)
-                .map ({ [unowned self] (channel) -> String in
-                    var nickname = ""
-                    for member in model.members ?? [] {
-                        if (member.info?.userID != self.userID) {
-                            nickname = member.info?.nickname ?? ""
-                        }
-                    }
-                    return nickname
-                })
+    private func bindModel(_ model: ICChannelListItem) {
+        nicknameSubject.onNext(model.member?.info?.nickname ?? "")
+        message.onNext(model.latestMsg ?? "")
+        unreadCount.onNext(model.unread ?? 0)
     }
 }
 

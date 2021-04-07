@@ -33,7 +33,7 @@ class ICChatManager: NSObject {
     private var history:[String: [ICChatData]] = [:]
     private var unreadMessage:[String: [ICChatData]] = [:]
     private var readDateDict: [String: Date] = [:]
-    private var channels: [ICChannel] = []
+    private var channels: [ICChannelListItem] = []
     
     //Rx
     private let disposeBag = DisposeBag()
@@ -66,21 +66,21 @@ extension ICChatManager: APIDataTransform {
         subscribeChannel(String(uid))
     }
     
-    public func updateReadDate(_ readDate: Date, channelID: String) {
-        //更新已讀時間
-        readDateDict[channelID] = readDate
-        
-        //清除未讀訊息
-        let lastReadDate = getMyLastReadDate(channelID: channelID)
-        if unreadMessage[channelID] != nil {
-            clearUnreadChatDatas(&unreadMessage[channelID]!, lastReadDate: lastReadDate)
-        }
-                
-        //更新未讀數量
-        unreadCount.onNext((channelID, unreadMessage[channelID]?.count ?? 0))
-    }
+//    public func updateReadDate(_ readDate: Date, channelID: String) {
+//        //更新已讀時間
+//        readDateDict[channelID] = readDate
+//
+//        //清除未讀訊息
+//        let lastReadDate = getMyLastReadDate(channelID: channelID)
+//        if unreadMessage[channelID] != nil {
+//            clearUnreadChatDatas(&unreadMessage[channelID]!, lastReadDate: lastReadDate)
+//        }
+//
+//        //更新未讀數量
+//        unreadCount.onNext((channelID, unreadMessage[channelID]?.count ?? 0))
+//    }
     
-    public func mychannels(onSuccess: @escaping ([ICChannel]) -> Void,
+    public func mychannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
                            onError: @escaping (Error) -> Void) {
         chatAPIService
             .apiGetChannels(userID: userManager.uid())
@@ -93,10 +93,6 @@ extension ICChatManager: APIDataTransform {
                 onError(error)
             })
             .disposed(by: disposeBag)
-    }
-    
-    public func subscribe(channelID: String) {
-        self.subscribeChannel(channelID)
     }
     
     // 獲取歷史訊息
@@ -166,29 +162,29 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
             print("subscribe user channel \(sub.channel)")
             return
         }
-        history(channelID: sub.channel) { [unowned self] (datas) in
-            
-            //加入自己的未讀訊息
-            var myUnreadMsgs: [ICChatData] = []
-            for data in datas {
-                if self.userManager.uid() != data.message?.uid ?? 0 {
-                    myUnreadMsgs.append(data)
-                }
-            }
-            self.unreadMessage[sub.channel] = myUnreadMsgs
-            
-            //清除未讀訊息
-            let lastReadDate = self.getMyLastReadDate(channelID: sub.channel)
-            if unreadMessage[sub.channel] != nil {
-                clearUnreadChatDatas(&unreadMessage[sub.channel]!, lastReadDate: lastReadDate)
-            }
-            //發送未讀數量訊號
-            self.unreadCount.onNext((sub.channel, self.unreadMessage[sub.channel]?.count ?? 0))
-            
-            //第一次成功訂閱通知
-            print("subscribe channel \(sub.channel) success")
-            self.onSubscribeSuccess.onNext((sub.channel, datas))
-        }
+//        history(channelID: sub.channel) { [unowned self] (datas) in
+//
+//            //加入自己的未讀訊息
+//            var myUnreadMsgs: [ICChatData] = []
+//            for data in datas {
+//                if self.userManager.uid() != data.message?.uid ?? 0 {
+//                    myUnreadMsgs.append(data)
+//                }
+//            }
+//            self.unreadMessage[sub.channel] = myUnreadMsgs
+//
+//            //清除未讀訊息
+//            let lastReadDate = self.getMyLastReadDate(channelID: sub.channel)
+//            if unreadMessage[sub.channel] != nil {
+//                clearUnreadChatDatas(&unreadMessage[sub.channel]!, lastReadDate: lastReadDate)
+//            }
+//            //發送未讀數量訊號
+//            self.unreadCount.onNext((sub.channel, self.unreadMessage[sub.channel]?.count ?? 0))
+//
+//            //第一次成功訂閱通知
+//            print("subscribe channel \(sub.channel) success")
+//            self.onSubscribeSuccess.onNext((sub.channel, datas))
+//        }
         
     }
     
@@ -214,7 +210,6 @@ extension ICChatManager {
             onSubscribeError.onNext(error.localizedDescription)
         }
         subscribeItem?.subscribe()
-        
     }
 }
 
@@ -222,38 +217,38 @@ extension ICChatManager {
 extension ICChatManager {
     
     //清除未讀訊息
-    private func clearUnreadChatDatas(_ chatDatas: inout [ICChatData], lastReadDate: Date?) {
-        guard let lastReadDate = lastReadDate else { return }
-        var messages = chatDatas
-        for (index, msg) in messages.enumerated().reversed() {
-            //判斷是來自對方的訊息
-            if userManager.uid() != msg.message?.uid ?? 0 {
-                let date = dateFormatter.dateStringToDate(msg.message?.date ?? "", "yyyy-MM-dd HH:mm:ss") ?? Date()
-                //判斷訊息日期小於當前最後讀取日期，就將此訊息從未讀陣列中移除
-                if dateFormatter.date(date, earlierThan: lastReadDate) {
-                    messages.remove(at: index)
-                }
-            }
-        }
-        chatDatas = messages
-    }
+//    private func clearUnreadChatDatas(_ chatDatas: inout [ICChatData], lastReadDate: Date?) {
+//        guard let lastReadDate = lastReadDate else { return }
+//        var messages = chatDatas
+//        for (index, msg) in messages.enumerated().reversed() {
+//            //判斷是來自對方的訊息
+//            if userManager.uid() != msg.message?.uid ?? 0 {
+//                let date = dateFormatter.dateStringToDate(msg.message?.date ?? "", "yyyy-MM-dd HH:mm:ss") ?? Date()
+//                //判斷訊息日期小於當前最後讀取日期，就將此訊息從未讀陣列中移除
+//                if dateFormatter.date(date, earlierThan: lastReadDate) {
+//                    messages.remove(at: index)
+//                }
+//            }
+//        }
+//        chatDatas = messages
+//    }
     
     /** 取得個人在指定頻道中最後讀取訊息時間*/
-    private func getMyLastReadDate(channelID: String) -> Date? {
-        if let readDate = readDateDict[channelID] { return readDate }
-        var readTime: String?
-        for channel in self.channels {
-            for member in channel.members ?? [] {
-                if self.userManager.uid() == member.info?.userID {
-                    readTime = member.readAt
-                }
-            }
-        }
-        guard let read = readTime else { return nil }
-        let lastReadDate = dateFormatter.dateStringToDate(read, "yyyy-MM-dd HH:mm:ss")
-        readDateDict[channelID] = lastReadDate
-        return lastReadDate
-    }
+//    private func getMyLastReadDate(channelID: String) -> Date? {
+//        if let readDate = readDateDict[channelID] { return readDate }
+//        var readTime: String?
+//        for channel in self.channels {
+//            for member in channel.members ?? [] {
+//                if self.userManager.uid() == member.info?.userID {
+//                    readTime = member.readAt
+//                }
+//            }
+//        }
+//        guard let read = readTime else { return nil }
+//        let lastReadDate = dateFormatter.dateStringToDate(read, "yyyy-MM-dd HH:mm:ss")
+//        readDateDict[channelID] = lastReadDate
+//        return lastReadDate
+//    }
 }
 
 //MARK: - API

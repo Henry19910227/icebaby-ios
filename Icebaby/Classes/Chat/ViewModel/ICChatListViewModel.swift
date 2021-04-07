@@ -30,7 +30,7 @@ class ICChatListViewModel: ICViewModel {
     private var allowChat = false
     
     //Data
-    private var channels: [ICChannel] = []
+    private var channels: [ICChannelListItem] = []
     private var items: [ICChatListCellViewModel] = []
     private var cellVMs: [ICChatListCellViewModel] = []
     

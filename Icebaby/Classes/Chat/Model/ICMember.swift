@@ -30,3 +30,10 @@ class ICMemberInfo: Codable {
         case avatar = "avatar"
     }
 }
+
+
+class ICMemberItem: Codable {
+    var id: Int?
+    var type: Int?
+    var info: ICMemberInfo?
+}
