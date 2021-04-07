@@ -13,7 +13,7 @@ import SwiftyJSON
 
 protocol ICLoginAPI {
     func apiUserRegister(parameter: [String: Any]?) -> Single<ICUser>
-    func apiUserLogin(identifier: String, password: String) -> Single<(Int, String, String)>
+    func apiUserLogin(identifier: String, password: String, role: Int) -> Single<(Int, String, String)>
 }
 
 class ICLoginAPIService: ICLoginAPI, APIBaseRequest, ICLoginURL, APIDataTransform {
@@ -36,9 +36,9 @@ class ICLoginAPIService: ICLoginAPI, APIBaseRequest, ICLoginURL, APIDataTransfor
         }
     }
     
-    func apiUserLogin(identifier: String, password: String) -> Single<(Int, String, String)> {
+    func apiUserLogin(identifier: String, password: String, role: Int) -> Single<(Int, String, String)> {
         return Single<(Int, String, String)>.create { [unowned self] (single) -> Disposable in
-            let parameter: [String: Any] = ["mobile": identifier, "password": password]
+            let parameter: [String: Any] = ["mobile": identifier, "password": password, "role": role]
             let _ = self.sendRequest(medthod: .post, url: self.loginURL, parameter: parameter, headers: nil)
                 .map({ (result) -> (Int, String, String) in
                     let uid = result.dictionaryValue["data"]?.dictionaryValue["id"]?.int ?? 0

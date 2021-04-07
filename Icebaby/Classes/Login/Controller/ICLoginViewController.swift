@@ -24,6 +24,7 @@ class ICLoginViewController: ICBaseViewController {
     @IBOutlet weak var fbLoginButton: UIButton!
     @IBOutlet weak var mobileTextField: UITextField!
     @IBOutlet weak var pwdTextField: UITextField!
+    @IBOutlet weak var roleSegment: UISegmentedControl!
 }
 
 //MARK: - Life Cycle
@@ -42,7 +43,8 @@ extension ICLoginViewController {
                                            loginTap: loginButton.rx.tap.asDriver(),
                                            fbLoginTap: fbLoginButton.rx.tap.asDriver(),
                                            identifier: mobileTextField.rx.text.asDriver(),
-                                           password: pwdTextField.rx.text.asDriver())
+                                           password: pwdTextField.rx.text.asDriver(),
+                                           role: roleSegment.rx.selectedSegmentIndex.asDriver())
         let output = viewModel?.transform(input: input)
         
         output?

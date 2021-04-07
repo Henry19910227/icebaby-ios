@@ -11,6 +11,11 @@ import RxCocoa
 import FBSDKCoreKit
 import FBSDKLoginKit
 
+enum ICRole: Int {
+    case user = 1
+    case girl = 2
+}
+
 class ICLoginViewModel: ICViewModel {
 
     //DI Param
@@ -30,6 +35,7 @@ class ICLoginViewModel: ICViewModel {
     //Param
     private var identifier = ""
     private var password = ""
+    private var role = ICRole.user
     
     
     struct Input {
@@ -38,6 +44,7 @@ class ICLoginViewModel: ICViewModel {
         public let fbLoginTap: Driver<Void>
         public let identifier: Driver<String?>
         public let password: Driver<String?>
+        public let role: Driver<Int>
     }
     
     struct Output {
@@ -62,6 +69,7 @@ class ICLoginViewModel: ICViewModel {
         bindPasswordDriver(input.password)
         bindLoginTap(input.loginTap)
         bindFbLoginTap(input.fbLoginTap)
+        bindRoleDriver(input.role)
         
         return Output(defaultMobile: defaultMobileSubject.asDriver(onErrorJustReturn: ""),
                       showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
@@ -93,7 +101,6 @@ extension ICLoginViewModel {
     private func bindFbLoginTap(_ fbLoginTap: Driver<Void>) {
         fbLoginTap
             .do(onNext: { [unowned self] (_) in
-                print("!!!!")
                 self.fbLoginManager
                     .login()
                     .drive(onNext: { (result) in
@@ -122,6 +129,21 @@ extension ICLoginViewModel {
            .drive()
            .disposed(by: disposeBag)
     }
+    
+    private func bindRoleDriver(_ roleDriver: Driver<Int>) {
+        roleDriver
+            .map({ (index) -> ICRole in
+                if index == 0 {
+                    return .user
+                }
+                return .girl
+            })
+            .do(onNext: { [unowned self] (role) in
+                self.role = role
+            })
+            .drive()
+            .disposed(by: disposeBag)
+    }
 }
 
 //MARK: - API
@@ -129,7 +151,7 @@ extension ICLoginViewModel {
     func apiUserLogin() {
         showLoadingSubject.onNext(true)
         loginAPIService
-            .apiUserLogin(identifier: identifier, password: password)
+            .apiUserLogin(identifier: identifier, password: password, role: role.rawValue)
             .do(onSuccess: { [unowned self] (_) in
                 self.userManager.saveMobile(self.identifier)
             })

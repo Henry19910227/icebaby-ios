@@ -54,11 +54,23 @@
                                     <color key="titleColor" white="0.98087007709999996" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                             </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Og6-BB-WvT">
+                                <rect key="frame" x="130" y="104" width="154" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="76z-GJ-UjR"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="會員"/>
+                                    <segment title="貴妃"/>
+                                </segments>
+                            </segmentedControl>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="skn-r3-9nq"/>
                         <color key="backgroundColor" red="0.83741801979999997" green="0.83743780850000005" blue="0.83742713930000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="kca-p0-GPI" secondAttribute="trailing" constant="20" id="1cB-QZ-XO2"/>
+                            <constraint firstItem="Og6-BB-WvT" firstAttribute="top" secondItem="skn-r3-9nq" secondAttribute="top" constant="60" id="2u5-UV-VNX"/>
+                            <constraint firstItem="Og6-BB-WvT" firstAttribute="centerX" secondItem="skn-r3-9nq" secondAttribute="centerX" id="31d-Zb-bhO"/>
                             <constraint firstItem="lX2-En-4Hj" firstAttribute="top" secondItem="skn-r3-9nq" secondAttribute="top" constant="150" id="AiY-Sr-dB9"/>
                             <constraint firstItem="kca-p0-GPI" firstAttribute="top" secondItem="lX2-En-4Hj" secondAttribute="bottom" constant="30" id="Gmi-TL-AKV"/>
                             <constraint firstItem="lX2-En-4Hj" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="It7-3i-TNE"/>
@@ -66,11 +78,13 @@
                             <constraint firstItem="SSe-aJ-2de" firstAttribute="top" secondItem="kca-p0-GPI" secondAttribute="bottom" constant="50" id="Opn-iA-S2D"/>
                             <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="SSe-aJ-2de" secondAttribute="trailing" constant="20" id="Xvr-jq-38s"/>
                             <constraint firstItem="Qqa-5z-uyl" firstAttribute="top" secondItem="SSe-aJ-2de" secondAttribute="bottom" constant="40" id="Y9S-uQ-g5X"/>
+                            <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="Og6-BB-WvT" secondAttribute="trailing" constant="130" id="YD4-ni-I4P"/>
                             <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="lX2-En-4Hj" secondAttribute="trailing" constant="20" id="YEF-1b-U8A"/>
                             <constraint firstItem="skn-r3-9nq" firstAttribute="trailing" secondItem="Qqa-5z-uyl" secondAttribute="trailing" constant="20" id="eHU-TE-cEo"/>
                             <constraint firstItem="SSe-aJ-2de" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="iTA-uT-rKa"/>
                             <constraint firstItem="kca-p0-GPI" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="maf-91-jcT"/>
                             <constraint firstItem="Qqa-5z-uyl" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="20" id="nXh-np-3Dn"/>
+                            <constraint firstItem="Og6-BB-WvT" firstAttribute="leading" secondItem="skn-r3-9nq" secondAttribute="leading" constant="130" id="qZh-Ta-Jkg"/>
                         </constraints>
                     </view>
                     <connections>
@@ -78,6 +92,7 @@
                         <outlet property="loginButton" destination="SSe-aJ-2de" id="CsJ-Kg-Yxi"/>
                         <outlet property="mobileTextField" destination="lX2-En-4Hj" id="tex-o4-kNv"/>
                         <outlet property="pwdTextField" destination="kca-p0-GPI" id="poQ-W3-css"/>
+                        <outlet property="roleSegment" destination="Og6-BB-WvT" id="NoA-VJ-UzX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AGk-iu-QBU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
