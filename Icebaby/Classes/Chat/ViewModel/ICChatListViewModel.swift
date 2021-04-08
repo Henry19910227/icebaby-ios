@@ -80,7 +80,7 @@ extension ICChatListViewModel {
     private func bindTrigger(_ trigger: Driver<Void>) {
         trigger
             .do(onNext: { [unowned self] (_) in
-                self.apiGetMyChannels()
+                self.loadChannels()
             })
             .drive()
             .disposed(by: disposeBag)
@@ -116,7 +116,7 @@ extension ICChatListViewModel {
                 return data?.type == "subscribe"
             })
             .subscribe(onNext: { [unowned self] (_) in
-                self.apiGetMyChannels()
+//                self.apiGetMyChannels()
             })
             .disposed(by: disposeBag)
 
@@ -156,8 +156,21 @@ extension ICChatListViewModel {
 
 //MARK: - API
 extension ICChatListViewModel {
+    
+    private func loadChannels() {
+        self.channels = chatManager.getChannelsFromCache()
+        self.cellVMs = channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
+            let vm = ICChatListCellViewModel(userID: self.userManager.uid())
+            vm.model = channel
+            return vm
+        }
+        self.itemsSubject.onNext(self.cellVMs)
+    }
+    
     private func apiGetMyChannels() {
-        chatManager.mychannels { [unowned self] (channels) in
+        
+        
+        chatManager.myChannels { [unowned self] (channels) in
             self.channels = channels
             
             //訂閱所有頻道ID

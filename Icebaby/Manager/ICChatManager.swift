@@ -80,7 +80,7 @@ extension ICChatManager: APIDataTransform {
 //        unreadCount.onNext((channelID, unreadMessage[channelID]?.count ?? 0))
 //    }
     
-    public func mychannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
+    public func myChannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
                            onError: @escaping (Error) -> Void) {
         chatAPIService
             .apiGetChannels(userID: userManager.uid())
@@ -93,6 +93,49 @@ extension ICChatManager: APIDataTransform {
                 onError(error)
             })
             .disposed(by: disposeBag)
+    }
+    
+    // 拉取我的頻道列表
+    public func pullMyChannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
+                              onError: @escaping (Error) -> Void) {
+        apiGetMyChannels { (channels) in
+            onSuccess(channels)
+        } onError: { (error) in
+            onError(error)
+        }
+    }
+    
+    //緩存多個頻道
+    public func cacheChannels(_ channels: [ICChannelListItem]) {
+        self.channels = channels
+    }
+    
+    //緩存單個頻道
+    public func cacheChannel(_ channel: ICChannelListItem) {
+        self.channels.append(channel)
+    }
+    
+    //從緩存中取得頻道列表
+    public func getChannelsFromCache() -> [ICChannelListItem] {
+        return self.channels
+    }
+    
+    // 訂閱單個頻道
+    public func subscribeChannel(_ channel: String?) {
+        guard let channel = channel else { return }
+        //已訂閱此channel
+        if currentSubscribe[channel] != nil {
+            onSubscribeSuccess.onNext((channel, history[channel] ?? []))
+            unreadCount.onNext((channel, unreadMessage[channel]?.count ?? 0))
+            return
+        }
+        var subscribeItem: CentrifugeSubscription?
+        do {
+            subscribeItem = try client.newSubscription(channel: channel, delegate: self)
+        } catch {
+            onSubscribeError.onNext(error.localizedDescription)
+        }
+        subscribeItem?.subscribe()
     }
     
     // 獲取歷史訊息
@@ -162,6 +205,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
             print("subscribe user channel \(sub.channel)")
             return
         }
+        print("subscribe channel \(sub.channel)")
 //        history(channelID: sub.channel) { [unowned self] (datas) in
 //
 //            //加入自己的未讀訊息
@@ -195,22 +239,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
 
 //MARK: - Other
 extension ICChatManager {
-    public func subscribeChannel(_ channel: String?) {
-        guard let channel = channel else { return }
-        //已訂閱此channel
-        if currentSubscribe[channel] != nil {
-            onSubscribeSuccess.onNext((channel, history[channel] ?? []))
-            unreadCount.onNext((channel, unreadMessage[channel]?.count ?? 0))
-            return
-        }
-        var subscribeItem: CentrifugeSubscription?
-        do {
-            subscribeItem = try client.newSubscription(channel: channel, delegate: self)
-        } catch {
-            onSubscribeError.onNext(error.localizedDescription)
-        }
-        subscribeItem?.subscribe()
-    }
+    
 }
 
 //MARK: - Unread
@@ -253,6 +282,25 @@ extension ICChatManager {
 
 //MARK: - API
 extension ICChatManager {
+    private func apiGetMyChannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
+                                  onError: @escaping (Error) -> Void) {
+        chatAPIService
+            .apiGetChannels(userID: userManager.uid())
+            .do(afterSuccess: { [unowned self] (channels) in
+                self.channels = channels
+                //訂閱所有頻道ID
+                for channel in channels {
+                    self.subscribeChannel(channel.id)
+                }
+            })
+            .subscribe(onSuccess: { (channels) in
+                onSuccess(channels)
+            }, onError: { (error) in
+                onError(error)
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func apiHistory(channelID: String, completion: @escaping ([ICChatData]) -> ()) {
         chatAPIService
             .apiHistory(channelID: channelID, offset: 0, count: 100)

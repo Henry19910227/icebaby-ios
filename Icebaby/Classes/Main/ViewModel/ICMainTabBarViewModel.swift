@@ -17,13 +17,16 @@ class ICMainTabBarViewModel: ICViewModel {
     private let navigator: ICMainTabBarNavigator?
     private let chatManager: ICChatManager?
     private let userManager: UserManager
+    private let showLoadingSubject = PublishSubject<Bool>()
+    private let showErrorMsgSubject = PublishSubject<String>()
     
     struct Input {
         public let trigger: Driver<UITabBarController>
     }
     
     struct Output {
-
+        public let showLoading: Driver<Bool>
+        public let showErrorMsg: Driver<String>
     }
     
     init(navigator: ICMainTabBarNavigator, chatManager: ICChatManager, userManager: UserManager) {
@@ -36,7 +39,8 @@ class ICMainTabBarViewModel: ICViewModel {
 extension ICMainTabBarViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(trigger: input.trigger)
-        return Output()
+        return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -46,8 +50,24 @@ extension ICMainTabBarViewModel {
             .do(onNext: { [unowned self] (tabbarVC) in
                 self.navigator?.toMain(tabbarVC: tabbarVC)
                 self.chatManager?.connect(token: self.userManager.token() ?? "", uid: self.userManager.uid())
+                self.pullMyChannels()
             })
             .drive()
             .disposed(by: disposeBag)
+    }
+}
+
+extension ICMainTabBarViewModel {
+    private func pullMyChannels() {
+        showLoadingSubject.onNext(true)
+        chatManager?.pullMyChannels(onSuccess: { [unowned self] (channels) in
+            for channel in channels {
+                self.chatManager?.subscribeChannel(channel.id)
+            }
+            self.chatManager?.cacheChannels(channels)
+            self.showLoadingSubject.onNext(false)
+        }, onError: { (error) in
+            self.showLoadingSubject.onNext(false)
+        })
     }
 }

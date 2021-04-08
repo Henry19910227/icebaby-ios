@@ -12,6 +12,8 @@ import RxSwift
 class ICMainTabBarController: UITabBarController {
     public var viewModel: ICMainTabBarViewModel?
     private var trigger = PublishSubject<UITabBarController>()
+    private let disposeBag = DisposeBag()
+    private let hud = ICLoadingProgressHUD()
     
 }
 
@@ -28,6 +30,17 @@ extension ICMainTabBarController {
 extension ICMainTabBarController {
     private func bindViewModel() {
         let input = ICMainTabBarViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: UITabBarController()))
-        viewModel?.transform(input: input)
+        let output = viewModel?.transform(input: input)
+        
+        output?
+            .showLoading
+            .drive(onNext: { [unowned self] (isShow) in
+                if isShow {
+                    self.hud.show(view)
+                } else {
+                    self.hud.hide()
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
