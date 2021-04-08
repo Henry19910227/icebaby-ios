@@ -61,10 +61,6 @@ extension ICMainTabBarViewModel {
     private func pullMyChannels() {
         showLoadingSubject.onNext(true)
         chatManager?.pullMyChannels(onSuccess: { [unowned self] (channels) in
-            for channel in channels {
-                self.chatManager?.subscribeChannel(channel.id)
-            }
-            self.chatManager?.cacheChannels(channels)
             self.showLoadingSubject.onNext(false)
         }, onError: { (error) in
             self.showLoadingSubject.onNext(false)

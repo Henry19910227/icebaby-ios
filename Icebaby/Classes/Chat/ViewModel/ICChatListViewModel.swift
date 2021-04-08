@@ -113,10 +113,12 @@ extension ICChatListViewModel {
                 return self.allowChat
             })
             .filter({ (data) -> Bool in
-                return data?.type == "subscribe"
+                return data?.type == "activate"
             })
-            .subscribe(onNext: { [unowned self] (_) in
-//                self.apiGetMyChannels()
+            .subscribe(onNext: { (data) in
+                guard let data = data else { return }
+                guard let channelID = data.channelId else { return }
+                print("\(channelID) 頻道開啟!!")
             })
             .disposed(by: disposeBag)
 
@@ -165,31 +167,6 @@ extension ICChatListViewModel {
             return vm
         }
         self.itemsSubject.onNext(self.cellVMs)
-    }
-    
-    private func apiGetMyChannels() {
-        
-        
-        chatManager.myChannels { [unowned self] (channels) in
-            self.channels = channels
-            
-            //訂閱所有頻道ID
-            for channel in channels {
-                self.chatManager.subscribeChannel(channel.id)
-            }
-            
-            //初始化vm
-            self.cellVMs = channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
-                let vm = ICChatListCellViewModel(userID: self.userManager.uid())
-                vm.model = channel
-                return vm
-            }
-            self.itemsSubject.onNext(self.cellVMs)
-        } onError: { [unowned self] (error) in
-            self.showLoadingSubject.onNext(false)
-            guard let err = error as? ICError else { return }
-            self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-        }
     }
     
     private func apiGetHistories() {
