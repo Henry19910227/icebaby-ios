@@ -50,20 +50,9 @@ extension ICMainTabBarViewModel {
             .do(onNext: { [unowned self] (tabbarVC) in
                 self.navigator?.toMain(tabbarVC: tabbarVC)
                 self.chatManager?.connect(token: self.userManager.token() ?? "", uid: self.userManager.uid())
-                self.pullMyChannels()
+                self.chatManager?.pullMyChannels()
             })
             .drive()
             .disposed(by: disposeBag)
-    }
-}
-
-extension ICMainTabBarViewModel {
-    private func pullMyChannels() {
-        showLoadingSubject.onNext(true)
-        chatManager?.pullMyChannels(onSuccess: { [unowned self] (channels) in
-            self.showLoadingSubject.onNext(false)
-        }, onError: { (error) in
-            self.showLoadingSubject.onNext(false)
-        })
     }
 }

@@ -20,7 +20,7 @@ protocol ICChatAPI {
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
     func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]>
     func apiHistories(channelIDs: [String], page: Int, size: Int) -> Single<JSON>
-    func apiGetChannel(reciverID: Int) -> Single<ICChannel?>
+    func apiGetChannel(channelID: String) -> Single<ICChannel?>
 }
 
 class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
@@ -86,7 +86,7 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
         let parameter: [String: Any] = ["user_id": userID, "status": 1]
         return Single<[ICChannelListItem]>.create { [unowned self] (single) -> Disposable in
-            let _ = self.sendRequest(medthod: .get, url: self.myChannelsURL, parameter: parameter, headers: header)
+            let _ = self.sendRequest(medthod: .get, url: self.myChannelListURL, parameter: parameter, headers: header)
                 .map ({ (result) -> [ICChannelListItem] in
                     let data = result.dictionary?["data"]?.array ?? []
                     return self.dataDecoderArrayTransform(ICChannelListItem.self, data)
@@ -161,13 +161,12 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         }
     }
     
-    func apiGetChannel(reciverID: Int) -> Single<ICChannel?> {
+    func apiGetChannel(channelID: String) -> Single<ICChannel?> {
         return Single<ICChannel?>.create { [unowned self] (single) -> Disposable in
             let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-            let parameter: [String: Any] = ["reciver_id": reciverID]
             let _ = self.sendRequest(medthod: .get,
-                             url: self.getChannel,
-                             parameter: parameter,
+                             url: self.myChannelURL(channelID: channelID),
+                             parameter: nil,
                              headers: header)
                 .map ({ [unowned self] (result) -> ICChannel? in
                     let data = result.dictionary?["data"] ?? JSON()

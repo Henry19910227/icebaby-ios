@@ -24,7 +24,7 @@ class ICChatListViewModel: ICViewModel {
     //Subject
     private let showLoadingSubject = PublishSubject<Bool>()
     private let showErrorMsgSubject = PublishSubject<String>()
-    private let itemsSubject = PublishSubject<[ICChatListCellViewModel]>()
+    private let itemsSubject = ReplaySubject<[ICChatListCellViewModel]>.create(bufferSize: 1)
     
     //Status
     private var allowChat = false
@@ -67,7 +67,8 @@ extension ICChatListViewModel {
         bindAllowChat(input.allowChat)
         bindItemSelected(input.itemSelected)
         bindOnPublish(chatManager.onPublish.asObservable())
-        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [ICChatData]())))
+        bindChannels(chatManager.channelsRelay.asDriver(onErrorJustReturn: []))
+        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [])))
         bindUnreadCount(chatManager.unreadCount.asDriver(onErrorJustReturn: ("", 0)))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
@@ -79,9 +80,23 @@ extension ICChatListViewModel {
 extension ICChatListViewModel {
     private func bindTrigger(_ trigger: Driver<Void>) {
         trigger
-            .do(onNext: { [unowned self] (_) in
-                self.loadChannels()
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindChannels(_ channelsRelay: Driver<[ICChannelListItem]>) {
+        channelsRelay
+            .map({ [unowned self] (channels) -> [ICChatListCellViewModel] in
+                return channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
+                    let vm = ICChatListCellViewModel(userID: self.userManager.uid())
+                    vm.model = channel
+                    return vm
+                }
             })
+            .do { [unowned self] (vms) in
+                self.cellVMs = vms
+                self.itemsSubject.onNext(vms)
+            }
             .drive()
             .disposed(by: disposeBag)
     }

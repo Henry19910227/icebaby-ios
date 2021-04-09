@@ -20,6 +20,7 @@ class ICChannelListItem: Codable {
     var status: Int?
     var type: Int?
     var unread: Int?
+    var me: ICMemberItem?
     var member: ICMemberItem?
     
     enum CodingKeys : String, CodingKey {
@@ -28,6 +29,7 @@ class ICChannelListItem: Codable {
         case status = "status"
         case type = "type"
         case unread = "unread"
+        case me = "me"
         case member = "member"
     }
 }

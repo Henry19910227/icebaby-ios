@@ -49,6 +49,7 @@ class ICChatManager: NSObject {
     
     //Output
     public let onPublish = PublishSubject<ICChatData?>()
+    public let channelsSubject = ReplaySubject<[ICChannelListItem]>.create(bufferSize: 1)
     public let subscribe = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<(String, [ICChatData])>()
     public let onSubscribeError = PublishSubject<String>()
@@ -102,40 +103,31 @@ extension ICChatManager: APIDataTransform {
 //    }
     
     // 拉取我的頻道列表
-    public func pullMyChannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
-                              onError: @escaping (Error) -> Void) {
+    public func pullMyChannels() {
         apiGetMyChannels { [unowned self] (channels) in
             for channel in channels {
                 self.channelMap[channel.id ?? ""] = ICChannelObject(item: channel, sub: nil)
                 self.subscribeChannel(channel.id)
             }
-            onSuccess(channels)
+            self.channelsSubject.onNext(self.getChannelsFromCache())
         } onError: { (error) in
-            onError(error)
+            
         }
-    }
-    
-    //從緩存中取得頻道列表
-    public func getChannelsFromCache() -> [ICChannelListItem] {
-        var channels: [ICChannelListItem] = []
-        for (_, v) in channelMap {
-            if let channel = v.item {
-                channels.append(channel)
-            }
-        }
-        return channels
     }
     
     // 訂閱單個頻道
-    public func subscribeChannel(_ channel: String?) {
-        guard let channel = channel else { return }
+    public func subscribeChannel(_ channelID: String?) {
+        guard let channelID = channelID else { return }
         var subscribeItem: CentrifugeSubscription?
         do {
-            subscribeItem = try client.newSubscription(channel: channel, delegate: self)
+            subscribeItem = try client.newSubscription(channel: channelID, delegate: self)
         } catch {
             onSubscribeError.onNext(error.localizedDescription)
         }
         subscribeItem?.subscribe()
+        if var channel = channelMap[channelID] {
+            channel.sub = subscribeItem
+        }
     }
     
     // 獲取歷史訊息
@@ -239,7 +231,16 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
 
 //MARK: - Other
 extension ICChatManager {
-    
+    //從緩存中取得頻道列表
+    public func getChannelsFromCache() -> [ICChannelListItem] {
+        var channels: [ICChannelListItem] = []
+        for (_, v) in channelMap {
+            if let channel = v.item {
+                channels.append(channel)
+            }
+        }
+        return channels
+    }
 }
 
 //MARK: - Unread
@@ -282,6 +283,21 @@ extension ICChatManager {
 
 //MARK: - API
 extension ICChatManager {
+    
+    private func apiGetMyChannel(channelID: String,
+                                 onSuccess: @escaping (ICChannelListItem) -> Void,
+                                 onError: @escaping (Error) -> Void) {
+        chatAPIService
+            .apiGetChannel(channelID: channelID)
+            .subscribe { (channel) in
+                
+            } onError: { (error) in
+                onError(error)
+            }
+            .disposed(by: disposeBag)
+
+    }
+    
     private func apiGetMyChannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
                                   onError: @escaping (Error) -> Void) {
         chatAPIService
