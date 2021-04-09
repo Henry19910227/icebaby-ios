@@ -50,7 +50,6 @@ extension ICMainTabBarViewModel {
             .do(onNext: { [unowned self] (tabbarVC) in
                 self.navigator?.toMain(tabbarVC: tabbarVC)
                 self.chatManager?.connect(token: self.userManager.token() ?? "", uid: self.userManager.uid())
-                self.chatManager?.pullMyChannels()
             })
             .drive()
             .disposed(by: disposeBag)

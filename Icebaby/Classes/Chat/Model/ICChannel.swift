@@ -7,14 +7,14 @@
 
 import UIKit
 
-class ICChannel: Codable {
-    var id: String?
-    var status: Int?
-    var members: [ICMember]?
-    var type: Int?
-}
+//class ICChannel: Codable {
+//    var id: String?
+//    var status: Int?
+//    var members: [ICMember]?
+//    var type: Int?
+//}
 
-class ICChannelListItem: Codable {
+class ICChannel: Codable {
     var id: String?
     var latestMsg: String?
     var status: Int?

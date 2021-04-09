@@ -30,7 +30,7 @@ class ICChatListViewModel: ICViewModel {
     private var allowChat = false
     
     //Data
-    private var channels: [ICChannelListItem] = []
+    private var channels: [ICChannel] = []
     private var items: [ICChatListCellViewModel] = []
     private var cellVMs: [ICChatListCellViewModel] = []
     
@@ -67,7 +67,7 @@ extension ICChatListViewModel {
         bindAllowChat(input.allowChat)
         bindItemSelected(input.itemSelected)
         bindOnPublish(chatManager.onPublish.asObservable())
-        bindChannels(chatManager.channelsRelay.asDriver(onErrorJustReturn: []))
+        bindChannels(chatManager.channelsSubject.asDriver(onErrorJustReturn: []))
         bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [])))
         bindUnreadCount(chatManager.unreadCount.asDriver(onErrorJustReturn: ("", 0)))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
@@ -84,7 +84,7 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindChannels(_ channelsRelay: Driver<[ICChannelListItem]>) {
+    private func bindChannels(_ channelsRelay: Driver<[ICChannel]>) {
         channelsRelay
             .map({ [unowned self] (channels) -> [ICChatListCellViewModel] in
                 return channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
@@ -175,7 +175,7 @@ extension ICChatListViewModel {
 extension ICChatListViewModel {
     
     private func loadChannels() {
-        self.channels = chatManager.getChannelsFromCache()
+        self.channels = chatManager.getChannelsFromMap()
         self.cellVMs = channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
             let vm = ICChatListCellViewModel(userID: self.userManager.uid())
             vm.model = channel

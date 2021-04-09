@@ -13,7 +13,7 @@ import SwiftyJSON
 
 
 struct ICChannelObject {
-    var item: ICChannelListItem?
+    var item: ICChannel?
     var sub: CentrifugeSubscription?
 }
 
@@ -38,7 +38,7 @@ class ICChatManager: NSObject {
     private var history:[String: [ICChatData]] = [:]
     private var unreadMessage:[String: [ICChatData]] = [:]
     private var readDateDict: [String: Date] = [:]
-    private var channels: [ICChannelListItem] = []
+    private var channels: [ICChannel] = []
     private var channelMap: [String: ICChannelObject] = [:]
     
     //Rx
@@ -49,7 +49,7 @@ class ICChatManager: NSObject {
     
     //Output
     public let onPublish = PublishSubject<ICChatData?>()
-    public let channelsSubject = ReplaySubject<[ICChannelListItem]>.create(bufferSize: 1)
+    public let channelsSubject = ReplaySubject<[ICChannel]>.create(bufferSize: 1)
     public let subscribe = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<(String, [ICChatData])>()
     public let onSubscribeError = PublishSubject<String>()
@@ -67,57 +67,20 @@ class ICChatManager: NSObject {
 
 //MARK: - Public
 extension ICChatManager: APIDataTransform {
+    // 連接聊天後台
     public func connect(token: String, uid: Int) {
         client.setToken(token)
         client.connect()
-        subscribeChannel(String(uid))
     }
-    
-//    public func updateReadDate(_ readDate: Date, channelID: String) {
-//        //更新已讀時間
-//        readDateDict[channelID] = readDate
-//
-//        //清除未讀訊息
-//        let lastReadDate = getMyLastReadDate(channelID: channelID)
-//        if unreadMessage[channelID] != nil {
-//            clearUnreadChatDatas(&unreadMessage[channelID]!, lastReadDate: lastReadDate)
-//        }
-//
-//        //更新未讀數量
-//        unreadCount.onNext((channelID, unreadMessage[channelID]?.count ?? 0))
-//    }
-    
-//    public func myChannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
-//                           onError: @escaping (Error) -> Void) {
-//        chatAPIService
-//            .apiGetChannels(userID: userManager.uid())
-//            .do(afterSuccess: { [unowned self] (channels) in
-//                self.channels = channels
-//            })
-//            .subscribe(onSuccess: { (channels) in
-//                onSuccess(channels)
-//            }, onError: { (error) in
-//                onError(error)
-//            })
-//            .disposed(by: disposeBag)
-//    }
     
     // 拉取我的頻道列表
     public func pullMyChannels() {
-        apiGetMyChannels { [unowned self] (channels) in
-            for channel in channels {
-                self.channelMap[channel.id ?? ""] = ICChannelObject(item: channel, sub: nil)
-                self.subscribeChannel(channel.id)
-            }
-            self.channelsSubject.onNext(self.getChannelsFromCache())
-        } onError: { (error) in
-            
-        }
+        apiGetMyChannels(userID: userManager.uid())
     }
     
     // 訂閱單個頻道
-    public func subscribeChannel(_ channelID: String?) {
-        guard let channelID = channelID else { return }
+    public func subscribeChannel(_ channelID: String?) -> CentrifugeSubscription? {
+        guard let channelID = channelID else { return nil }
         var subscribeItem: CentrifugeSubscription?
         do {
             subscribeItem = try client.newSubscription(channel: channelID, delegate: self)
@@ -125,9 +88,7 @@ extension ICChatManager: APIDataTransform {
             onSubscribeError.onNext(error.localizedDescription)
         }
         subscribeItem?.subscribe()
-        if var channel = channelMap[channelID] {
-            channel.sub = subscribeItem
-        }
+        return subscribeItem
     }
     
     // 獲取歷史訊息
@@ -167,6 +128,8 @@ extension ICChatManager {
 extension ICChatManager: CentrifugeClientDelegate {
     func onConnect(_ client: CentrifugeClient, _ event: CentrifugeConnectEvent) {
         print("連線成功!!!!!")
+        pullMyChannels()
+        _ = subscribeChannel(String(userManager.uid()))
     }
 }
 
@@ -185,6 +148,14 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     unreadCount.onNext((sub.channel, unreadMessage[data.channelId ?? ""]?.count ?? 0))
                 }
             }
+            if data.type == "activate" {
+                if let channel = channelMap[data.channelId ?? ""] { //頻道已存在
+                    channel.item?.status = 1
+                    channelsSubject.onNext(getChannelsFromMap())
+                } else { //頻道不存在
+                    apiGetMyChannel(channelID: data.channelId ?? "")
+                }
+            }
             onPublish.onNext(data)
         } catch {
             print("Error!")
@@ -197,31 +168,6 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
         if channel != nil {
             channel?.sub = sub
         }
-        
-//        history(channelID: sub.channel) { [unowned self] (datas) in
-//
-//            //加入自己的未讀訊息
-//            var myUnreadMsgs: [ICChatData] = []
-//            for data in datas {
-//                if self.userManager.uid() != data.message?.uid ?? 0 {
-//                    myUnreadMsgs.append(data)
-//                }
-//            }
-//            self.unreadMessage[sub.channel] = myUnreadMsgs
-//
-//            //清除未讀訊息
-//            let lastReadDate = self.getMyLastReadDate(channelID: sub.channel)
-//            if unreadMessage[sub.channel] != nil {
-//                clearUnreadChatDatas(&unreadMessage[sub.channel]!, lastReadDate: lastReadDate)
-//            }
-//            //發送未讀數量訊號
-//            self.unreadCount.onNext((sub.channel, self.unreadMessage[sub.channel]?.count ?? 0))
-//
-//            //第一次成功訂閱通知
-//            print("subscribe channel \(sub.channel) success")
-//            self.onSubscribeSuccess.onNext((sub.channel, datas))
-//        }
-        
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
@@ -232,8 +178,8 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
 //MARK: - Other
 extension ICChatManager {
     //從緩存中取得頻道列表
-    public func getChannelsFromCache() -> [ICChannelListItem] {
-        var channels: [ICChannelListItem] = []
+    public func getChannelsFromMap() -> [ICChannel] {
+        var channels: [ICChannel] = []
         for (_, v) in channelMap {
             if let channel = v.item {
                 channels.append(channel)
@@ -243,69 +189,42 @@ extension ICChatManager {
     }
 }
 
-//MARK: - Unread
-extension ICChatManager {
-    
-    //清除未讀訊息
-//    private func clearUnreadChatDatas(_ chatDatas: inout [ICChatData], lastReadDate: Date?) {
-//        guard let lastReadDate = lastReadDate else { return }
-//        var messages = chatDatas
-//        for (index, msg) in messages.enumerated().reversed() {
-//            //判斷是來自對方的訊息
-//            if userManager.uid() != msg.message?.uid ?? 0 {
-//                let date = dateFormatter.dateStringToDate(msg.message?.date ?? "", "yyyy-MM-dd HH:mm:ss") ?? Date()
-//                //判斷訊息日期小於當前最後讀取日期，就將此訊息從未讀陣列中移除
-//                if dateFormatter.date(date, earlierThan: lastReadDate) {
-//                    messages.remove(at: index)
-//                }
-//            }
-//        }
-//        chatDatas = messages
-//    }
-    
-    /** 取得個人在指定頻道中最後讀取訊息時間*/
-//    private func getMyLastReadDate(channelID: String) -> Date? {
-//        if let readDate = readDateDict[channelID] { return readDate }
-//        var readTime: String?
-//        for channel in self.channels {
-//            for member in channel.members ?? [] {
-//                if self.userManager.uid() == member.info?.userID {
-//                    readTime = member.readAt
-//                }
-//            }
-//        }
-//        guard let read = readTime else { return nil }
-//        let lastReadDate = dateFormatter.dateStringToDate(read, "yyyy-MM-dd HH:mm:ss")
-//        readDateDict[channelID] = lastReadDate
-//        return lastReadDate
-//    }
-}
-
 //MARK: - API
 extension ICChatManager {
     
-    private func apiGetMyChannel(channelID: String,
-                                 onSuccess: @escaping (ICChannelListItem) -> Void,
-                                 onError: @escaping (Error) -> Void) {
+    private func apiGetMyChannel(channelID: String) {
         chatAPIService
             .apiGetChannel(channelID: channelID)
-            .subscribe { (channel) in
-                
+            .do(onSuccess: { (channel) in
+                if let channel = channel {
+                    if let sub = self.subscribeChannel(channel.id) {
+                        self.channelMap[channel.id ?? ""] = ICChannelObject(item: channel, sub: sub)
+                    }
+                }
+            })
+            .subscribe { [unowned self] (channel) in
+                self.channelsSubject.onNext(self.getChannelsFromMap())
             } onError: { (error) in
-                onError(error)
+                
             }
             .disposed(by: disposeBag)
 
     }
     
-    private func apiGetMyChannels(onSuccess: @escaping ([ICChannelListItem]) -> Void,
-                                  onError: @escaping (Error) -> Void) {
+    private func apiGetMyChannels(userID: Int) {
         chatAPIService
             .apiGetChannels(userID: userManager.uid())
-            .subscribe(onSuccess: { (channels) in
-                onSuccess(channels)
+            .do(onSuccess: { [unowned self] (channels) in
+                for channel in channels {
+                    if let sub = self.subscribeChannel(channel.id) {
+                        self.channelMap[channel.id ?? ""] = ICChannelObject(item: channel, sub: sub)
+                    }
+                }
+            })
+            .subscribe(onSuccess: { [unowned self] (channels) in
+                self.channelsSubject.onNext(self.getChannelsFromMap())
             }, onError: { (error) in
-                onError(error)
+                
             })
             .disposed(by: disposeBag)
     }

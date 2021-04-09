@@ -12,7 +12,7 @@ import RxSwift
 class ICChatListCellViewModel: NSObject {
     
     //Model
-    public var model: ICChannelListItem? {
+    public var model: ICChannel? {
         didSet {
             guard let model = model else { return }
             bindModel(model)
@@ -47,7 +47,7 @@ class ICChatListCellViewModel: NSObject {
 
 //MARK: - Bind Model
 extension ICChatListCellViewModel {
-    private func bindModel(_ model: ICChannelListItem) {
+    private func bindModel(_ model: ICChannel) {
         nicknameSubject.onNext(model.member?.info?.nickname ?? "")
         message.onNext(model.latestMsg ?? "")
         unreadCount.onNext(model.unread ?? 0)
