@@ -7,16 +7,10 @@
 
 import UIKit
 
-//class ICChannel: Codable {
-//    var id: String?
-//    var status: Int?
-//    var members: [ICMember]?
-//    var type: Int?
-//}
-
 class ICChannel: Codable {
     var id: String?
     var latestMsg: String?
+    var lastSeenSeq: Int?
     var status: Int?
     var type: Int?
     var unread: Int?
@@ -26,6 +20,7 @@ class ICChannel: Codable {
     enum CodingKeys : String, CodingKey {
         case id = "id"
         case latestMsg = "latest_msg"
+        case lastSeenSeq = "last_seen_seq"
         case status = "status"
         case type = "type"
         case unread = "unread"

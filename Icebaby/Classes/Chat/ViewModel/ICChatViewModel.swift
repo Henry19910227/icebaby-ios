@@ -72,7 +72,7 @@ extension ICChatViewModel {
         bindExit(input.exit)
         bindAllowChat(input.allowChat)
         bindSendMessage(input.sendMessage)
-        bindOnPublish(chatManager.onPublish)
+        bindLatestMsg(chatManager.latestMessage.asObserver())
         return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
                       messages: messageSubject.asDriver(onErrorJustReturn: []),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
@@ -127,17 +127,14 @@ extension ICChatViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindOnPublish(_ onPublish: Observable<ICChatData?>) {
+    private func bindLatestMsg(_ onPublish: Observable<ICMessageData?>) {
         onPublish
             .filter({ [unowned self] (_) -> Bool in
                 return self.allowChat
             })
-            .filter({ (data) -> Bool in
-                return data?.type == "message"
-            })
             .subscribe(onNext: { [unowned self] (data) in
                 if self.channelID == data?.channelId ?? ""{
-                    let message = ICMessage(data: data?.message ?? ICChatMsg())
+                    let message = ICMessage(data: data?.payload ?? ICMsgPayload())
                     self.messages.append(message)
                     self.messageSubject.onNext(self.messages)
                 }
@@ -170,7 +167,7 @@ extension ICChatViewModel {
     private func getHistory() {
         chatManager.history(channelID: channelID) { [unowned self] (datas) in
             self.messages = datas.map { (data) -> ICMessage in
-                return ICMessage(data: data.message)
+                return ICMessage(data: data.payload)
             }
             self.messageSubject.onNext(self.messages)
         }

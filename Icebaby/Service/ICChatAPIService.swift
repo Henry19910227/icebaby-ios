@@ -18,7 +18,7 @@ protocol ICChatAPI {
     func apiShutdownChannel(channelID: String) -> Single<String?>
     func apiGetChannels(userID: Int) -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
-    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]>
+    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICMessageData]>
     func apiHistories(channelIDs: [String], page: Int, size: Int) -> Single<JSON>
     func apiGetChannel(channelID: String) -> Single<ICChannel?>
 }
@@ -121,18 +121,18 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         }
     }
     
-    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICChatData]> {
+    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICMessageData]> {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
         let parameter: [String: Any] = ["offset": offset, "count": count]
-        return Single<[ICChatData]>.create { [unowned self] (single) -> Disposable in
+        return Single<[ICMessageData]>.create { [unowned self] (single) -> Disposable in
             let _ = self.sendRequest(medthod: .get,
                              url: self.historyURL(channelID: channelID),
                              parameter: parameter,
                              headers: header)
-                .map ({ (result) -> [ICChatData] in
+                .map ({ (result) -> [ICMessageData] in
                     var data = result.dictionary?["data"]?.array ?? []
                     data.reverse()
-                    return self.dataDecoderArrayTransform(ICChatData.self, data)
+                    return self.dataDecoderArrayTransform(ICMessageData.self, data)
                 }).subscribe { (datas) in
                     single(.success(datas))
                 } onError: { (error) in

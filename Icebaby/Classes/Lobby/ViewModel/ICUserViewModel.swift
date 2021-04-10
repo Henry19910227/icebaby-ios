@@ -67,8 +67,8 @@ extension ICUserViewModel {
         bindTrigger(input.trigger)
         bindChatTap(input.chatTap)
         bindAllowChat(input.allowChat)
-        bindOnPublish(chatManager.onPublish.asObservable())
-        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [ICChatData]())))
+//        bindOnPublish(chatManager.onPublish.asObservable())
+        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [ICMessageData]())))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       uid: uidSubject.asDriver(onErrorJustReturn: 0),
@@ -108,24 +108,24 @@ extension ICUserViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindOnPublish(_ onPublish: Observable<ICChatData?>) {
-        onPublish
-            .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat
-            })
-            .filter({ (data) -> Bool in
-                return data?.type == "subscribe"
-            })
-            .map({ (data) -> String in
-                return data?.channelId ?? ""
-            })
-            .subscribe(onNext: { [unowned self] (channelID) in
-                self.chatManager.subscribeChannel(channelID)
-            })
-            .disposed(by: disposeBag)
+    private func bindOnPublish(_ onPublish: Observable<ICMessageData?>) {
+//        onPublish
+//            .filter({ [unowned self] (_) -> Bool in
+//                return self.allowChat
+//            })
+//            .filter({ (data) -> Bool in
+//                return data?.type == "subscribe"
+//            })
+//            .map({ (data) -> String in
+//                return data?.channelId ?? ""
+//            })
+//            .subscribe(onNext: { [unowned self] (channelID) in
+//                self.chatManager.subscribeChannel(channelID)
+//            })
+//            .disposed(by: disposeBag)
     }
     
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICChatData])>) {
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICMessageData])>) {
         onSubscribeSuccess
             .filter({ [unowned self] (_) -> Bool in
                 return self.allowChat && self.needToChat

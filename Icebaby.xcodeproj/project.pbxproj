@@ -58,7 +58,7 @@
 		C7AF349826034E090084BFBB /* ICUserBrief.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AF349726034E090084BFBB /* ICUserBrief.swift */; };
 		C7CECA392587729800018054 /* ICMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA382587729800018054 /* ICMessage.swift */; };
 		C7CECA3E2587734E00018054 /* ICSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA3D2587734E00018054 /* ICSender.swift */; };
-		C7CECA4425888E4200018054 /* ICChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA4325888E4200018054 /* ICChatData.swift */; };
+		C7CECA4425888E4200018054 /* ICMessageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA4325888E4200018054 /* ICMessageData.swift */; };
 		C7CECA492588A8F900018054 /* ICChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA482588A8F900018054 /* ICChatViewModel.swift */; };
 		C7CECA4E2588AA9100018054 /* ICChatNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA4D2588AA9100018054 /* ICChatNavigator.swift */; };
 		C7CECA532588BF6E00018054 /* ICDateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA522588BF6E00018054 /* ICDateFormatter.swift */; };
@@ -153,7 +153,7 @@
 		C7AF349726034E090084BFBB /* ICUserBrief.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserBrief.swift; sourceTree = "<group>"; };
 		C7CECA382587729800018054 /* ICMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMessage.swift; sourceTree = "<group>"; };
 		C7CECA3D2587734E00018054 /* ICSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICSender.swift; sourceTree = "<group>"; };
-		C7CECA4325888E4200018054 /* ICChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatData.swift; sourceTree = "<group>"; };
+		C7CECA4325888E4200018054 /* ICMessageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMessageData.swift; sourceTree = "<group>"; };
 		C7CECA482588A8F900018054 /* ICChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatViewModel.swift; sourceTree = "<group>"; };
 		C7CECA4D2588AA9100018054 /* ICChatNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICChatNavigator.swift; sourceTree = "<group>"; };
 		C7CECA522588BF6E00018054 /* ICDateFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICDateFormatter.swift; sourceTree = "<group>"; };
@@ -444,7 +444,7 @@
 				C7082CFE25836DC700C49DCF /* ICMember.swift */,
 				C7CECA382587729800018054 /* ICMessage.swift */,
 				C7CECA3D2587734E00018054 /* ICSender.swift */,
-				C7CECA4325888E4200018054 /* ICChatData.swift */,
+				C7CECA4325888E4200018054 /* ICMessageData.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -871,7 +871,7 @@
 				BA353EC82570062D00CC4917 /* ICViewModel.swift in Sources */,
 				BA258F662583C99000AA88AB /* ICChatListCellViewModel.swift in Sources */,
 				BA235B78257E906900A09280 /* ICChatManager.swift in Sources */,
-				C7CECA4425888E4200018054 /* ICChatData.swift in Sources */,
+				C7CECA4425888E4200018054 /* ICMessageData.swift in Sources */,
 				C7CF3CBC257792D400D34FFD /* ICLobbyViewModel.swift in Sources */,
 				C7082CFF25836DC700C49DCF /* ICMember.swift in Sources */,
 				C7CECA392587729800018054 /* ICMessage.swift in Sources */,

@@ -7,19 +7,20 @@
 
 import UIKit
 
-struct ICChatData: Codable {
+struct ICMessageData: Codable {
+    var seq: Int = 0
     var type: String?
     var channelId: String?
-    var message: ICChatMsg?
+    var payload: ICMsgPayload?
     
     enum CodingKeys : String, CodingKey {
         case type = "type"
         case channelId = "channel_id"
-        case message = "message"
+        case payload = "payload"
     }
 }
 
-struct ICChatMsg: Codable {
+struct ICMsgPayload: Codable {
     var id: String?
     var date: String?
     var uid: Int?

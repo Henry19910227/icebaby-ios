@@ -66,7 +66,7 @@ extension ICChatListViewModel {
         bindTrigger(input.trigger)
         bindAllowChat(input.allowChat)
         bindItemSelected(input.itemSelected)
-        bindOnPublish(chatManager.onPublish.asObservable())
+        bindLatestMsg(chatManager.latestMessage.asObservable())
         bindChannels(chatManager.channelsSubject.asDriver(onErrorJustReturn: []))
         bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [])))
         bindUnreadCount(chatManager.unreadCount.asDriver(onErrorJustReturn: ("", 0)))
@@ -122,22 +122,7 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindOnPublish(_ onPublish: Observable<ICChatData?>) {
-        onPublish
-            .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat
-            })
-            .filter({ (data) -> Bool in
-                return data?.type == "activate"
-            })
-            .subscribe(onNext: { (data) in
-                guard let data = data else { return }
-                guard let channelID = data.channelId else { return }
-                print("\(channelID) 頻道開啟!!")
-            })
-            .disposed(by: disposeBag)
-
-        
+    private func bindLatestMsg(_ onPublish: Observable<ICMessageData?>) {
         onPublish
             .filter({ (data) -> Bool in
                 return data?.type == "message"
@@ -145,18 +130,18 @@ extension ICChatListViewModel {
             .subscribe(onNext: { [unowned self] (data) in
                 guard let data = data else { return }
                 guard let channelID = data.channelId else { return }
-                self.setCellVMLatestText(channelID: channelID, msg: data.message?.msg ?? "")
+                self.setCellVMLatestText(channelID: channelID, msg: data.payload?.msg ?? "")
             })
             .disposed(by: disposeBag)
     }
     
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICChatData])>) {
+    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICMessageData])>) {
         onSubscribeSuccess
             .filter({ [unowned self] (_) -> Bool in
                 return self.allowChat
             })
             .drive(onNext: { [unowned self] (channelID, chatDatas) in
-                self.setCellVMLatestText(channelID: channelID, msg: chatDatas.last?.message?.msg ?? "")
+                self.setCellVMLatestText(channelID: channelID, msg: chatDatas.last?.payload?.msg ?? "")
             })
             .disposed(by: disposeBag)
     }
@@ -175,7 +160,7 @@ extension ICChatListViewModel {
 extension ICChatListViewModel {
     
     private func loadChannels() {
-        self.channels = chatManager.getChannelsFromMap()
+        self.channels = chatManager.getChannelDatas()
         self.cellVMs = channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
             let vm = ICChatListCellViewModel(userID: self.userManager.uid())
             vm.model = channel
