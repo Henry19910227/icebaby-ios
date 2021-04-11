@@ -72,7 +72,7 @@ extension ICChatViewModel {
         bindExit(input.exit)
         bindAllowChat(input.allowChat)
         bindSendMessage(input.sendMessage)
-        bindLatestMsg(chatManager.latestMessage.asObserver())
+        bindLatestMsg(chatManager.updateLatestMsg.asObserver())
         return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
                       messages: messageSubject.asDriver(onErrorJustReturn: []),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
@@ -148,16 +148,17 @@ extension ICChatViewModel {
     private func getChatData(text: String) -> Data? {
         let date = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") ?? ""
         let msdId = "\(userManager.uid())-" + (dateFormatter.dateToDateString(Date(), "yyyyMMddHHmmss") ?? "")
-        let msgDict: [String: Any] = ["id": msdId,
+        let payload: [String: Any] = ["id": msdId,
                                       "date": date,
                                       "uid": userManager.uid(),
                                       "nickname": userManager.nickname(),
                                       "msg": text]
-        let dataDict: [String: Any] = ["type": "message",
-                                       "channel_id": channelID,
-                                       "message": msgDict]
+        
+        let message: [String: Any] = ["type": "message",
+                                      "channel_id": channelID,
+                                      "payload": payload]
         do {
-            let data = try JSONSerialization.data(withJSONObject: dataDict, options: .prettyPrinted)
+            let data = try JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
             return data
         } catch  {
             return nil

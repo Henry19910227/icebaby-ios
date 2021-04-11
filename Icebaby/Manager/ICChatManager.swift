@@ -49,15 +49,15 @@ class ICChatManager: NSObject {
     public let sendMessage = PublishSubject<(String, Data?)>()
     
     //Output
-    public let latestMessage = PublishSubject<ICMessageData?>()
-    public let unreadCount = PublishSubject<(String, Int)>()
+    public let updateLatestMsg = PublishSubject<ICMessageData?>()
+    public let updateUnreadCount = PublishSubject<(String, Int)>()
+    public let updateChannelStatus = PublishSubject<(String, Int)>()
+    public let channels = ReplaySubject<[ICChannel]>.create(bufferSize: 1)
     
     
-    public let channelsSubject = ReplaySubject<[ICChannel]>.create(bufferSize: 1)
     public let subscribe = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<(String, [ICMessageData])>()
     public let onSubscribeError = PublishSubject<String>()
-    
     public let historyError = PublishSubject<String>()
     
     init(userManager: UserManager,
@@ -108,7 +108,7 @@ extension ICChatManager: APIDataTransform {
     }
 }
 
-//MARK: - Bind
+//MARK: - Input Bind
 extension ICChatManager {
     private func bindSendMessage(_ sendMessage: Driver<(String, Data?)>) {
         sendMessage
@@ -149,15 +149,17 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     channelData.channel?.unread = data.seq - (channelData.channel?.lastSeenSeq ?? 0)
                     channelData.history.append(data)
                     
-                    latestMessage.onNext(data)
-                    unreadCount.onNext((data.channelId ?? "", channelData.channel?.unread ?? 0))
+                    updateLatestMsg.onNext(data)
+                    updateUnreadCount.onNext((data.channelId ?? "", channelData.channel?.unread ?? 0))
                 }
             }
             if data.type == "activate" {
-                if let channel = channelDataPool[data.channelId ?? ""] { //頻道已存在
-                    channel.channel?.status = 1
-                    channelsSubject.onNext(getChannelsFromMap())
-                } else { //頻道不存在
+                if let channelData = channelDataPool[data.channelId ?? ""] {
+                    //頻道已存在:變更狀態並發出訊號更新UI
+                    channelData.channel?.status = 1
+                    updateChannelStatus.onNext((channelData.channel?.id ?? "", 1))
+                } else {
+                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號更新整個列表
                     apiGetMyChannel(channelID: data.channelId ?? "")
                 }
             }
@@ -168,10 +170,6 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     
     func onSubscribeSuccess(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeSuccessEvent) {
         print("subscribe channel \(sub.channel)")
-        var channel = channelDataPool[sub.channel]
-        if channel != nil {
-            channel?.sub = sub
-        }
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
@@ -182,7 +180,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
 //MARK: - Other
 extension ICChatManager {
     //從緩存中取得頻道列表
-    public func getChannelsFromMap() -> [ICChannel] {
+    public func getChannelsFromPool() -> [ICChannel] {
         var channels: [ICChannel] = []
         for (_, v) in channelDataPool {
             if let channel = v.channel {
@@ -199,15 +197,17 @@ extension ICChatManager {
     private func apiGetMyChannel(channelID: String) {
         chatAPIService
             .apiGetChannel(channelID: channelID)
-            .do(onSuccess: { (channel) in
+            .do(onSuccess: { [unowned self] (channel) in
                 if let channel = channel {
+                    //訂閱頻道
                     if let sub = self.subscribeChannel(channel.id) {
+                        //將channel資料加入pool
                         self.channelDataPool[channel.id ?? ""] = ICChannelData(channel: channel, sub: sub)
                     }
                 }
             })
             .subscribe { [unowned self] (channel) in
-                self.channelsSubject.onNext(self.getChannelsFromMap())
+                self.channels.onNext(self.getChannelsFromPool())
             } onError: { (error) in
                 
             }
@@ -226,7 +226,7 @@ extension ICChatManager {
                 }
             })
             .subscribe(onSuccess: { [unowned self] (channels) in
-                self.channelsSubject.onNext(self.getChannelsFromMap())
+                self.channels.onNext(self.getChannelsFromPool())
             }, onError: { (error) in
                 
             })

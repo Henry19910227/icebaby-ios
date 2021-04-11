@@ -30,7 +30,6 @@ class ICChatListViewModel: ICViewModel {
     private var allowChat = false
     
     //Data
-    private var channels: [ICChannel] = []
     private var items: [ICChatListCellViewModel] = []
     private var cellVMs: [ICChatListCellViewModel] = []
     
@@ -66,10 +65,10 @@ extension ICChatListViewModel {
         bindTrigger(input.trigger)
         bindAllowChat(input.allowChat)
         bindItemSelected(input.itemSelected)
-        bindLatestMsg(chatManager.latestMessage.asObservable())
-        bindChannels(chatManager.channelsSubject.asDriver(onErrorJustReturn: []))
+        bindLatestMsg(chatManager.updateLatestMsg.asObservable())
+        bindChannels(chatManager.channels.asDriver(onErrorJustReturn: []))
         bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [])))
-        bindUnreadCount(chatManager.unreadCount.asDriver(onErrorJustReturn: ("", 0)))
+        bindUnreadCount(chatManager.updateUnreadCount.asDriver(onErrorJustReturn: ("", 0)))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
@@ -104,7 +103,7 @@ extension ICChatListViewModel {
     private func bindItemSelected(_ itemSelected: Driver<IndexPath>) {
         itemSelected
             .map({ [unowned self] (indexPath) -> String in
-                return self.channels[indexPath.row].id ?? ""
+                return self.cellVMs[indexPath.row].model?.id ?? ""
             })
             .do (onNext:{ [unowned self] (channelID) in
                 self.navigator?.toChat(channelID: channelID)
@@ -158,16 +157,6 @@ extension ICChatListViewModel {
 
 //MARK: - API
 extension ICChatListViewModel {
-    
-    private func loadChannels() {
-        self.channels = chatManager.getChannelDatas()
-        self.cellVMs = channels.map { [unowned self] (channel) -> ICChatListCellViewModel in
-            let vm = ICChatListCellViewModel(userID: self.userManager.uid())
-            vm.model = channel
-            return vm
-        }
-        self.itemsSubject.onNext(self.cellVMs)
-    }
     
     private func apiGetHistories() {
         chatAPIService?
