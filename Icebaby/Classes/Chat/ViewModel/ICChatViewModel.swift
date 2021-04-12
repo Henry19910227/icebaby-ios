@@ -71,8 +71,8 @@ extension ICChatViewModel {
         bindTrigger(input.trigger)
         bindExit(input.exit)
         bindAllowChat(input.allowChat)
+        bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
         bindSendMessage(input.sendMessage)
-        bindLatestMsg(chatManager.updateLatestMsg.asObserver())
         return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
                       messages: messageSubject.asDriver(onErrorJustReturn: []),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
@@ -87,18 +87,18 @@ extension ICChatViewModel {
             .do(onNext: { [unowned self] (_) in
                 self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
                                                    displayName: self.userManager.nickname()))
-//                self.updateReadDate()
+                self.chatManager.updateLastSeen(channelID: channelID)
             })
             .drive(onNext: { [unowned self] (_) in
-                self.getHistory()
+                self.chatManager.pullHistory(channelID: channelID)
             })
             .disposed(by: disposeBag)
     }
     
     private func bindExit(_ exit: Driver<Void>) {
         exit
-            .do(onNext: { (_) in
-//                self.updateReadDate()
+            .do(onNext: { [unowned self] (_) in
+                self.chatManager.updateLastSeen(channelID: channelID)
             })
             .drive()
             .disposed(by: disposeBag)
@@ -127,19 +127,25 @@ extension ICChatViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindLatestMsg(_ onPublish: Observable<ICMessageData?>) {
-        onPublish
-            .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat
+    private func bindUpdateHistory(_ updateHistory: Driver<(String, [ICMessageData])>) {
+        updateHistory
+            .filter ({ [unowned self] (channelID, msgDatas) -> Bool in
+                return self.channelID == channelID
             })
-            .subscribe(onNext: { [unowned self] (data) in
-                if self.channelID == data?.channelID ?? ""{
-                    let message = ICMessage(data: data?.payload ?? ICMsgPayload())
-                    self.messages.append(message)
-                    self.messageSubject.onNext(self.messages)
+            .map({ (channelID, msgDatas) -> [ICMessage] in
+                return msgDatas.map { (msgData) -> ICMessage in
+                    return ICMessage(data: msgData.payload)
                 }
             })
+            .do { [unowned self] (msgs) in
+                for msg in msgs {
+                    self.messages.append(msg)
+                }
+                self.messageSubject.onNext(self.messages)
+            }
+            .drive()
             .disposed(by: disposeBag)
+
     }
 }
 
@@ -164,25 +170,6 @@ extension ICChatViewModel {
             return nil
         }
     }
-    
-    private func getHistory() {
-        chatManager.history(channelID: channelID) { [unowned self] (datas) in
-            self.messages = datas.map { (data) -> ICMessage in
-                return ICMessage(data: data.payload)
-            }
-            self.messageSubject.onNext(self.messages)
-        }
-    }
-    
-//    // 更新該頻道已讀時間
-//    private func updateReadDate() {
-//        //本地
-//        chatManager.updateReadDate(Date(), channelID: channelID)
-//
-//        //Server
-//        guard let dateStr = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") else { return }
-//        apiUpdateReadDate(dateStr, channelID: channelID, userID: userManager.uid())
-//    }
 }
 
 //MARK: - API
