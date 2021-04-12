@@ -97,7 +97,7 @@ extension ICChatViewModel {
     
     private func bindExit(_ exit: Driver<Void>) {
         exit
-            .do(onNext: { [unowned self] (_) in
+            .do(onNext: { (_) in
 //                self.updateReadDate()
             })
             .drive()
@@ -133,7 +133,7 @@ extension ICChatViewModel {
                 return self.allowChat
             })
             .subscribe(onNext: { [unowned self] (data) in
-                if self.channelID == data?.channelId ?? ""{
+                if self.channelID == data?.channelID ?? ""{
                     let message = ICMessage(data: data?.payload ?? ICMsgPayload())
                     self.messages.append(message)
                     self.messageSubject.onNext(self.messages)
@@ -152,7 +152,7 @@ extension ICChatViewModel {
                                       "date": date,
                                       "uid": userManager.uid(),
                                       "nickname": userManager.nickname(),
-                                      "msg": text]
+                                      "body": text]
         
         let message: [String: Any] = ["type": "message",
                                       "channel_id": channelID,

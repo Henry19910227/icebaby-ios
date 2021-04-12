@@ -52,6 +52,7 @@ class ICChatManager: NSObject {
     public let updateLatestMsg = PublishSubject<ICMessageData?>()
     public let updateUnreadCount = PublishSubject<(String, Int)>()
     public let updateChannelStatus = PublishSubject<(String, Int)>()
+    public let updateChannel = PublishSubject<ICChannel?>()
     public let channels = ReplaySubject<[ICChannel]>.create(bufferSize: 1)
     
     
@@ -141,26 +142,29 @@ extension ICChatManager: CentrifugeClientDelegate {
 extension ICChatManager: CentrifugeSubscriptionDelegate {
     func onPublish(_ sub: CentrifugeSubscription, _ event: CentrifugePublishEvent) {
         do {
-            let data = try JSONDecoder().decode(ICMessageData.self, from: event.data)
-            if data.type == "message" {
+            var msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
+            if msgData.type == "message" {
                 //將新訊息存入歷史訊息中
-                if var channelData = channelDataPool[data.channelId ?? ""] {
-                    channelData.channel?.latestMsg = data.payload?.msg
-                    channelData.channel?.unread = data.seq - (channelData.channel?.lastSeenSeq ?? 0)
-                    channelData.history.append(data)
-                    
-                    updateLatestMsg.onNext(data)
-                    updateUnreadCount.onNext((data.channelId ?? "", channelData.channel?.unread ?? 0))
+                if var channelData = channelDataPool[msgData.channelID ?? ""] {
+                    //自增訊息序列號
+                    msgData.seq = (channelData.channel?.latestMsg?.seq ?? 0) + 1
+                    //手動更新channel
+                    channelData.channel?.latestMsg = msgData
+                    channelData.channel?.unread = (channelData.channel?.unread ?? 0) + 1
+                    channelData.history.append(msgData)
+                    //發布channel更新狀態
+                    updateChannel.onNext(channelData.channel)
                 }
             }
-            if data.type == "activate" {
-                if let channelData = channelDataPool[data.channelId ?? ""] {
+            if msgData.type == "activate" {
+                if let channelData = channelDataPool[msgData.channelID ?? ""] {
                     //頻道已存在:變更狀態並發出訊號更新UI
                     channelData.channel?.status = 1
-                    updateChannelStatus.onNext((channelData.channel?.id ?? "", 1))
+                    //更新channel狀態
+                    updateChannel.onNext(channelData.channel)
                 } else {
                     //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號更新整個列表
-                    apiGetMyChannel(channelID: data.channelId ?? "")
+                    apiGetMyChannel(channelID: msgData.channelID ?? "")
                 }
             }
         } catch {

@@ -49,7 +49,7 @@ class ICChatListCellViewModel: NSObject {
 extension ICChatListCellViewModel {
     private func bindModel(_ model: ICChannel) {
         nicknameSubject.onNext(model.member?.info?.nickname ?? "")
-        message.onNext(model.latestMsg ?? "")
+        message.onNext(model.latestMsg?.payload?.body ?? "")
         unreadCount.onNext(model.unread ?? 0)
     }
 }

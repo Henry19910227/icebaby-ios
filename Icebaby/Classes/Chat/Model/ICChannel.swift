@@ -9,7 +9,7 @@ import UIKit
 
 class ICChannel: Codable {
     var id: String?
-    var latestMsg: String?
+    var latestMsg: ICMessageData?
     var lastSeenSeq: Int?
     var status: Int?
     var type: Int?

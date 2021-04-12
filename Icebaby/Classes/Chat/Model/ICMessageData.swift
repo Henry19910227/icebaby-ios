@@ -8,14 +8,15 @@
 import UIKit
 
 struct ICMessageData: Codable {
-    var seq: Int = 0
+    var seq: Int?
     var type: String?
-    var channelId: String?
+    var channelID: String?
     var payload: ICMsgPayload?
     
     enum CodingKeys : String, CodingKey {
+        case seq = "seq"
         case type = "type"
-        case channelId = "channel_id"
+        case channelID = "channel_id"
         case payload = "payload"
     }
 }
@@ -25,5 +26,5 @@ struct ICMsgPayload: Codable {
     var date: String?
     var uid: Int?
     var nickname: String?
-    var msg: String?
+    var body: String?
 }

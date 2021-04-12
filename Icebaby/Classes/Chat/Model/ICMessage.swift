@@ -18,6 +18,6 @@ class ICMessage: MessageType {
         messageId = data?.id ?? ""
         sender = ICSender(senderId: String(data?.uid ?? 0), displayName: data?.nickname ?? "")
         sentDate = ICDateFormatter().dateStringToDate(data?.date ?? "", "yyyy-MM-dd HH:mm:ss") ?? Date()
-        kind = .text(data?.msg ?? "")
+        kind = .text(data?.body ?? "")
     }
 }

@@ -65,10 +65,9 @@ extension ICChatListViewModel {
         bindTrigger(input.trigger)
         bindAllowChat(input.allowChat)
         bindItemSelected(input.itemSelected)
-        bindLatestMsg(chatManager.updateLatestMsg.asObservable())
         bindChannels(chatManager.channels.asDriver(onErrorJustReturn: []))
         bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [])))
-        bindUnreadCount(chatManager.updateUnreadCount.asDriver(onErrorJustReturn: ("", 0)))
+        bindUpdateChannel(chatManager.updateChannel.asDriver(onErrorJustReturn: nil))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
@@ -121,15 +120,23 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindLatestMsg(_ onPublish: Observable<ICMessageData?>) {
-        onPublish
-            .filter({ (data) -> Bool in
-                return data?.type == "message"
-            })
-            .subscribe(onNext: { [unowned self] (data) in
-                guard let data = data else { return }
-                guard let channelID = data.channelId else { return }
-                self.setCellVMLatestText(channelID: channelID, msg: data.payload?.msg ?? "")
+//    private func bindLatestMsg(_ onPublish: Observable<ICMessageData?>) {
+//        onPublish
+//            .filter({ (data) -> Bool in
+//                return data?.type == "message"
+//            })
+//            .subscribe(onNext: { [unowned self] (data) in
+//                guard let data = data else { return }
+//                guard let channelID = data.channelId else { return }
+//                self.setCellVMLatestText(channelID: channelID, msg: data.payload?.msg ?? "")
+//            })
+//            .disposed(by: disposeBag)
+//    }
+    
+    private func bindUpdateChannel(_ updateChannelDriver: Driver<ICChannel?>) {
+        updateChannelDriver
+            .drive(onNext: { [unowned self] (channel) in
+                self.updateCellVmModel(channel: channel)
             })
             .disposed(by: disposeBag)
     }
@@ -139,20 +146,20 @@ extension ICChatListViewModel {
             .filter({ [unowned self] (_) -> Bool in
                 return self.allowChat
             })
-            .drive(onNext: { [unowned self] (channelID, chatDatas) in
-                self.setCellVMLatestText(channelID: channelID, msg: chatDatas.last?.payload?.msg ?? "")
+            .drive(onNext: { (channelID, chatDatas) in
+//                self.setCellVMLatestText(channelID: channelID, msg: chatDatas.last?.payload?.msg ?? "")
             })
             .disposed(by: disposeBag)
     }
     
-    private func bindUnreadCount(_ unreadCount: Driver<(String, Int)>) {
-        unreadCount
-            .do(onNext: { [unowned self] (channelID, count) in
-                self.setCellVMUnread(channelID: channelID, count: count)
-            })
-            .drive()
-            .disposed(by: disposeBag)
-    }
+//    private func bindUnreadCount(_ unreadCount: Driver<(String, Int)>) {
+//        unreadCount
+//            .do(onNext: { [unowned self] (channelID, count) in
+//                self.setCellVMUnread(channelID: channelID, count: count)
+//            })
+//            .drive()
+//            .disposed(by: disposeBag)
+//    }
 }
 
 //MARK: - API
@@ -174,19 +181,28 @@ extension ICChatListViewModel {
 
 //MARK: - Setup VM
 extension ICChatListViewModel {
-    private func setCellVMLatestText(channelID: String, msg: String) {
+    
+    private func updateCellVmModel(channel: ICChannel?) {
         for vm in cellVMs {
-            if vm.model?.id ?? "" == channelID {
-                vm.message.onNext(msg)
+            if vm.model?.id ?? "" == channel?.id {
+                vm.model = channel
             }
         }
     }
     
-    private func setCellVMUnread(channelID: String, count: Int) {
-        for vm in cellVMs {
-            if vm.model?.id ?? "" == channelID {
-                vm.unreadCount.onNext(count)
-            }
-        }
-    }
+//    private func setCellVMLatestText(channelID: String, msg: String) {
+//        for vm in cellVMs {
+//            if vm.model?.id ?? "" == channelID {
+//                vm.message.onNext(msg)
+//            }
+//        }
+//    }
+//
+//    private func setCellVMUnread(channelID: String, count: Int) {
+//        for vm in cellVMs {
+//            if vm.model?.id ?? "" == channelID {
+//                vm.unreadCount.onNext(count)
+//            }
+//        }
+//    }
 }
