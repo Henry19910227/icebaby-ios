@@ -18,6 +18,7 @@ protocol ICChatAPI {
     func apiShutdownChannel(channelID: String) -> Single<String?>
     func apiGetChannels(userID: Int) -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
+    func apiUpdateLastSeen(channelID: String, seq: Int) -> Single<()>
     func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICMessageData]>
     func apiHistories(channelIDs: [String], page: Int, size: Int) -> Single<JSON>
     func apiGetChannel(channelID: String) -> Single<ICChannel?>
@@ -117,6 +118,23 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
                 }, onError: { (error) in
                     single(.error(error))
                 })
+            return Disposables.create()
+        }
+    }
+    
+    func apiUpdateLastSeen(channelID: String, seq: Int) -> Single<()> {
+        let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+        let parameter: [String: Any] = ["channel_id": channelID, "last_seen_seq": seq]
+        return Single<()>.create { [unowned self] (single) -> Disposable in
+            let _ = self.sendRequest(medthod: .put,
+                             url: self.updateLastSeenURL(channelID: channelID),
+                             parameter: parameter,
+                             headers: header)
+                .subscribe { (datas) in
+                    single(.success(()))
+                } onError: { (error) in
+                    single(.error(error))
+                }
             return Disposables.create()
         }
     }

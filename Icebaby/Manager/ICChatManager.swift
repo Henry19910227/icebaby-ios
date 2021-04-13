@@ -101,9 +101,13 @@ extension ICChatManager: APIDataTransform {
     // 更新最後讀取序列
     public func updateLastSeen(channelID: String) {
         if let channelData = channelDataPool[channelID] {
-            channelData.channel?.lastSeenSeq = channelData.channel?.latestMsg?.seq ?? 0
             channelData.channel?.unread = 0
             updateChannel.onNext(channelData.channel)
+            //如果最後讀取序號有更新，再更新到server
+            if (channelData.channel?.latestMsg?.seq ?? 0) != (channelData.channel?.lastSeenSeq ?? 0) {
+                channelData.channel?.lastSeenSeq = channelData.channel?.latestMsg?.seq ?? 0
+                apiUpdateLastSeen(channelID: channelID, seq: channelData.channel?.latestMsg?.seq ?? 0)
+            }
         }
     }
 }
@@ -264,5 +268,18 @@ extension ICChatManager {
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func apiUpdateLastSeen(channelID: String, seq: Int) {
+        chatAPIService
+            .apiUpdateLastSeen(channelID: channelID, seq: seq)
+            .subscribe { (_) in
+                print("更新了最後閱讀序號")
+            } onError: { (error) in
+                guard let err = error as? ICError else { return }
+                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            }
+            .disposed(by: disposeBag)
+
     }
 }

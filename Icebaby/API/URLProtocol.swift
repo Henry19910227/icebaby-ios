@@ -23,6 +23,7 @@ protocol ICChatURL: ICBaseURL {
     var myChannelListURL: URL { get }
     func myChannelURL(channelID: String) -> URL
     func updateReadDateURL(channelID: String) -> URL
+    func updateLastSeenURL(channelID: String) -> URL
     func historyURL(channelID: String) -> URL
 }
 
@@ -73,6 +74,10 @@ extension ICChatURL {
     
     func updateReadDateURL(channelID: String) -> URL {
         return URL(string: "\(baseURL)/chat/my/channel/\(channelID)/message")!
+    }
+    
+    func updateLastSeenURL(channelID: String) -> URL {
+        return URL(string: "\(baseURL)/chat/my/channel/\(channelID)/last_seen")!
     }
     
     func historyURL(channelID: String) -> URL {

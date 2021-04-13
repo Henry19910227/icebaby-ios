@@ -91,6 +91,7 @@ extension ICChatViewModel {
             })
             .drive(onNext: { [unowned self] (_) in
                 self.chatManager.pullHistory(channelID: channelID)
+                self.chatManager.updateLastSeen(channelID: channelID)
             })
             .disposed(by: disposeBag)
     }
