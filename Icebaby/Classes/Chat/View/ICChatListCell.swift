@@ -79,6 +79,13 @@ extension ICChatListCell {
             })
             .drive(dotView.rx.isHidden)
             .disposed(by: disposeBag)
+        
+        viewModel
+            .isActivate?
+            .drive(onNext: { [unowned self] (isActivate) in
+                self.contentView.backgroundColor = isActivate ? .white : .gray
+            })
+            .disposed(by: disposeBag)
     }
 }
 

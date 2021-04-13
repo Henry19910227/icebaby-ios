@@ -101,11 +101,12 @@ extension ICChatListViewModel {
     
     private func bindItemSelected(_ itemSelected: Driver<IndexPath>) {
         itemSelected
-            .map({ [unowned self] (indexPath) -> String in
-                return self.cellVMs[indexPath.row].model?.id ?? ""
+            .map({ [unowned self] (indexPath) -> ICChannel? in
+                return self.cellVMs[indexPath.row].model
             })
-            .do (onNext:{ [unowned self] (channelID) in
-                self.navigator?.toChat(channelID: channelID)
+            .do (onNext:{ [unowned self] (channel) in
+                guard let channel = channel else { return }
+                self.navigator?.toChat(channel: channel)
             })
             .drive()
             .disposed(by: disposeBag)
@@ -119,19 +120,6 @@ extension ICChatListViewModel {
             .drive()
             .disposed(by: disposeBag)
     }
-    
-//    private func bindLatestMsg(_ onPublish: Observable<ICMessageData?>) {
-//        onPublish
-//            .filter({ (data) -> Bool in
-//                return data?.type == "message"
-//            })
-//            .subscribe(onNext: { [unowned self] (data) in
-//                guard let data = data else { return }
-//                guard let channelID = data.channelId else { return }
-//                self.setCellVMLatestText(channelID: channelID, msg: data.payload?.msg ?? "")
-//            })
-//            .disposed(by: disposeBag)
-//    }
     
     private func bindUpdateChannel(_ updateChannelDriver: Driver<ICChannel?>) {
         updateChannelDriver
@@ -151,15 +139,6 @@ extension ICChatListViewModel {
             })
             .disposed(by: disposeBag)
     }
-    
-//    private func bindUnreadCount(_ unreadCount: Driver<(String, Int)>) {
-//        unreadCount
-//            .do(onNext: { [unowned self] (channelID, count) in
-//                self.setCellVMUnread(channelID: channelID, count: count)
-//            })
-//            .drive()
-//            .disposed(by: disposeBag)
-//    }
 }
 
 //MARK: - API
@@ -190,19 +169,4 @@ extension ICChatListViewModel {
         }
     }
     
-//    private func setCellVMLatestText(channelID: String, msg: String) {
-//        for vm in cellVMs {
-//            if vm.model?.id ?? "" == channelID {
-//                vm.message.onNext(msg)
-//            }
-//        }
-//    }
-//
-//    private func setCellVMUnread(channelID: String, count: Int) {
-//        for vm in cellVMs {
-//            if vm.model?.id ?? "" == channelID {
-//                vm.unreadCount.onNext(count)
-//            }
-//        }
-//    }
 }

@@ -25,22 +25,23 @@ class ICChatListCellViewModel: NSObject {
     //Rx
     private var disposeBag = DisposeBag()
     private var nicknameSubject = ReplaySubject<String>.create(bufferSize: 1)
-    
-    //Input
-    public var message = ReplaySubject<String>.create(bufferSize: 1)
-    public var unreadCount = ReplaySubject<Int>.create(bufferSize: 1)
+    private var messageSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private var unreadSubject = ReplaySubject<Int>.create(bufferSize: 1)
+    private var statusSubject = ReplaySubject<Int>.create(bufferSize: 1)
     
     //Output
     public var nickname: Driver<String>?
     public var latestMsg: Driver<String>?
     public var unread: Driver<Int>?
+    public var isActivate: Driver<Bool>?
     
     init(userID: Int) {
         self.userID = userID
         super.init()
         nickname = nicknameSubject.asDriver(onErrorJustReturn: "")
-        latestMsg = message.asDriver(onErrorJustReturn: "")
-        unread = unreadCount.asDriver(onErrorJustReturn: 0)
+        latestMsg = messageSubject.asDriver(onErrorJustReturn: "")
+        unread = unreadSubject.asDriver(onErrorJustReturn: 0)
+        isActivate = statusSubject.map({ $0 == 1 }).asDriver(onErrorJustReturn: false)
     }
     
 }
@@ -49,8 +50,9 @@ class ICChatListCellViewModel: NSObject {
 extension ICChatListCellViewModel {
     private func bindModel(_ model: ICChannel) {
         nicknameSubject.onNext(model.member?.info?.nickname ?? "")
-        message.onNext(model.latestMsg?.payload?.body ?? "")
-        unreadCount.onNext(model.unread ?? 0)
+        messageSubject.onNext(model.latestMsg?.payload?.body ?? "")
+        unreadSubject.onNext(model.unread ?? 0)
+        statusSubject.onNext(model.status ?? 0)
     }
 }
 

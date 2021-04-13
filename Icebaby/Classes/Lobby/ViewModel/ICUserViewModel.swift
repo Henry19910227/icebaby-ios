@@ -132,7 +132,7 @@ extension ICUserViewModel {
             })
             .drive(onNext: { [unowned self] (channelID, _) in
                 self.needToChat = false
-                self.navigator?.toChat(channelID: channelID)
+//                self.navigator?.toChat(channelID: channelID)
             })
             .disposed(by: disposeBag)
     }

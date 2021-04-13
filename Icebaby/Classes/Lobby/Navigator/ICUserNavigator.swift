@@ -22,14 +22,14 @@ class ICUserNavigator: NSObject {
 }
 
 extension ICUserNavigator {
-    public func toChat(channelID: String) {
+    public func toChat(channel: ICChannel) {
         let navigator = ICChatNavigator(window, navigationController, storyboard)
         let vc = UIStoryboard(name: "Chat", bundle: nil).instantiateViewController(identifier: String(describing:ICChatViewController.self)) as! ICChatViewController
         vc.viewModel = ICChatViewModel(navigator: navigator,
                                        chatAPIService: ICChatAPIService(userManager: ICUserManager()),
                                        chatManager: ICChatManager.shard,
                                        userManager: ICUserManager(),
-                                       channelID: channelID)
+                                       channel: channel)
         navigationController?.pushViewController(vc, animated: true)
     }
 }

@@ -80,22 +80,13 @@ extension ICChatManager: APIDataTransform {
         apiGetMyChannels(userID: userManager.uid())
     }
     
-    // 訂閱單個頻道
-    public func subscribeChannel(_ channelID: String?) -> CentrifugeSubscription? {
-        guard let channelID = channelID else { return nil }
-        var subscribeItem: CentrifugeSubscription?
-        do {
-            subscribeItem = try client.newSubscription(channel: channelID, delegate: self)
-        } catch {
-            onSubscribeError.onNext(error.localizedDescription)
-        }
-        subscribeItem?.subscribe()
-        return subscribeItem
-    }
-    
     // 拉取指定頻道歷史訊息
     public func pullHistory(channelID: String) {
         apiHistory(channelID: channelID)
+    }
+    
+    public func getChannel(_ channelID: String) -> ICChannelData? {
+        return channelDataPool[channelID]
     }
     
     // 更新最後讀取序列
@@ -109,6 +100,11 @@ extension ICChatManager: APIDataTransform {
                 apiUpdateLastSeen(channelID: channelID, seq: channelData.channel?.latestMsg?.seq ?? 0)
             }
         }
+    }
+    
+    //關閉頻道(停止收費)
+    public func shutdownChannel(channelID: String) {
+        apiShutdownChannel(channelID: channelID)
     }
 }
 
@@ -174,6 +170,17 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     apiGetMyChannel(channelID: msgData.channelID ?? "")
                 }
             }
+            if msgData.type == "shutdown" {
+                if let channelData = channelDataPool[msgData.channelID ?? ""] {
+                    //頻道已存在:變更狀態並發出訊號更新UI
+                    channelData.channel?.status = 0
+                    //更新channel狀態
+                    updateChannel.onNext(channelData.channel)
+                } else {
+                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號更新整個列表
+                    apiGetMyChannel(channelID: msgData.channelID ?? "")
+                }
+            }
         } catch {
             print("Error!")
         }
@@ -199,6 +206,18 @@ extension ICChatManager {
             }
         }
         return channels
+    }
+    // 訂閱單個頻道
+    private func subscribeChannel(_ channelID: String?) -> CentrifugeSubscription? {
+        guard let channelID = channelID else { return nil }
+        var subscribeItem: CentrifugeSubscription?
+        do {
+            subscribeItem = try client.newSubscription(channel: channelID, delegate: self)
+        } catch {
+            onSubscribeError.onNext(error.localizedDescription)
+        }
+        subscribeItem?.subscribe()
+        return subscribeItem
     }
 }
 
@@ -275,7 +294,7 @@ extension ICChatManager {
             .apiUpdateLastSeen(channelID: channelID, seq: seq)
             .subscribe { (_) in
                 print("更新了最後閱讀序號")
-            } onError: { (error) in
+            } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
@@ -288,7 +307,8 @@ extension ICChatManager {
             .apiShutdownChannel(channelID: channelID)
             .subscribe { (channelID) in
                 print("關閉 \(channelID ?? "") 頻道!")
-            } onError: { (error) in
+                
+            } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }

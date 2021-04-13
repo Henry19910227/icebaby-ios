@@ -72,7 +72,8 @@ extension ICChatViewController {
         let input = ICChatViewModel.Input(trigger: trigger.asDriver(onErrorJustReturn: ()),
                                           exit: exit.asDriver(onErrorJustReturn: ()),
                                           sendMessage: sendMsg.asDriver(onErrorJustReturn: ""),
-                                          allowChat: allowChat.asDriver(onErrorJustReturn: false))
+                                          allowChat: allowChat.asDriver(onErrorJustReturn: false),
+                                          changeStatus: statusBarButtonItem.rx.tap.asDriver())
         let output = viewModel?.transform(input: input)
         
         output?
@@ -89,6 +90,13 @@ extension ICChatViewController {
             })
             .drive(onNext: { [unowned self] (_) in
                 self.messagesCollectionView.reloadData()
+            })
+            .disposed(by: disposeBag)
+        
+        output?
+            .status
+            .drive(onNext: { [unowned self] (isActivate) in
+                self.statusBarButtonItem.title = isActivate ? "關閉頻道" : "開啟頻道"
             })
             .disposed(by: disposeBag)
     }

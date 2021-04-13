@@ -17,7 +17,7 @@ class ICChatViewModel: ICViewModel {
     private let chatAPIService: ICChatAPI
     private let chatManager: ICChatManager
     private let userManager: UserManager
-    private let channelID: String
+    private var channel: ICChannel
     
     //Tool
     private let dateFormatter = ICDateFormatter()
@@ -29,6 +29,7 @@ class ICChatViewModel: ICViewModel {
     private let messageSubject = PublishSubject<[ICMessage]>()
     private var senderSubject = PublishSubject<SenderType>()
     private let showErrorMsgSubject = PublishSubject<String>()
+    private let statusSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     
     //Status
     private var allowChat = false
@@ -42,27 +43,31 @@ class ICChatViewModel: ICViewModel {
         public let exit: Driver<Void>
         public let sendMessage: Driver<String>
         public let allowChat: Driver<Bool>
+        public let changeStatus: Driver<Void>
     }
     
     struct Output {
         public let sender: Driver<SenderType>
         public let messages: Driver<[ICMessage]>
         public let showErrorMsg: Driver<String>
+        public let status: Driver<Bool>
     }
     
     init(navigator: ICChatNavigator,
          chatAPIService: ICChatAPI,
          chatManager: ICChatManager,
          userManager: UserManager,
-         channelID: String) {
+         channel: ICChannel) {
         
         self.navigator = navigator
         self.chatAPIService = chatAPIService
         self.chatManager = chatManager
         self.userManager = userManager
-        self.channelID = channelID
+        self.channel = channel
+        bindInitChannel(channel)
+        bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
+        
     }
-    
 }
 
 //MARK: - Transform
@@ -71,11 +76,12 @@ extension ICChatViewModel {
         bindTrigger(input.trigger)
         bindExit(input.exit)
         bindAllowChat(input.allowChat)
-        bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
         bindSendMessage(input.sendMessage)
+        bindStatusChange(input.changeStatus)
         return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
                       messages: messageSubject.asDriver(onErrorJustReturn: []),
-                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
+                      status: statusSubject.asDriver(onErrorJustReturn: false))
     }
 }
 
@@ -87,11 +93,23 @@ extension ICChatViewModel {
             .do(onNext: { [unowned self] (_) in
                 self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
                                                    displayName: self.userManager.nickname()))
-                self.chatManager.updateLastSeen(channelID: channelID)
+                self.chatManager.updateLastSeen(channelID: self.channel.id ?? "")
             })
             .drive(onNext: { [unowned self] (_) in
-                self.chatManager.pullHistory(channelID: channelID)
-                self.chatManager.updateLastSeen(channelID: channelID)
+                self.chatManager.pullHistory(channelID: self.channel.id ?? "")
+                self.chatManager.updateLastSeen(channelID: self.channel.id ?? "")
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindInitChannel(_ channel: ICChannel) {
+        statusSubject.onNext((channel.status ?? 0 == 1))
+    }
+    
+    private func bindStatusChange(_ statusChange: Driver<Void>) {
+        statusChange
+            .drive(onNext: { (_) in
+                print("StatusChange")
             })
             .disposed(by: disposeBag)
     }
@@ -99,7 +117,7 @@ extension ICChatViewModel {
     private func bindExit(_ exit: Driver<Void>) {
         exit
             .do(onNext: { [unowned self] (_) in
-                self.chatManager.updateLastSeen(channelID: channelID)
+                self.chatManager.updateLastSeen(channelID: self.channel.id ?? "")
             })
             .drive()
             .disposed(by: disposeBag)
@@ -123,7 +141,7 @@ extension ICChatViewModel {
                 return data != nil
             })
             .drive(onNext: { [unowned self] (data) in
-                self.chatManager.sendMessage.onNext((self.channelID, data))
+                self.chatManager.sendMessage.onNext((self.channel.id ?? "", data))
             })
             .disposed(by: disposeBag)
     }
@@ -131,7 +149,7 @@ extension ICChatViewModel {
     private func bindUpdateHistory(_ updateHistory: Driver<(String, [ICMessageData])>) {
         updateHistory
             .filter ({ [unowned self] (channelID, msgDatas) -> Bool in
-                return self.channelID == channelID
+                return self.channel.id ?? "" == channelID
             })
             .map({ (channelID, msgDatas) -> [ICMessage] in
                 return msgDatas.map { (msgData) -> ICMessage in
@@ -162,7 +180,7 @@ extension ICChatViewModel {
                                       "body": text]
         
         let message: [String: Any] = ["type": "message",
-                                      "channel_id": channelID,
+                                      "channel_id": self.channel.id ?? "",
                                       "payload": payload]
         do {
             let data = try JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
@@ -170,35 +188,5 @@ extension ICChatViewModel {
         } catch  {
             return nil
         }
-    }
-}
-
-//MARK: - API
-extension ICChatViewModel {
-    private func apiUpdateReadDate(_ dateString: String, channelID: String, userID: Int) {
-        chatAPIService
-            .apiUpdateReadDate(channelID: channelID, userID: userID, date: dateString)
-            .subscribe(onSuccess: { (member) in
-                
-            }, onError: { (error) in
-                guard let err = error as? ICError else { return }
-                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-                print(error.localizedDescription)
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func apiShutdownChannel(channelID: String) {
-        chatAPIService
-            .apiShutdownChannel(channelID: channelID)
-            .subscribe { (channelID) in
-                print("關閉 \(channelID ?? "") 頻道!")
-            } onError: { (error) in
-                guard let err = error as? ICError else { return }
-                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-                print(error.localizedDescription)
-            }
-            .disposed(by: disposeBag)
-
     }
 }
