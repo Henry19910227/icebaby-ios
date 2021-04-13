@@ -282,4 +282,17 @@ extension ICChatManager {
             .disposed(by: disposeBag)
 
     }
+    
+    private func apiShutdownChannel(channelID: String) {
+        chatAPIService
+            .apiShutdownChannel(channelID: channelID)
+            .subscribe { (channelID) in
+                print("關閉 \(channelID ?? "") 頻道!")
+            } onError: { (error) in
+                guard let err = error as? ICError else { return }
+                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            }
+            .disposed(by: disposeBag)
+
+    }
 }
