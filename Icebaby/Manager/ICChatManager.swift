@@ -49,6 +49,7 @@ class ICChatManager: NSObject {
     
     //Output
     public let updateChannel = PublishSubject<ICChannel?>()
+    public let addChannel = PublishSubject<ICChannel?>()
     public let updateHistory = PublishSubject<(String, [ICMessageData])>()
     public let channels = ReplaySubject<[ICChannel]>.create(bufferSize: 1)
     
@@ -85,8 +86,16 @@ extension ICChatManager: APIDataTransform {
         apiHistory(channelID: channelID)
     }
     
-    public func getChannel(_ channelID: String) -> ICChannelData? {
-        return channelDataPool[channelID]
+    // 以memberID獲取頻道
+    public func getChannelWithFriend(_ friendID: Int) -> ICChannel? {
+        for (_, v) in channelDataPool {
+            if let channel = v.channel {
+                if channel.member?.info?.userID ?? 0 == friendID {
+                    return v.channel
+                }
+            }
+        }
+        return nil
     }
     
     // 更新最後讀取序列
@@ -111,6 +120,11 @@ extension ICChatManager: APIDataTransform {
     //開啟頻道
     public func activateChannel(channelID: String) {
         apiActivateChannel(channelID: channelID)
+    }
+    
+    //創建並激活頻道
+    public func createChannel(friendID: Int) {
+        apiCreateChannel(friendID: friendID)
     }
 }
 
@@ -172,8 +186,10 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     //更新channel狀態
                     updateChannel.onNext(channelData.channel)
                 } else {
-                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號更新整個列表
-                    apiGetMyChannel(channelID: msgData.channelID ?? "")
+                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號通知添加channel
+                    apiGetMyChannel(channelID: msgData.channelID ?? "") { [unowned self] (channel) in
+                        self.addChannel.onNext(channel)
+                    }
                 }
             }
             if msgData.type == "shutdown" {
@@ -183,8 +199,10 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     //更新channel狀態
                     updateChannel.onNext(channelData.channel)
                 } else {
-                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號更新整個列表
-                    apiGetMyChannel(channelID: msgData.channelID ?? "")
+                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號通知添加channel
+                    apiGetMyChannel(channelID: msgData.channelID ?? "") { [unowned self] (channel) in
+                        self.addChannel.onNext(channel)
+                    }
                 }
             }
         } catch {
@@ -230,7 +248,7 @@ extension ICChatManager {
 //MARK: - API
 extension ICChatManager {
     
-    private func apiGetMyChannel(channelID: String) {
+    private func apiGetMyChannel(channelID: String, success: @escaping (ICChannel?) -> ()) {
         chatAPIService
             .apiGetChannel(channelID: channelID)
             .do(onSuccess: { [unowned self] (channel) in
@@ -245,10 +263,11 @@ extension ICChatManager {
                     }
                 }
             })
-            .subscribe { [unowned self] (channel) in
-                self.channels.onNext(self.getChannelsFromPool())
+            .subscribe { (channel) in
+                success(channel)
             } onError: { (error) in
-                
+                guard let err = error as? ICError else { return }
+                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
 
@@ -270,7 +289,8 @@ extension ICChatManager {
             .subscribe(onSuccess: { [unowned self] (channels) in
                 self.channels.onNext(self.getChannelsFromPool())
             }, onError: { (error) in
-                
+                guard let err = error as? ICError else { return }
+                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
     }
@@ -324,7 +344,20 @@ extension ICChatManager {
         chatAPIService
             .apiActivateChannel(channelID: channelID)
             .subscribe { (channelID) in
-                print("開啟 \(channelID ?? "") 頻道!")
+                print("激活 \(channelID ?? "") 頻道!")
+            } onError: { [unowned self] (error) in
+                guard let err = error as? ICError else { return }
+                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func apiCreateChannel(friendID: Int) {
+        chatAPIService
+            .apiCreateChannel(friendID: friendID)
+            .subscribe { [unowned self] (channelID) in
+                self.activateChannel(channelID: channelID ?? "")
+                print("創建 \(channelID ?? "") 頻道!")
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")

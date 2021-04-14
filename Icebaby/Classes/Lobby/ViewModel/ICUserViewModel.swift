@@ -35,7 +35,7 @@ class ICUserViewModel: ICViewModel {
 
     struct Input {
         public let trigger: Driver<Void>
-        public let allowChat: Driver<Bool>
+        public let isDisplay: Driver<Bool>
         public let chatTap: Driver<Void>
     }
     
@@ -58,6 +58,7 @@ class ICUserViewModel: ICViewModel {
         self.chatAPIService = chatAPIService
         self.chatManager = chatManager
         self.userID = userID
+        bindAddChannel(chatManager.addChannel.asDriver(onErrorJustReturn: nil))
     }
 }
 
@@ -66,9 +67,7 @@ extension ICUserViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(input.trigger)
         bindChatTap(input.chatTap)
-        bindAllowChat(input.allowChat)
-//        bindOnPublish(chatManager.onPublish.asObservable())
-        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [ICMessageData]())))
+        bindIsDisplay(input.isDisplay)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       uid: uidSubject.asDriver(onErrorJustReturn: 0),
@@ -92,48 +91,35 @@ extension ICUserViewModel {
     private func bindChatTap(_ chatTap: Driver<Void>) {
         chatTap
             .do(onNext: { [unowned self] (_) in
-                self.needToChat = true
-                self.apiCreateAndActivateChannel(friendID: self.userID)
+                if let channel = self.chatManager.getChannelWithFriend(self.userID) { //已經存在該頻道
+                    self.navigator?.toChat(channel: channel)
+                } else { //從沒跟這位用戶聊過天，需要創建頻道
+                    self.chatManager.createChannel(friendID: self.userID)
+                }
             }) 
             .drive()
             .disposed(by: disposeBag)
     }
     
-    private func bindAllowChat(_ allowChat: Driver<Bool>) {
-        allowChat
+    //第一次激活該頻道，會收到AddChannel訊號
+    private func bindAddChannel(_ addChannel: Driver<ICChannel?>) {
+        addChannel
+            .drive(onNext: { (channel) in
+                guard let channel = channel else { return }
+                self.navigator?.toChat(channel: channel)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindIsDisplay(_ isDisplay: Driver<Bool>) {
+        isDisplay
+            .filter({ (isDisplay) -> Bool in
+                return isDisplay
+            })
             .do(onNext: { [unowned self] (isAllow) in
                 self.allowChat = isAllow
             })
             .drive()
-            .disposed(by: disposeBag)
-    }
-    
-    private func bindOnPublish(_ onPublish: Observable<ICMessageData?>) {
-//        onPublish
-//            .filter({ [unowned self] (_) -> Bool in
-//                return self.allowChat
-//            })
-//            .filter({ (data) -> Bool in
-//                return data?.type == "subscribe"
-//            })
-//            .map({ (data) -> String in
-//                return data?.channelId ?? ""
-//            })
-//            .subscribe(onNext: { [unowned self] (channelID) in
-//                self.chatManager.subscribeChannel(channelID)
-//            })
-//            .disposed(by: disposeBag)
-    }
-    
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICMessageData])>) {
-        onSubscribeSuccess
-            .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat && self.needToChat
-            })
-            .drive(onNext: { [unowned self] (channelID, _) in
-                self.needToChat = false
-//                self.navigator?.toChat(channelID: channelID)
-            })
             .disposed(by: disposeBag)
     }
 }
