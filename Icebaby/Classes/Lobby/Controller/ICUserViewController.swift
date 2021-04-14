@@ -24,6 +24,7 @@ class ICUserViewController: ICBaseViewController {
     @IBOutlet weak var nicknameLabel: UILabel!
     @IBOutlet weak var birthdayLabel: UILabel!
     @IBOutlet weak var chatButton: UIButton!
+    @IBOutlet weak var testImageView: UIImageView!
     
 }
 
@@ -32,6 +33,8 @@ extension ICUserViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bindViewModel()
+        testImageView.layer.cornerRadius = testImageView.bounds.size.height * 0.5
+        testImageView.layer.masksToBounds = true
     }
     
     override func viewDidAppear(_ animated: Bool) {

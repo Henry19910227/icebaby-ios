@@ -95,7 +95,8 @@ extension ICChatManager: APIDataTransform {
             channelData.channel?.unread = 0
             updateChannel.onNext(channelData.channel)
             //如果最後讀取序號有更新，再更新到server
-            if (channelData.channel?.latestMsg?.seq ?? 0) != (channelData.channel?.lastSeenSeq ?? 0) {
+            guard let latestSeq = channelData.channel?.latestMsg?.seq else { return }
+            if latestSeq != (channelData.channel?.lastSeenSeq ?? 0) {
                 channelData.channel?.lastSeenSeq = channelData.channel?.latestMsg?.seq ?? 0
                 apiUpdateLastSeen(channelID: channelID, seq: channelData.channel?.latestMsg?.seq ?? 0)
             }

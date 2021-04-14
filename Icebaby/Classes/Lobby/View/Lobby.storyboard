@@ -216,6 +216,13 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="IU" translatesAutoresizingMaskIntoConstraints="NO" id="jG2-q5-qKy">
+                                <rect key="frame" x="132" y="512" width="150" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="6gV-9y-UD7"/>
+                                    <constraint firstAttribute="width" constant="150" id="LTJ-6e-o8f"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="wBp-or-2s1"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -223,8 +230,10 @@
                             <constraint firstItem="wBp-or-2s1" firstAttribute="trailing" secondItem="vng-yd-Ghu" secondAttribute="trailing" constant="50" id="37l-yk-OHD"/>
                             <constraint firstItem="vng-yd-Ghu" firstAttribute="leading" secondItem="wBp-or-2s1" secondAttribute="leading" constant="50" id="8cF-K6-Z5q"/>
                             <constraint firstItem="KfP-4o-oVx" firstAttribute="leading" secondItem="wBp-or-2s1" secondAttribute="leading" id="8vz-w5-nOG"/>
+                            <constraint firstItem="jG2-q5-qKy" firstAttribute="centerX" secondItem="wBp-or-2s1" secondAttribute="centerX" id="CBO-cf-CrL"/>
                             <constraint firstItem="KfP-4o-oVx" firstAttribute="top" secondItem="Qv8-g6-RLs" secondAttribute="bottom" id="DDi-z4-YYN"/>
                             <constraint firstItem="Qv8-g6-RLs" firstAttribute="trailing" secondItem="wBp-or-2s1" secondAttribute="trailing" id="N0t-OC-uNq"/>
+                            <constraint firstItem="wBp-or-2s1" firstAttribute="bottom" secondItem="jG2-q5-qKy" secondAttribute="bottom" constant="200" id="NzS-Yu-jza"/>
                             <constraint firstItem="wBp-or-2s1" firstAttribute="trailing" secondItem="ZaV-GV-Uw4" secondAttribute="trailing" id="OJp-qI-Baj"/>
                             <constraint firstItem="ZaV-GV-Uw4" firstAttribute="leading" secondItem="wBp-or-2s1" secondAttribute="leading" id="Xeu-GG-MBO"/>
                             <constraint firstItem="Qv8-g6-RLs" firstAttribute="top" secondItem="ZaV-GV-Uw4" secondAttribute="bottom" id="bWx-w5-dYw"/>
@@ -239,6 +248,7 @@
                         <outlet property="birthdayLabel" destination="EKz-9O-kqD" id="cJm-DU-zua"/>
                         <outlet property="chatButton" destination="vng-yd-Ghu" id="83D-q1-dpP"/>
                         <outlet property="nicknameLabel" destination="7DR-LR-dUf" id="3FL-nh-sHc"/>
+                        <outlet property="testImageView" destination="jG2-q5-qKy" id="WfR-wj-ZXf"/>
                         <outlet property="uidLabel" destination="1Hf-3y-Fbt" id="BpR-6p-UKd"/>
                     </connections>
                 </viewController>
@@ -248,6 +258,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="IU" width="328" height="184.5"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
