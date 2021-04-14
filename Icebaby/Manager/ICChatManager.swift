@@ -106,6 +106,11 @@ extension ICChatManager: APIDataTransform {
     public func shutdownChannel(channelID: String) {
         apiShutdownChannel(channelID: channelID)
     }
+    
+    //開啟頻道
+    public func activateChannel(channelID: String) {
+        apiActivateChannel(channelID: channelID)
+    }
 }
 
 //MARK: - Input Bind
@@ -307,12 +312,22 @@ extension ICChatManager {
             .apiShutdownChannel(channelID: channelID)
             .subscribe { (channelID) in
                 print("關閉 \(channelID ?? "") 頻道!")
-                
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
-
+    }
+    
+    private func apiActivateChannel(channelID: String) {
+        chatAPIService
+            .apiActivateChannel(channelID: channelID)
+            .subscribe { (channelID) in
+                print("開啟 \(channelID ?? "") 頻道!")
+            } onError: { [unowned self] (error) in
+                guard let err = error as? ICError else { return }
+                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+            }
+            .disposed(by: disposeBag)
     }
 }

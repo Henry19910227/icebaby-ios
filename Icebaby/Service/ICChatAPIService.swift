@@ -85,7 +85,7 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
     
     func apiGetChannels(userID: Int) -> Single<[ICChannel]> {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-        let parameter: [String: Any] = ["user_id": userID, "status": 1]
+        let parameter: [String: Any] = ["user_id": userID]
         return Single<[ICChannel]>.create { [unowned self] (single) -> Disposable in
             let _ = self.sendRequest(medthod: .get, url: self.myChannelListURL, parameter: parameter, headers: header)
                 .map ({ (result) -> [ICChannel] in

@@ -30,6 +30,7 @@ class ICChatViewModel: ICViewModel {
     private var senderSubject = PublishSubject<SenderType>()
     private let showErrorMsgSubject = PublishSubject<String>()
     private let statusSubject = ReplaySubject<Bool>.create(bufferSize: 1)
+    private let enableChangeStatusSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     
     //Status
     private var allowChat = false
@@ -51,6 +52,7 @@ class ICChatViewModel: ICViewModel {
         public let messages: Driver<[ICMessage]>
         public let showErrorMsg: Driver<String>
         public let status: Driver<Bool>
+        public let enableChangeStatus: Driver<Bool>
     }
     
     init(navigator: ICChatNavigator,
@@ -64,9 +66,9 @@ class ICChatViewModel: ICViewModel {
         self.chatManager = chatManager
         self.userManager = userManager
         self.channel = channel
-        bindInitChannel(channel)
+        setupChannel(channel)
+        bindUpdateChannel(chatManager.updateChannel.asDriver(onErrorJustReturn: nil))
         bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
-        
     }
 }
 
@@ -81,7 +83,8 @@ extension ICChatViewModel {
         return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
                       messages: messageSubject.asDriver(onErrorJustReturn: []),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
-                      status: statusSubject.asDriver(onErrorJustReturn: false))
+                      status: statusSubject.asDriver(onErrorJustReturn: false),
+                      enableChangeStatus: enableChangeStatusSubject.asDriver(onErrorJustReturn: false))
     }
 }
 
@@ -102,14 +105,33 @@ extension ICChatViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindInitChannel(_ channel: ICChannel) {
-        statusSubject.onNext((channel.status ?? 0 == 1))
+    private func setupChannel(_ channel: ICChannel) {
+        statusSubject.onNext(channel.status ?? 0 == 1)
+        enableChangeStatusSubject.onNext(channel.me?.type ?? 0 == 1) //type = 1(房主) 才能操作開啟 or 關閉頻道
+    }
+    
+    private func bindUpdateChannel(_ updateChannel: Driver<ICChannel?>) {
+        updateChannel
+            .drive { [unowned self] (channel) in
+                if let channel = channel {
+                    self.setupChannel(channel)
+                }
+            }
+            .disposed(by: disposeBag)
+
     }
     
     private func bindStatusChange(_ statusChange: Driver<Void>) {
         statusChange
-            .drive(onNext: { (_) in
-                print("StatusChange")
+            .drive(onNext: { [unowned self] (_) in
+                if self.channel.status ?? 0 == 1 {
+                    print("關閉頻道")
+                    self.chatManager.shutdownChannel(channelID: self.channel.id ?? "")
+                } else {
+                    print("開啟頻道")
+                    self.chatManager.activateChannel(channelID: self.channel.id ?? "")
+                }
+                
             })
             .disposed(by: disposeBag)
     }
@@ -164,7 +186,6 @@ extension ICChatViewModel {
             }
             .drive()
             .disposed(by: disposeBag)
-
     }
 }
 

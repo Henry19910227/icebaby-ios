@@ -97,7 +97,13 @@ extension ICChatViewController {
             .status
             .drive(onNext: { [unowned self] (isActivate) in
                 self.statusBarButtonItem.title = isActivate ? "關閉頻道" : "開啟頻道"
+                self.messagesCollectionView.backgroundColor = isActivate ? .white : .gray
             })
+            .disposed(by: disposeBag)
+        
+        output?
+            .enableChangeStatus
+            .drive(statusBarButtonItem.rx.isEnabled)
             .disposed(by: disposeBag)
     }
 }
