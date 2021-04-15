@@ -33,10 +33,10 @@ extension ICChatListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         bindViewModel()
+        trigger.onNext(())
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        trigger.onNext(())
         allowChat.onNext(true)
     }
     override func viewDidDisappear(_ animated: Bool) {

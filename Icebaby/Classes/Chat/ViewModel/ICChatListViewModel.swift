@@ -26,9 +26,6 @@ class ICChatListViewModel: ICViewModel {
     private let showErrorMsgSubject = PublishSubject<String>()
     private let itemsSubject = ReplaySubject<[ICChatListCellViewModel]>.create(bufferSize: 1)
     
-    //Status
-    private var allowChat = false
-    
     //Data
     private var cellVMs: [ICChatListCellViewModel] = []
     
@@ -55,6 +52,9 @@ class ICChatListViewModel: ICViewModel {
         self.chatAPIService = chatAPIService
         self.chatManager = chatManager
         self.userManager = userManager
+        bindChannels(chatManager.channels.asDriver(onErrorJustReturn: []))
+        bindUpdateChannel(chatManager.updateChannel.asDriver(onErrorJustReturn: nil))
+        bindAddChannel(chatManager.addChannel.asDriver(onErrorJustReturn: nil))
     }
 }
 
@@ -62,12 +62,7 @@ class ICChatListViewModel: ICViewModel {
 extension ICChatListViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(input.trigger)
-        bindAllowChat(input.allowChat)
         bindItemSelected(input.itemSelected)
-        bindChannels(chatManager.channels.asDriver(onErrorJustReturn: []))
-        bindOnSubscribeSuccess(chatManager.onSubscribeSuccess.asDriver(onErrorJustReturn: ("", [])))
-        bindUpdateChannel(chatManager.updateChannel.asDriver(onErrorJustReturn: nil))
-        bindAddChannel(chatManager.addChannel.asDriver(onErrorJustReturn: nil))
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       items: itemsSubject.asDriver(onErrorJustReturn: []))
@@ -78,6 +73,9 @@ extension ICChatListViewModel {
 extension ICChatListViewModel {
     private func bindTrigger(_ trigger: Driver<Void>) {
         trigger
+            .do(onNext: { [unowned self] (_) in
+                self.chatManager.getMyChannels()
+            })
             .drive()
             .disposed(by: disposeBag)
     }
@@ -112,15 +110,6 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindAllowChat(_ allowChat: Driver<Bool>) {
-        allowChat
-            .do(onNext: { [unowned self] (isAllow) in
-                self.allowChat = isAllow
-            })
-            .drive()
-            .disposed(by: disposeBag)
-    }
-    
     private func bindUpdateChannel(_ updateChannelDriver: Driver<ICChannel?>) {
         updateChannelDriver
             .drive(onNext: { [unowned self] (channel) in
@@ -139,34 +128,6 @@ extension ICChatListViewModel {
             .drive(onNext: { [unowned self] (vm) in
                 self.cellVMs.insert(vm, at: 0)
                 self.itemsSubject.onNext(self.cellVMs)
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func bindOnSubscribeSuccess(_ onSubscribeSuccess: Driver<(String, [ICMessageData])>) {
-        onSubscribeSuccess
-            .filter({ [unowned self] (_) -> Bool in
-                return self.allowChat
-            })
-            .drive(onNext: { (channelID, chatDatas) in
-//                self.setCellVMLatestText(channelID: channelID, msg: chatDatas.last?.payload?.msg ?? "")
-            })
-            .disposed(by: disposeBag)
-    }
-}
-
-//MARK: - API
-extension ICChatListViewModel {
-    
-    private func apiGetHistories() {
-        chatAPIService?
-            .apiHistories(channelIDs: [String](), page: 1, size: 1)
-            .subscribe(onSuccess: { (result) in
-                print(result)
-            }, onError: { (error) in
-                self.showLoadingSubject.onNext(false)
-                guard let err = error as? ICError else { return }
-                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
     }

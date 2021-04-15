@@ -51,7 +51,7 @@ class ICChatManager: NSObject {
     public let updateChannel = PublishSubject<ICChannel?>()
     public let addChannel = PublishSubject<ICChannel?>()
     public let updateHistory = PublishSubject<(String, [ICMessageData])>()
-    public let channels = ReplaySubject<[ICChannel]>.create(bufferSize: 1)
+    public let channels = PublishSubject<[ICChannel]>()
     
     
     public let subscribe = PublishSubject<String>()
@@ -78,7 +78,23 @@ extension ICChatManager: APIDataTransform {
     
     // 拉取我的頻道列表
     public func pullMyChannels() {
-        apiGetMyChannels(userID: userManager.uid())
+        channelDataPool = [:]
+        apiGetMyChannels(userID: userManager.uid()) { [unowned self] (channels) in
+            for channel in channels {
+                if let sub = self.subscribeChannel(channel.id) {
+                    let channelData = ICChannelData()
+                    channelData.channel = channel
+                    channelData.sub = sub
+                    self.channelDataPool[channel.id ?? ""] = channelData
+                }
+            }
+            self.channels.onNext(self.getChannelsFromPool())
+        }
+    }
+    
+    // 取得我的頻道列表
+    public func getMyChannels() {
+        self.channels.onNext(self.getChannelsFromPool())
     }
     
     // 拉取指定頻道歷史訊息
@@ -273,21 +289,11 @@ extension ICChatManager {
 
     }
     
-    private func apiGetMyChannels(userID: Int) {
+    private func apiGetMyChannels(userID: Int, success: @escaping ([ICChannel]) -> ()) {
         chatAPIService
             .apiGetChannels(userID: userManager.uid())
-            .do(onSuccess: { [unowned self] (channels) in
-                for channel in channels {
-                    if let sub = self.subscribeChannel(channel.id) {
-                        let channelData = ICChannelData()
-                        channelData.channel = channel
-                        channelData.sub = sub
-                        self.channelDataPool[channel.id ?? ""] = channelData
-                    }
-                }
-            })
-            .subscribe(onSuccess: { [unowned self] (channels) in
-                self.channels.onNext(self.getChannelsFromPool())
+            .subscribe(onSuccess: { (channels) in
+                success(channels)
             }, onError: { (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
