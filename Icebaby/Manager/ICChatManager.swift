@@ -23,7 +23,7 @@ class ICChatManager: NSObject {
                                      chatAPIService: ICChatAPIService(userManager: ICUserManager()))
     private lazy var client: CentrifugeClient = {
         let url = "ws://127.0.0.1:8000/connection/websocket?format=protobuf"
-//        let url = "ws://104.199.204.119:31500/connection/websocket?format=protobuf"
+//        let url = "ws://35.194.186.96:31500/connection/websocket?format=protobuf"
         let client = CentrifugeClient(url: url, config: CentrifugeClientConfig(), delegate: self)
         return client
     }()
