@@ -16,6 +16,10 @@ protocol ICMeAPI {
     func apiLogout() -> Single<Void>
 }
 
-class ICMeAPIService: NSObject {
-
+class ICMeAPIService: ICMeAPI {
+    func apiLogout() -> Single<Void> {
+        return Single<Void>.create { (single) -> Disposable in
+            return Disposables.create()
+        }
+    }
 }
