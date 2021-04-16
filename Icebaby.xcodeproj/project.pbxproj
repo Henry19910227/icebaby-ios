@@ -55,6 +55,8 @@
 		C77A257F2570D61100FCFA8D /* ICMeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A257E2570D61100FCFA8D /* ICMeViewController.swift */; };
 		C77A25882570D64900FCFA8D /* ICMeRootNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */; };
 		C77A25912570D6F500FCFA8D /* ICMainTabBarNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */; };
+		C794B7FF26299B150061834E /* ICMeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C794B7FE26299B150061834E /* ICMeViewModel.swift */; };
+		C794B8042629A1090061834E /* ICMeAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C794B8032629A1090061834E /* ICMeAPIService.swift */; };
 		C7AF349826034E090084BFBB /* ICUserBrief.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AF349726034E090084BFBB /* ICUserBrief.swift */; };
 		C7CECA392587729800018054 /* ICMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA382587729800018054 /* ICMessage.swift */; };
 		C7CECA3E2587734E00018054 /* ICSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7CECA3D2587734E00018054 /* ICSender.swift */; };
@@ -150,6 +152,8 @@
 		C77A257E2570D61100FCFA8D /* ICMeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeViewController.swift; sourceTree = "<group>"; };
 		C77A25872570D64900FCFA8D /* ICMeRootNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeRootNavigator.swift; sourceTree = "<group>"; };
 		C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMainTabBarNavigator.swift; sourceTree = "<group>"; };
+		C794B7FE26299B150061834E /* ICMeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeViewModel.swift; sourceTree = "<group>"; };
+		C794B8032629A1090061834E /* ICMeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMeAPIService.swift; sourceTree = "<group>"; };
 		C7AF349726034E090084BFBB /* ICUserBrief.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICUserBrief.swift; sourceTree = "<group>"; };
 		C7CECA382587729800018054 /* ICMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICMessage.swift; sourceTree = "<group>"; };
 		C7CECA3D2587734E00018054 /* ICSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICSender.swift; sourceTree = "<group>"; };
@@ -395,6 +399,7 @@
 				BA353F1F25701E4E00CC4917 /* ICLoginAPIService.swift */,
 				C7CF3CC825779ECA00D34FFD /* ICLobbyAPIService.swift */,
 				C7CF3D042578BCDD00D34FFD /* ICChatAPIService.swift */,
+				C794B8032629A1090061834E /* ICMeAPIService.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -403,6 +408,7 @@
 			isa = PBXGroup;
 			children = (
 				C77A257D2570D5E300FCFA8D /* Controller */,
+				C794B7FD26299AF40061834E /* ViewModel */,
 				BA353F2825701EFB00CC4917 /* Model */,
 				C77A25862570D61700FCFA8D /* Navigator */,
 				C77A25772570D5C900FCFA8D /* View */,
@@ -525,6 +531,14 @@
 				C77A25902570D6F500FCFA8D /* ICMainTabBarNavigator.swift */,
 			);
 			path = Navigator;
+			sourceTree = "<group>";
+		};
+		C794B7FD26299AF40061834E /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				C794B7FE26299B150061834E /* ICMeViewModel.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		C7CF3CBA257792B700D34FFD /* ViewModel */ = {
@@ -895,6 +909,7 @@
 				BADCACDF2577FB5B00D98060 /* ICLobbyCellViewModel.swift in Sources */,
 				BADCACF62578150400D98060 /* ICUserDetail.swift in Sources */,
 				BA353F0A257014E300CC4917 /* ICLoginViewController.swift in Sources */,
+				C794B7FF26299B150061834E /* ICMeViewModel.swift in Sources */,
 				C7CF3D052578BCDD00D34FFD /* ICChatAPIService.swift in Sources */,
 				BA353EF025700E6400CC4917 /* URLProtocol.swift in Sources */,
 				C74728A625776BCC00FE8ED2 /* ICLobbyViewController.swift in Sources */,
@@ -903,6 +918,7 @@
 				BADCAC9B2576C51500D98060 /* ICBaseViewController.swift in Sources */,
 				BA9A9C6D25D800DD0066CF57 /* ICFBLoginManager.swift in Sources */,
 				BADCACE925780B2200D98060 /* ICUserNavigator.swift in Sources */,
+				C794B8042629A1090061834E /* ICMeAPIService.swift in Sources */,
 				C7CF3CC925779ECA00D34FFD /* ICLobbyAPIService.swift in Sources */,
 				BADCACEE25780B2F00D98060 /* ICUserViewModel.swift in Sources */,
 				C7CF3CB0257776D300D34FFD /* ICLobbyCell.swift in Sources */,
