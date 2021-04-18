@@ -10,13 +10,22 @@ import RxSwift
 import RxCocoa
 import RxAlamofire
 import SwiftyJSON
+import Alamofire
 
 protocol ICLoginAPI {
     func apiUserRegister(parameter: [String: Any]?) -> Single<ICUser>
     func apiUserLogin(identifier: String, password: String, role: Int) -> Single<(Int, String, String)>
+    func apiLogout() -> Single<Void>
 }
 
 class ICLoginAPIService: ICLoginAPI, APIBaseRequest, ICLoginURL, APIDataTransform {
+    
+    private let userManager: UserManager
+    
+    init(userManager: UserManager) {
+        self.userManager = userManager
+    }
+    
     func apiUserRegister(parameter: [String: Any]?) -> Single<ICUser>  {
         return Single<ICUser>.create { [unowned self] (single) -> Disposable in
             let _ = self.sendRequest(medthod: .post, url: self.registerURL, parameter: parameter, headers: nil)
@@ -52,6 +61,19 @@ class ICLoginAPIService: ICLoginAPI, APIBaseRequest, ICLoginURL, APIDataTransfor
                 .subscribe(onSuccess: { (uid, token, nickname) in
                     single(.success((uid, token, nickname)))
                 }) { (error) in
+                    single(.error(error))
+                }
+            return Disposables.create()
+        }
+    }
+    
+    func apiLogout() -> Single<Void> {
+        return Single<Void>.create { [unowned self] (single) -> Disposable in
+            let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
+            let _ = self.sendRequest(medthod: .post, url: self.logoutURL, parameter: nil, headers: header)
+                .subscribe { (_) in
+                    single(.success(()))
+                } onError: { (error) in
                     single(.error(error))
                 }
             return Disposables.create()

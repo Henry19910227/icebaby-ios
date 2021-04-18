@@ -65,6 +65,7 @@ extension ICMainTabBarNavigator {
 
         // 我的 tabbar
         let meVC = meStoryboard.instantiateViewController(withIdentifier: String(describing: ICMeViewController.self)) as! ICMeViewController
+        meVC.viewModel = ICMeViewModel(loginAPIService: ICLoginAPIService(userManager: ICUserManager()), chatManager: ICChatManager.shard)
         meNav.setViewControllers([meVC], animated: true)
     }
 }

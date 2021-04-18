@@ -13,6 +13,7 @@ protocol ICBaseURL {
 protocol ICLoginURL: ICBaseURL {
     var registerURL: URL { get }
     var loginURL: URL { get }
+    var logoutURL: URL { get }
 }
 protocol ICLobbyURL: ICBaseURL {
     var girlsURL: URL { get }
@@ -40,6 +41,9 @@ extension ICLoginURL {
     }
     var loginURL: URL {
         return URL(string: "\(baseURL)/account/login/mobile")!
+    }
+    var logoutURL: URL {
+        return URL(string: "\(baseURL)/account/logout")!
     }
 }
 extension ICLobbyURL {
