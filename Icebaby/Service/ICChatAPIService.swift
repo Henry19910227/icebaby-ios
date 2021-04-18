@@ -19,7 +19,7 @@ protocol ICChatAPI {
     func apiGetChannels(userID: Int) -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
     func apiUpdateLastSeen(channelID: String, seq: Int) -> Single<()>
-    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICMessageData]>
+    func apiHistory(channelID: String, startSeq: Int?, endSeq: Int?, count: Int?) -> Single<[ICMessageData]>
     func apiHistories(channelIDs: [String], page: Int, size: Int) -> Single<JSON>
     func apiGetChannel(channelID: String) -> Single<ICChannel?>
 }
@@ -139,17 +139,19 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         }
     }
     
-    func apiHistory(channelID: String, offset: Int, count: Int) -> Single<[ICMessageData]> {
+    func apiHistory(channelID: String, startSeq: Int?, endSeq: Int?, count: Int?) -> Single<[ICMessageData]> {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-        let parameter: [String: Any] = ["offset": offset, "count": count]
+        var parameter: [String: Any] = [:]
+        if let startSeq = startSeq { parameter["start_seq"] = startSeq }
+        if let endSeq = endSeq { parameter["end_seq"] = endSeq }
+        if let count = count { parameter["count"] = count }
         return Single<[ICMessageData]>.create { [unowned self] (single) -> Disposable in
             let _ = self.sendRequest(medthod: .get,
                              url: self.historyURL(channelID: channelID),
                              parameter: parameter,
                              headers: header)
                 .map ({ (result) -> [ICMessageData] in
-                    var data = result.dictionary?["data"]?.array ?? []
-                    data.reverse()
+                    let data = result.dictionary?["data"]?.array ?? []
                     return self.dataDecoderArrayTransform(ICMessageData.self, data)
                 }).subscribe { (datas) in
                     single(.success(datas))

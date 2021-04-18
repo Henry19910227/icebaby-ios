@@ -336,7 +336,7 @@ extension ICChatManager {
         }
         //尚未拉取過歷史訊息
         chatAPIService
-            .apiHistory(channelID: channelID, offset: 0, count: 100)
+            .apiHistory(channelID: channelID, startSeq: nil, endSeq: nil, count: 100)
             .subscribe { [unowned self] (datas) in
                 channelData.history = datas
                 self.updateHistory.onNext((channelID, datas))
