@@ -85,11 +85,14 @@ extension ICChatManager: APIDataTransform {
         channelDataPool = [:]
         apiGetMyChannels(userID: userManager.uid()) { [unowned self] (channels) in
             for channel in channels {
-                if let sub = self.subscribeChannel(channel.id) {
-                    let channelData = ICChannelData()
-                    channelData.channel = channel
-                    channelData.sub = sub
-                    self.channelDataPool?[channel.id ?? ""] = channelData
+                let channelData = ICChannelData()
+                channelData.channel = channel
+                self.channelDataPool?[channel.id ?? ""] = channelData
+                //當頻道狀態為開啟時才訂閱
+                if channel.status ?? 0 == 1 {
+                    if let sub = self.subscribeChannel(channel.id) {
+                        channelData.sub = sub
+                    }
                 }
             }
             self.channels.onNext(self.getChannelsFromPool())
