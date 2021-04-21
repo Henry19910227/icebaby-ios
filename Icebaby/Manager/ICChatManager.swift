@@ -17,6 +17,11 @@ class ICChannelData {
     var sub: CentrifugeSubscription?
 }
 
+class ICHistoryData {
+    var needPull = true
+    var messages: [ICMessageData]?
+}
+
 class ICChatManager: NSObject {
     static let shard = ICChatManager(userManager: ICUserManager(),
                                      chatAPIService: ICChatAPIService(userManager: ICUserManager()))
@@ -35,8 +40,8 @@ class ICChatManager: NSObject {
     private let dateFormatter = ICDateFormatter()
     
     //Data
-    private var historyPool:[String: [ICMessageData]] = [:]
-    private var channelDataPool: [String: ICChannelData]?
+    private var historyPool: [String: ICHistoryData] = [:]
+    private var channelDataPool: [String: ICChannelData] = [:]
     
     //Rx
     private let disposeBag = DisposeBag()
@@ -79,19 +84,26 @@ extension ICChatManager: APIDataTransform {
     
     // 拉取我的頻道列表
     public func pullMyChannels() {
-        channelDataPool = [:]
         apiGetMyChannels(userID: userManager.uid()) { [unowned self] (channels) in
             for channel in channels {
-                let channelData = ICChannelData()
-                channelData.channel = channel
-                channelDataPool?[channel.id ?? ""] = channelData
-                //當頻道狀態為開啟時才訂閱
-                if channel.status ?? 0 == 1 {
+                //處理channel資訊
+                if let channelData = channelDataPool[channel.id ?? ""] { //已存在channel
+                    channelData.channel = channel
+                } else { //未存在channel
+                    let channelData = ICChannelData()
+                    channelData.channel = channel
+                    channelDataPool[channel.id ?? ""] = channelData
+                }
+                //處理channel訂閱
+                if channel.status ?? 0 == 1 { //當頻道狀態為開啟時才訂閱
                     if let sub = subscribeChannel(channel.id) {
-                        channelData.sub = sub
+                        channelDataPool[channel.id ?? ""]?.sub = sub
                     }
+                } else { //當頻道狀態為關閉時取消訂閱
+                    channelDataPool[channel.id ?? ""]?.sub?.unsubscribe()
                 }
             }
+            //送出channel訊號
             self.channels.onNext(getChannelsFromPool())
         }
     }
@@ -103,18 +115,25 @@ extension ICChatManager: APIDataTransform {
     
     // 拉取指定頻道歷史訊息
     public func pullHistory(channelID: String) {
-        if historyPool[channelID] != nil {
-            //已拉取過訊息
-            apiHistory(channelID: channelID, startSeq: historyPool[channelID]?.last?.seq, endSeq: nil, count: nil) { [unowned self] (msgs) in
-                for msg in msgs {
-                    historyPool[channelID]?.append(msg)
+        if let historyData = historyPool[channelID] {
+            if historyData.needPull { //已登入過，但因為斷線原因，重新連接後需要追訊息
+                apiHistory(channelID: channelID, startSeq: historyData.messages?.last?.seq, endSeq: nil, count: 100) { [unowned self] (msgs) in
+                    for msg in msgs {
+                        historyData.messages?.append(msg)
+                    }
+                    historyData.needPull = false
+                    self.updateHistory.onNext((channelID, historyData.messages ?? []))
                 }
-                self.updateHistory.onNext((channelID, historyPool[channelID] ?? []))
+                return
             }
-        } else {
-            //尚未拉取過訊息
+            //發送歷史訊息更新信號
+            self.updateHistory.onNext((channelID, historyData.messages ?? []))
+            
+        } else { //首次登入尚未拉取過訊息
             apiHistory(channelID: channelID, startSeq: nil, endSeq: nil, count: 100) { [unowned self] (msgs) in
-                self.historyPool[channelID] = msgs
+                let historyData = ICHistoryData()
+                historyData.messages = msgs
+                self.historyPool[channelID] = historyData
                 self.updateHistory.onNext((channelID, msgs))
             }
         }
@@ -122,7 +141,6 @@ extension ICChatManager: APIDataTransform {
     
     // 以memberID獲取頻道
     public func getChannelWithFriend(_ friendID: Int) -> ICChannel? {
-        guard let channelDataPool = channelDataPool else { return nil }
         for (_, v) in channelDataPool {
             if let channel = v.channel {
                 if channel.member?.info?.userID ?? 0 == friendID {
@@ -135,7 +153,7 @@ extension ICChatManager: APIDataTransform {
     
     // 更新最後讀取序列
     public func updateLastSeen(channelID: String) {
-        if let channelData = channelDataPool?[channelID] {
+        if let channelData = channelDataPool[channelID] {
             channelData.channel?.unread = 0
             updateChannel.onNext(channelData.channel)
             //如果最後讀取序號有更新，再更新到server
@@ -169,10 +187,10 @@ extension ICChatManager {
         
         sendMessage
             .filter({ [unowned self] (channelID, data) -> Bool in
-                return data != nil && self.channelDataPool?[channelID]?.sub != nil
+                return data != nil && self.channelDataPool[channelID]?.sub != nil
             })
             .map({ [unowned self] (channelID, data) -> (CentrifugeSubscription, Data) in
-                return (self.channelDataPool![channelID]!.sub! , data!)
+                return (self.channelDataPool[channelID]!.sub! , data!)
             })
             .drive(onNext: { (sub, data) in
                 sub.publish(data: data) { (error) in
@@ -189,6 +207,7 @@ extension ICChatManager: CentrifugeClientDelegate {
     func onConnect(_ client: CentrifugeClient, _ event: CentrifugeConnectEvent) {
         print("連接聊天室成功 or 斷線重連成功")
         subscribeChannel(String(userManager.uid()))
+        resetHistoryPoolStatus()
         pullMyChannels()
     }
     
@@ -205,14 +224,14 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
             var msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
             if msgData.type == "message" {
                 //將新訊息存入歷史訊息中
-                if let channelData = channelDataPool?[msgData.channelID ?? ""] {
+                if let channelData = channelDataPool[msgData.channelID ?? ""] {
                     //自增訊息序列號
                     msgData.seq = (channelData.channel?.latestMsg?.seq ?? 0) + 1
                     
                     //手動更新channel
                     channelData.channel?.latestMsg = msgData
                     channelData.channel?.unread = (channelData.channel?.unread ?? 0) + 1
-                    historyPool[channelData.channel?.id ?? ""]?.append(msgData)
+                    historyPool[channelData.channel?.id ?? ""]?.messages?.append(msgData)
                     
                     //發布channel更新狀態
                     updateChannel.onNext(channelData.channel)
@@ -221,7 +240,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                 }
             }
             if msgData.type == "activate" {
-                if let channelData = channelDataPool?[msgData.channelID ?? ""] {
+                if let channelData = channelDataPool[msgData.channelID ?? ""] {
                     //頻道已存在:變更狀態並發出訊號更新UI 訂閱頻道
                     if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
                         channelData.channel?.status = 1
@@ -236,7 +255,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                             //將channel資料加入pool
                             let channelData = ICChannelData()
                             channelData.channel = channel
-                            self.channelDataPool?[channel.id ?? ""] = channelData
+                            self.channelDataPool[channel.id ?? ""] = channelData
                             //訂閱頻道
                             if let sub = self.subscribeChannel(channel.id) {
                                 channelData.sub = sub
@@ -249,7 +268,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
             }
             if msgData.type == "shutdown" {
                 //頻道已存在
-                if let channelData = channelDataPool?[msgData.channelID ?? ""] {
+                if let channelData = channelDataPool[msgData.channelID ?? ""] {
                     //退訂此頻道
                     channelData.sub?.unsubscribe()
                     channelData.sub = nil
@@ -281,7 +300,6 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
 extension ICChatManager {
     //從緩存中取得頻道列表
     public func getChannelsFromPool() -> [ICChannel] {
-        guard let channelDataPool = channelDataPool else { return [] }
         var channels: [ICChannel] = []
         for (_, v) in channelDataPool {
             if let channel = v.channel {
@@ -301,6 +319,12 @@ extension ICChatManager {
         }
         subscribeItem?.subscribe()
         return subscribeItem
+    }
+    
+    private func resetHistoryPoolStatus() {
+        for (_, historyData) in historyPool {
+            historyData.needPull = true
+        }
     }
 }
 
