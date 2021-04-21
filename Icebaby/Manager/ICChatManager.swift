@@ -87,21 +87,21 @@ extension ICChatManager: APIDataTransform {
             for channel in channels {
                 let channelData = ICChannelData()
                 channelData.channel = channel
-                self.channelDataPool?[channel.id ?? ""] = channelData
+                channelDataPool?[channel.id ?? ""] = channelData
                 //當頻道狀態為開啟時才訂閱
                 if channel.status ?? 0 == 1 {
-                    if let sub = self.subscribeChannel(channel.id) {
+                    if let sub = subscribeChannel(channel.id) {
                         channelData.sub = sub
                     }
                 }
             }
-            self.channels.onNext(self.getChannelsFromPool())
+            self.channels.onNext(getChannelsFromPool())
         }
     }
     
     // 取得我的頻道列表
     public func getMyChannels() {
-        self.channels.onNext(self.getChannelsFromPool())
+        channels.onNext(getChannelsFromPool())
     }
     
     // 拉取指定頻道歷史訊息
@@ -176,22 +176,14 @@ extension ICChatManager {
 //MARK: - CentrifugeClientDelegate
 extension ICChatManager: CentrifugeClientDelegate {
     func onConnect(_ client: CentrifugeClient, _ event: CentrifugeConnectEvent) {
-        print("連接聊天室成功")
-        //尚未拉取頻道
-        if channelDataPool == nil {
-            subscribeChannel(String(userManager.uid()))
-            pullMyChannels()
-        }
+        print("連接聊天室成功 or 斷線重連成功")
+        
+        subscribeChannel(String(userManager.uid()))
+        pullMyChannels()
     }
     
     func onDisconnect(_ client: CentrifugeClient, _ event: CentrifugeDisconnectEvent) {
         print("與聊天室斷開連接: \(event.reason), reconnect: \(event.reconnect)")
-//        guard let channelDataPool = channelDataPool else { return }
-//        for (_, v) in channelDataPool {
-//            if let sub = v.sub {
-//                sub.unsubscribe()
-//            }
-//        }
     }
 }
 
@@ -220,28 +212,40 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
             }
             if msgData.type == "activate" {
                 if let channelData = channelDataPool?[msgData.channelID ?? ""] {
-                    //頻道已存在:變更狀態並發出訊號更新UI
-                    channelData.channel?.status = 1
-                    //更新channel狀態
+                    //頻道已存在:變更狀態並發出訊號更新UI 訂閱頻道
+                    if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
+                        channelData.channel?.status = 1
+                        channelData.sub = sub
+                    }
+                    //發出訊號
                     updateChannel.onNext(channelData.channel)
                 } else {
                     //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號通知添加channel
                     apiGetMyChannel(channelID: msgData.channelID ?? "") { [unowned self] (channel) in
+                        if let channel = channel {
+                            //將channel資料加入pool
+                            let channelData = ICChannelData()
+                            channelData.channel = channel
+                            self.channelDataPool?[channel.id ?? ""] = channelData
+                            //訂閱頻道
+                            if let sub = self.subscribeChannel(channel.id) {
+                                channelData.sub = sub
+                            }
+                        }
+                        //發出訊號
                         self.addChannel.onNext(channel)
                     }
                 }
             }
             if msgData.type == "shutdown" {
+                //頻道已存在
                 if let channelData = channelDataPool?[msgData.channelID ?? ""] {
-                    //頻道已存在:變更狀態並發出訊號更新UI
+                    //退訂此頻道
+                    channelData.sub?.unsubscribe()
+                    channelData.sub = nil
                     channelData.channel?.status = 0
-                    //更新channel狀態
+                    //發出訊號
                     updateChannel.onNext(channelData.channel)
-                } else {
-                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號通知添加channel
-                    apiGetMyChannel(channelID: msgData.channelID ?? "") { [unowned self] (channel) in
-                        self.addChannel.onNext(channel)
-                    }
                 }
             }
         } catch {
@@ -296,18 +300,6 @@ extension ICChatManager {
     private func apiGetMyChannel(channelID: String, success: @escaping (ICChannel?) -> ()) {
         chatAPIService
             .apiGetChannel(channelID: channelID)
-            .do(onSuccess: { [unowned self] (channel) in
-                if let channel = channel {
-                    //訂閱頻道
-                    if let sub = self.subscribeChannel(channel.id) {
-                        //將channel資料加入pool
-                        let channelData = ICChannelData()
-                        channelData.channel = channel
-                        channelData.sub = sub
-                        self.channelDataPool?[channel.id ?? ""] = channelData
-                    }
-                }
-            })
             .subscribe { (channel) in
                 success(channel)
             } onError: { (error) in
