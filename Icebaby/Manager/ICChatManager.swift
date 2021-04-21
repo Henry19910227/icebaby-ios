@@ -14,7 +14,6 @@ import SwiftyJSON
 
 class ICChannelData {
     var channel: ICChannel?
-    var history: [ICMessageData]?
     var sub: CentrifugeSubscription?
 }
 
@@ -36,9 +35,7 @@ class ICChatManager: NSObject {
     private let dateFormatter = ICDateFormatter()
     
     //Data
-    private var history:[String: [ICMessageData]] = [:]
-    private var unreadMessage:[String: [ICMessageData]] = [:]
-    private var readDateDict: [String: Date] = [:]
+    private var historyPool:[String: [ICMessageData]] = [:]
     private var channelDataPool: [String: ICChannelData]?
     
     //Rx
@@ -106,7 +103,21 @@ extension ICChatManager: APIDataTransform {
     
     // 拉取指定頻道歷史訊息
     public func pullHistory(channelID: String) {
-        apiHistory(channelID: channelID)
+        if historyPool[channelID] != nil {
+            //已拉取過訊息
+            apiHistory(channelID: channelID, startSeq: historyPool[channelID]?.last?.seq, endSeq: nil, count: nil) { [unowned self] (msgs) in
+                for msg in msgs {
+                    historyPool[channelID]?.append(msg)
+                }
+                self.updateHistory.onNext((channelID, historyPool[channelID] ?? []))
+            }
+        } else {
+            //尚未拉取過訊息
+            apiHistory(channelID: channelID, startSeq: nil, endSeq: nil, count: 100) { [unowned self] (msgs) in
+                self.historyPool[channelID] = msgs
+                self.updateHistory.onNext((channelID, msgs))
+            }
+        }
     }
     
     // 以memberID獲取頻道
@@ -177,7 +188,6 @@ extension ICChatManager {
 extension ICChatManager: CentrifugeClientDelegate {
     func onConnect(_ client: CentrifugeClient, _ event: CentrifugeConnectEvent) {
         print("連接聊天室成功 or 斷線重連成功")
-        
         subscribeChannel(String(userManager.uid()))
         pullMyChannels()
     }
@@ -202,7 +212,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     //手動更新channel
                     channelData.channel?.latestMsg = msgData
                     channelData.channel?.unread = (channelData.channel?.unread ?? 0) + 1
-                    channelData.history?.append(msgData)
+                    historyPool[channelData.channel?.id ?? ""]?.append(msgData)
                     
                     //發布channel更新狀態
                     updateChannel.onNext(channelData.channel)
@@ -322,19 +332,12 @@ extension ICChatManager {
             .disposed(by: disposeBag)
     }
     
-    private func apiHistory(channelID: String) {
-        guard let channelData = channelDataPool?[channelID]  else { return }
-        //已從server拉取過歷史訊息
-        if let history = channelData.history {
-            updateHistory.onNext((channelID, history))
-            return
-        }
+    private func apiHistory(channelID: String, startSeq: Int?, endSeq: Int?, count: Int?, success: @escaping ([ICMessageData]) -> ()) {
         //尚未拉取過歷史訊息
         chatAPIService
-            .apiHistory(channelID: channelID, startSeq: nil, endSeq: nil, count: 100)
-            .subscribe { [unowned self] (datas) in
-                channelData.history = datas
-                self.updateHistory.onNext((channelID, datas))
+            .apiHistory(channelID: channelID, startSeq: startSeq, endSeq: endSeq, count: count)
+            .subscribe { (datas) in
+                success(datas)
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
