@@ -13,6 +13,7 @@ import SwiftyJSON
 
 
 class ICChannelData {
+    var needUpdateSeq = false
     var channel: ICChannel?
     var sub: CentrifugeSubscription?
 }
@@ -54,7 +55,7 @@ class ICChatManager: NSObject {
     public let addChannel = PublishSubject<ICChannel?>()
     public let updateHistory = PublishSubject<(String, [ICMessageData])>()
     public let channels = PublishSubject<[ICChannel]>()
-    
+    public let onConnect = PublishSubject<Void>()
     
     public let subscribe = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<(String, [ICMessageData])>()
@@ -151,21 +152,33 @@ extension ICChatManager: APIDataTransform {
         return nil
     }
     
-    // 更新最後讀取序列
+    // 更新最後讀取序列(本地)
     public func updateLastSeen(channelID: String) {
         if let channelData = channelDataPool[channelID] {
+            //清空未讀訊息數量
             channelData.channel?.unread = 0
+            //更新channel列表UI
             updateChannel.onNext(channelData.channel)
-            //如果最後讀取序號有更新，再更新到server
-            guard let latestSeq = channelData.channel?.latestMsg?.seq else { return }
-            if latestSeq != (channelData.channel?.lastSeenSeq ?? 0) {
+            //判斷lastSeenSeq參數與latestMsg.seq參數是否一致(latestMsg.seq每當接到新訊息都會更新)
+            if channelData.channel?.lastSeenSeq != channelData.channel?.latestMsg?.seq ?? 0 {
+                //更新最後閱讀訊息序列號
                 channelData.channel?.lastSeenSeq = channelData.channel?.latestMsg?.seq ?? 0
-                apiUpdateLastSeen(channelID: channelID, seq: channelData.channel?.latestMsg?.seq ?? 0)
+                channelData.needUpdateSeq = true
             }
         }
     }
     
-    //關閉頻道(停止收費)
+    // 更新最後讀取序列(雲端)
+    public func uploadLastSeen(channelID: String) {
+        guard let channelData = channelDataPool[channelID] else { return }
+        if channelData.needUpdateSeq {
+            apiUpdateLastSeen(channelID: channelID, seq: channelData.channel?.lastSeenSeq ?? 0) {
+                channelData.needUpdateSeq = false
+            }
+        }
+    }
+    
+    // 關閉頻道(停止收費)
     public func shutdownChannel(channelID: String) {
         apiShutdownChannel(channelID: channelID)
     }
@@ -209,6 +222,8 @@ extension ICChatManager: CentrifugeClientDelegate {
         subscribeChannel(String(userManager.uid()))
         resetHistoryPoolStatus()
         pullMyChannels()
+        //發送成功連接訊號
+        onConnect.onNext(())
     }
     
     func onDisconnect(_ client: CentrifugeClient, _ event: CentrifugeDisconnectEvent) {
@@ -280,10 +295,6 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
         } catch {
             print("Error!")
         }
-    }
-    
-    func onMessage(_ client: CentrifugeClient, _ event: CentrifugeMessageEvent) {
-        print("onMessage :\(event.data)")
     }
     
     
@@ -369,11 +380,12 @@ extension ICChatManager {
             .disposed(by: disposeBag)
     }
     
-    private func apiUpdateLastSeen(channelID: String, seq: Int) {
+    private func apiUpdateLastSeen(channelID: String, seq: Int, success: @escaping () -> ()) {
         chatAPIService
             .apiUpdateLastSeen(channelID: channelID, seq: seq)
             .subscribe { (_) in
                 print("更新了最後閱讀序號")
+                success()
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")

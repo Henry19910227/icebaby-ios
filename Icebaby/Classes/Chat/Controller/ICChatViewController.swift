@@ -47,6 +47,7 @@ extension ICChatViewController {
         messagesCollectionView.messagesDisplayDelegate = self
         initUI()
         bindViewModel()
+        trigger.onNext(())
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -56,7 +57,6 @@ extension ICChatViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        trigger.onNext(())
         allowChat.onNext(true)
     }
     

@@ -69,6 +69,7 @@ class ICChatViewModel: ICViewModel {
         setupChannel(channel)
         bindUpdateChannel(chatManager.updateChannel.asDriver(onErrorJustReturn: nil))
         bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
+        bindOnConnect(chatManager.onConnect.asDriver(onErrorJustReturn: ()))
     }
 }
 
@@ -108,6 +109,17 @@ extension ICChatViewModel {
     private func setupChannel(_ channel: ICChannel) {
         statusSubject.onNext(channel.status ?? 0 == 1)
         enableChangeStatusSubject.onNext(channel.me?.type ?? 0 == 1) //type = 1(房主) 才能操作開啟 or 關閉頻道
+    }
+    
+    private func bindOnConnect(_ onConnect: Driver<Void>) {
+        onConnect
+            .do { [unowned self] (_) in
+                self.messages = []
+                self.chatManager.pullHistory(channelID: self.channel.id ?? "")
+            }
+            .drive()
+            .disposed(by: disposeBag)
+
     }
     
     private func bindUpdateChannel(_ updateChannel: Driver<ICChannel?>) {
