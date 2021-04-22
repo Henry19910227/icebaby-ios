@@ -13,7 +13,6 @@ import SwiftyJSON
 
 
 class ICChannelData {
-    var needUpdateSeq = false
     var channel: ICChannel?
     var sub: CentrifugeSubscription?
 }
@@ -118,6 +117,7 @@ extension ICChatManager: APIDataTransform {
     public func pullHistory(channelID: String) {
         if let historyData = historyPool[channelID] {
             if historyData.needPull { //已登入過，但因為斷線原因，重新連接後需要追訊息
+                //使用該頻道最後一筆歷史訊息的seq查找後續的訊息
                 apiHistory(channelID: channelID, startSeq: historyData.messages?.last?.seq, endSeq: nil, count: 100) { [unowned self] (msgs) in
                     for msg in msgs {
                         historyData.messages?.append(msg)
@@ -134,6 +134,7 @@ extension ICChatManager: APIDataTransform {
             apiHistory(channelID: channelID, startSeq: nil, endSeq: nil, count: 100) { [unowned self] (msgs) in
                 let historyData = ICHistoryData()
                 historyData.messages = msgs
+                historyData.needPull = false
                 self.historyPool[channelID] = historyData
                 self.updateHistory.onNext((channelID, msgs))
             }
@@ -152,7 +153,7 @@ extension ICChatManager: APIDataTransform {
         return nil
     }
     
-    // 更新最後讀取序列(本地)
+    // 更新最後讀取序列
     public func updateLastSeen(channelID: String) {
         if let channelData = channelDataPool[channelID] {
             //清空未讀訊息數量
@@ -162,18 +163,8 @@ extension ICChatManager: APIDataTransform {
             //判斷lastSeenSeq參數與latestMsg.seq參數是否一致(latestMsg.seq每當接到新訊息都會更新)
             if channelData.channel?.lastSeenSeq != channelData.channel?.latestMsg?.seq ?? 0 {
                 //更新最後閱讀訊息序列號
-                channelData.channel?.lastSeenSeq = channelData.channel?.latestMsg?.seq ?? 0
-                channelData.needUpdateSeq = true
-            }
-        }
-    }
-    
-    // 更新最後讀取序列(雲端)
-    public func uploadLastSeen(channelID: String) {
-        guard let channelData = channelDataPool[channelID] else { return }
-        if channelData.needUpdateSeq {
-            apiUpdateLastSeen(channelID: channelID, seq: channelData.channel?.lastSeenSeq ?? 0) {
-                channelData.needUpdateSeq = false
+                channelData.channel?.lastSeenSeq = channelData.channel?.latestMsg?.seq
+                apiUpdateLastSeen(channelID: channelID, seq: channelData.channel?.lastSeenSeq ?? 0)
             }
         }
     }
@@ -380,12 +371,11 @@ extension ICChatManager {
             .disposed(by: disposeBag)
     }
     
-    private func apiUpdateLastSeen(channelID: String, seq: Int, success: @escaping () -> ()) {
+    private func apiUpdateLastSeen(channelID: String, seq: Int) {
         chatAPIService
             .apiUpdateLastSeen(channelID: channelID, seq: seq)
             .subscribe { (_) in
                 print("更新了最後閱讀序號")
-                success()
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
                 self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")

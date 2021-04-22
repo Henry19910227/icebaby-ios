@@ -97,7 +97,6 @@ extension ICChatViewModel {
             .do(onNext: { [unowned self] (_) in
                 self.senderSubject.onNext(ICSender(senderId: "\(self.userManager.uid())",
                                                    displayName: self.userManager.nickname()))
-                self.chatManager.updateLastSeen(channelID: self.channel.id ?? "")
             })
             .drive(onNext: { [unowned self] (_) in
                 self.chatManager.pullHistory(channelID: self.channel.id ?? "")
@@ -114,7 +113,7 @@ extension ICChatViewModel {
     private func bindOnConnect(_ onConnect: Driver<Void>) {
         onConnect
             .do { [unowned self] (_) in
-                self.messages = []
+                self.messages.removeAll() //斷線重連後必須先清空紀錄
                 self.chatManager.pullHistory(channelID: self.channel.id ?? "")
             }
             .drive()
