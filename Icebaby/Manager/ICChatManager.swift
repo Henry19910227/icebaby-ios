@@ -55,6 +55,8 @@ class ICChatManager: NSObject {
     public let updateHistory = PublishSubject<(String, [ICMessageData])>()
     public let channels = PublishSubject<[ICChannel]>()
     public let onConnect = PublishSubject<Void>()
+    public let publishError = PublishSubject<Error>()
+    public let showConnLoading = PublishSubject<Bool>()
     
     public let subscribe = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<(String, [ICMessageData])>()
@@ -76,6 +78,8 @@ extension ICChatManager: APIDataTransform {
     public func connect(token: String, uid: Int) {
         client.setToken(token)
         client.connect()
+        //顯示連接中菊花
+        showConnLoading.onNext(true)
     }
     
     public func disconnect() {
@@ -131,7 +135,7 @@ extension ICChatManager: APIDataTransform {
             self.updateHistory.onNext((channelID, historyData.messages ?? []))
             
         } else { //首次登入尚未拉取過訊息
-            apiHistory(channelID: channelID, startSeq: nil, endSeq: nil, count: 100) { [unowned self] (msgs) in
+            apiHistory(channelID: channelID, startSeq: nil, endSeq: nil, count: 300) { [unowned self] (msgs) in
                 let historyData = ICHistoryData()
                 historyData.messages = msgs
                 historyData.needPull = false
@@ -197,9 +201,9 @@ extension ICChatManager {
                 return (self.channelDataPool[channelID]!.sub! , data!)
             })
             .drive(onNext: { (sub, data) in
-                sub.publish(data: data) { (error) in
+                sub.publish(data: data) { [unowned self] (error) in
                     guard let error = error else { return }
-                    print("publish error: \(error.localizedDescription)")
+                    self.publishError.onNext(error)
                 }
             })
             .disposed(by: disposeBag)
@@ -215,6 +219,8 @@ extension ICChatManager: CentrifugeClientDelegate {
         pullMyChannels()
         //發送成功連接訊號
         onConnect.onNext(())
+        //關閉顯示中菊花
+        showConnLoading.onNext(false)
     }
     
     func onDisconnect(_ client: CentrifugeClient, _ event: CentrifugeDisconnectEvent) {
