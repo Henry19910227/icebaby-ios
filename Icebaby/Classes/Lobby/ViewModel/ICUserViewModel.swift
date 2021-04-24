@@ -93,7 +93,7 @@ extension ICUserViewModel {
             .do(onNext: { [unowned self] (_) in
                 if let channel = self.chatManager.getChannelWithFriend(self.userID) { //已經存在該頻道
                     self.navigator?.toChat(channel: channel)
-                } else { //從沒跟這位用戶聊過天，需要創建頻道
+                } else { //目前沒有開通所以創建頻道
                     self.chatManager.createChannel(friendID: self.userID)
                 }
             }) 
@@ -143,22 +143,22 @@ extension ICUserViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func apiCreateAndActivateChannel(friendID: Int) {
-        showLoadingSubject.onNext(true)
-        chatAPIService
-            .apiCreateChannel(friendID: friendID)
-            .flatMap ({ [unowned self] (channelID) -> Single<String?> in
-                return self.chatAPIService.apiActivateChannel(channelID: channelID ?? "")
-            })
-            .subscribe { [unowned self] (channelID) in
-                self.showLoadingSubject.onNext(false)
-                print("創建並激活 \(channelID ?? "") 頻道!")
-            } onError: { [unowned self] (error) in
-                self.showLoadingSubject.onNext(false)
-                guard let err = error as? ICError else { return }
-                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-            }
-            .disposed(by: disposeBag)
-    }
+//    private func apiCreateAndActivateChannel(friendID: Int) {
+//        showLoadingSubject.onNext(true)
+//        chatAPIService
+//            .apiCreateChannel(friendID: friendID)
+//            .flatMap ({ [unowned self] (channelID) -> Single<String?> in
+//                return self.chatAPIService.apiActivateChannel(channelID: channelID ?? "")
+//            })
+//            .subscribe { [unowned self] (channelID) in
+//                self.showLoadingSubject.onNext(false)
+//                print("創建並激活 \(channelID ?? "") 頻道!")
+//            } onError: { [unowned self] (error) in
+//                self.showLoadingSubject.onNext(false)
+//                guard let err = error as? ICError else { return }
+//                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+//            }
+//            .disposed(by: disposeBag)
+//    }
 }
 

@@ -53,6 +53,7 @@ class ICChatViewModel: ICViewModel {
         public let showErrorMsg: Driver<String>
         public let status: Driver<Bool>
         public let enableChangeStatus: Driver<Bool>
+        public let msgSendError: Driver<String>
     }
     
     init(navigator: ICChatNavigator,
@@ -85,7 +86,8 @@ extension ICChatViewModel {
                       messages: messageSubject.asDriver(onErrorJustReturn: []),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       status: statusSubject.asDriver(onErrorJustReturn: false),
-                      enableChangeStatus: enableChangeStatusSubject.asDriver(onErrorJustReturn: false))
+                      enableChangeStatus: enableChangeStatusSubject.asDriver(onErrorJustReturn: false),
+                      msgSendError: chatManager.publishError.asDriver(onErrorJustReturn: ""))
     }
 }
 

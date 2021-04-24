@@ -10,6 +10,11 @@ import JGProgressHUD
 
 class ICLoadingProgressHUD: ICProgressHUD {
     private let hud = JGProgressHUD(style: .light)
+    private lazy var errHud: JGProgressHUD = {
+        let errHud = JGProgressHUD(style: .dark)
+        errHud.indicatorView = JGProgressHUDErrorIndicatorView()
+        return errHud
+    }()
     
     init() {
         hud.position = .center
@@ -21,5 +26,11 @@ class ICLoadingProgressHUD: ICProgressHUD {
     
     func hide() {
         hud.dismiss(animated: true)
+    }
+    
+    func toast(_ view: UIView, _ msg: String) {
+        errHud.textLabel.text = msg
+        errHud.show(in: view)
+        errHud.dismiss(afterDelay: 1.0)
     }
 }

@@ -27,12 +27,14 @@ class ICMainTabBarViewModel: ICViewModel {
     struct Output {
         public let showLoading: Driver<Bool>
         public let showErrorMsg: Driver<String>
+        public let showDisconnect: Driver<Void>
     }
     
     init(navigator: ICMainTabBarNavigator, chatManager: ICChatManager, userManager: UserManager) {
         self.navigator = navigator
         self.chatManager = chatManager
         self.userManager = userManager
+        bindConnLoading(loading: chatManager.showConnLoading.asDriver(onErrorJustReturn: false))
     }
 }
 
@@ -40,7 +42,8 @@ extension ICMainTabBarViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(trigger: input.trigger)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
-                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
+                      showErrorMsg: chatManager!.publishError.asDriver(onErrorJustReturn: ""),
+                      showDisconnect: chatManager!.onDisconnect.asDriver(onErrorJustReturn: ()))
     }
 }
 
@@ -53,5 +56,15 @@ extension ICMainTabBarViewModel {
             })
             .drive()
             .disposed(by: disposeBag)
+    }
+    
+    private func bindConnLoading(loading: Driver<Bool>?) {
+        loading?
+            .do { [unowned self] (isShow) in
+                self.showLoadingSubject.onNext(isShow)
+            }
+            .drive()
+            .disposed(by: disposeBag)
+
     }
 }

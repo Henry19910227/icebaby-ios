@@ -55,10 +55,12 @@ class ICChatManager: NSObject {
     public let updateHistory = PublishSubject<(String, [ICMessageData])>()
     public let channels = PublishSubject<[ICChannel]>()
     public let onConnect = PublishSubject<Void>()
-    public let publishError = PublishSubject<Error>()
+    public let onDisconnect = PublishSubject<Void>()
+    public let publishError = PublishSubject<String>()
     public let showConnLoading = PublishSubject<Bool>()
     
-    public let subscribe = PublishSubject<String>()
+    
+    
     public let onSubscribeSuccess = PublishSubject<(String, [ICMessageData])>()
     public let onSubscribeError = PublishSubject<String>()
     public let historyError = PublishSubject<String>()
@@ -203,7 +205,7 @@ extension ICChatManager {
             .drive(onNext: { (sub, data) in
                 sub.publish(data: data) { [unowned self] (error) in
                     guard let error = error else { return }
-                    self.publishError.onNext(error)
+                    self.publishError.onNext(error.localizedDescription)
                 }
             })
             .disposed(by: disposeBag)
@@ -225,6 +227,7 @@ extension ICChatManager: CentrifugeClientDelegate {
     
     func onDisconnect(_ client: CentrifugeClient, _ event: CentrifugeDisconnectEvent) {
         print("與聊天室斷開連接: \(event.reason), reconnect: \(event.reconnect)")
+        onDisconnect.onNext(())
     }
 }
 
@@ -233,9 +236,11 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     
     func onPublish(_ sub: CentrifugeSubscription, _ event: CentrifugePublishEvent) {
         do {
-            var msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
-            if msgData.type == "message" {
+            let type = try JSON(data: event.data).dictionary?["type"]?.string ?? ""
+            
+            if type == "message" {
                 //將新訊息存入歷史訊息中
+                var msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
                 if let channelData = channelDataPool[msgData.channelID ?? ""] {
                     //自增訊息序列號
                     msgData.seq = (channelData.channel?.latestMsg?.seq ?? 0) + 1
@@ -251,34 +256,30 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     updateHistory.onNext((channelData.channel?.id ?? "", [msgData]))
                 }
             }
-            if msgData.type == "activate" {
-                if let channelData = channelDataPool[msgData.channelID ?? ""] {
+            if type == "activate" {
+                let actData = try JSONDecoder().decode(ICActivateData.self, from: event.data)
+                if let channelData = channelDataPool[actData.channelID ?? ""] {
                     //頻道已存在:變更狀態並發出訊號更新UI 訂閱頻道
+                    channelData.channel?.status = 1
                     if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
-                        channelData.channel?.status = 1
                         channelData.sub = sub
                     }
                     //發出訊號
                     updateChannel.onNext(channelData.channel)
                 } else {
                     //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號通知添加channel
-                    apiGetMyChannel(channelID: msgData.channelID ?? "") { [unowned self] (channel) in
-                        if let channel = channel {
-                            //將channel資料加入pool
-                            let channelData = ICChannelData()
-                            channelData.channel = channel
-                            self.channelDataPool[channel.id ?? ""] = channelData
-                            //訂閱頻道
-                            if let sub = self.subscribeChannel(channel.id) {
-                                channelData.sub = sub
-                            }
-                        }
-                        //發出訊號
-                        self.addChannel.onNext(channel)
+                    let channelData = ICChannelData()
+                    channelData.channel = actData.payload
+                    if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
+                        channelData.sub = sub
                     }
+                    channelDataPool[actData.channelID ?? ""] = channelData
+                    //發出新增頻道訊號
+                    addChannel.onNext(channelData.channel)
                 }
             }
-            if msgData.type == "shutdown" {
+            if type == "shutdown" {
+                let msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
                 //頻道已存在
                 if let channelData = channelDataPool[msgData.channelID ?? ""] {
                     //退訂此頻道
@@ -417,8 +418,7 @@ extension ICChatManager {
     private func apiCreateChannel(friendID: Int) {
         chatAPIService
             .apiCreateChannel(friendID: friendID)
-            .subscribe { [unowned self] (channelID) in
-                self.activateChannel(channelID: channelID ?? "")
+            .subscribe { (channelID) in
                 print("創建 \(channelID ?? "") 頻道!")
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }

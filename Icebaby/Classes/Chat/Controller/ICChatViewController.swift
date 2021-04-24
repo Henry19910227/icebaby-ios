@@ -36,6 +36,7 @@ class ICChatViewController: MessagesViewController {
         statusButton.title = "test"
         return statusButton
     }()
+    private let hud = ICLoadingProgressHUD()
 }
 
 //MARK: - Life Cycle
@@ -104,6 +105,13 @@ extension ICChatViewController {
         output?
             .enableChangeStatus
             .drive(statusBarButtonItem.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        output?
+            .msgSendError
+            .drive(onNext: { [unowned self] (msg) in
+                self.hud.toast(self.view, msg)
+            })
             .disposed(by: disposeBag)
     }
 }

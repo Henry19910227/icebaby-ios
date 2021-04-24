@@ -10,4 +10,5 @@ import UIKit
 protocol ICProgressHUD {
     func show( _ view: UIView)
     func hide()
+    func toast(_ view: UIView, _ msg: String)
 }

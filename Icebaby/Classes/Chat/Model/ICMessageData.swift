@@ -28,3 +28,17 @@ struct ICMsgPayload: Codable {
     var nickname: String?
     var body: String?
 }
+
+struct ICActivateData: Codable {
+    var seq: Int?
+    var type: String?
+    var channelID: String?
+    var payload: ICChannel?
+    
+    enum CodingKeys : String, CodingKey {
+        case seq = "seq"
+        case type = "type"
+        case channelID = "channel_id"
+        case payload = "payload"
+    }
+}
