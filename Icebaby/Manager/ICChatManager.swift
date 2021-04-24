@@ -58,6 +58,8 @@ class ICChatManager: NSObject {
     public let onDisconnect = PublishSubject<Void>()
     public let publishError = PublishSubject<String>()
     public let showConnLoading = PublishSubject<Bool>()
+    public let onShutdown = PublishSubject<String>()
+    public let onActivate = PublishSubject<String>()
     
     
     
@@ -250,7 +252,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     channelData.channel?.unread = (channelData.channel?.unread ?? 0) + 1
                     historyPool[channelData.channel?.id ?? ""]?.messages?.append(msgData)
                     
-                    //發布channel更新狀態
+                    //發布channel更新狀態，更新小紅點
                     updateChannel.onNext(channelData.channel)
                     //發布history更新狀態
                     updateHistory.onNext((channelData.channel?.id ?? "", [msgData]))
@@ -258,36 +260,29 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
             }
             if type == "activate" {
                 let actData = try JSONDecoder().decode(ICActivateData.self, from: event.data)
-                if let channelData = channelDataPool[actData.channelID ?? ""] {
-                    //頻道已存在:變更狀態並發出訊號更新UI 訂閱頻道
-                    channelData.channel?.status = 1
-                    if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
-                        channelData.sub = sub
-                    }
-                    //發出訊號
-                    updateChannel.onNext(channelData.channel)
-                } else {
-                    //頻道不存在:獲取此頻道資訊放入pool, 並且發訊號通知添加channel
-                    let channelData = ICChannelData()
-                    channelData.channel = actData.payload
-                    if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
-                        channelData.sub = sub
-                    }
-                    channelDataPool[actData.channelID ?? ""] = channelData
-                    //發出新增頻道訊號
-                    addChannel.onNext(channelData.channel)
+                let channelData = ICChannelData()
+                channelData.channel = actData.payload
+                if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
+                    channelData.sub = sub
                 }
+                //添加頻道
+                channelDataPool[actData.channelID ?? ""] = channelData
+                //發出頻道開啟訊號
+                onActivate.onNext(actData.channelID ?? "")
+                //發出新增頻道訊號
+                addChannel.onNext(channelData.channel)
             }
             if type == "shutdown" {
                 let msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
-                //頻道已存在
                 if let channelData = channelDataPool[msgData.channelID ?? ""] {
                     //退訂此頻道
                     channelData.sub?.unsubscribe()
-                    channelData.sub = nil
-                    channelData.channel?.status = 0
-                    //發出訊號
-                    updateChannel.onNext(channelData.channel)
+                    //刪除頻道
+                    channelDataPool.removeValue(forKey: msgData.channelID ?? "")
+                    //發出頻道關閉訊號
+                    onShutdown.onNext(msgData.channelID ?? "")
+                    //發出訊號更新列表
+                    channels.onNext(getChannelsFromPool())
                 }
             }
         } catch {

@@ -68,7 +68,8 @@ class ICChatViewModel: ICViewModel {
         self.userManager = userManager
         self.channel = channel
         setupChannel(channel)
-        bindUpdateChannel(chatManager.updateChannel.asDriver(onErrorJustReturn: nil))
+        bindOnShutdown(chatManager.onShutdown.asDriver(onErrorJustReturn: ""))
+        bindOnActivate(chatManager.onActivate.asDriver(onErrorJustReturn: ""))
         bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
         bindOnConnect(chatManager.onConnect.asDriver(onErrorJustReturn: ()))
     }
@@ -123,15 +124,27 @@ extension ICChatViewModel {
 
     }
     
-    private func bindUpdateChannel(_ updateChannel: Driver<ICChannel?>) {
-        updateChannel
-            .drive { [unowned self] (channel) in
-                if let channel = channel {
-                    self.setupChannel(channel)
-                }
+    private func bindOnShutdown(_ onShutdown: Driver<String>) {
+        onShutdown
+            .filter({ [unowned self] (channelID) -> Bool in
+                return self.channel.id ?? "" == channelID
+            })
+            .drive { [unowned self] (channelID) in
+                self.statusSubject.onNext(false)
             }
             .disposed(by: disposeBag)
 
+    }
+    
+    private func bindOnActivate(_ onActivate: Driver<String>) {
+        onActivate
+            .filter({ [unowned self] (channelID) -> Bool in
+                return self.channel.id ?? "" == channelID
+            })
+            .drive { [unowned self] (channelID) in
+                self.statusSubject.onNext(true)
+            }
+            .disposed(by: disposeBag)
     }
     
     private func bindStatusChange(_ statusChange: Driver<Void>) {

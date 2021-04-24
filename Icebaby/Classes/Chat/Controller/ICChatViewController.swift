@@ -37,6 +37,10 @@ class ICChatViewController: MessagesViewController {
         return statusButton
     }()
     private let hud = ICLoadingProgressHUD()
+    
+    deinit {
+        print("deinit ICChatViewController")
+    }
 }
 
 //MARK: - Life Cycle

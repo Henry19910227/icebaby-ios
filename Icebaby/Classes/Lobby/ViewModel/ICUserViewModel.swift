@@ -60,6 +60,10 @@ class ICUserViewModel: ICViewModel {
         self.userID = userID
         bindAddChannel(chatManager.addChannel.asDriver(onErrorJustReturn: nil))
     }
+    
+    deinit {
+        print("deinit ICUserViewModel")
+    }
 }
 
 //MARK: - Transform
@@ -104,7 +108,7 @@ extension ICUserViewModel {
     //第一次激活該頻道，會收到AddChannel訊號
     private func bindAddChannel(_ addChannel: Driver<ICChannel?>) {
         addChannel
-            .drive(onNext: { (channel) in
+            .drive(onNext: { [unowned self] (channel) in
                 guard let channel = channel else { return }
                 self.navigator?.toChat(channel: channel)
             })
@@ -142,23 +146,5 @@ extension ICUserViewModel {
             })
             .disposed(by: disposeBag)
     }
-    
-//    private func apiCreateAndActivateChannel(friendID: Int) {
-//        showLoadingSubject.onNext(true)
-//        chatAPIService
-//            .apiCreateChannel(friendID: friendID)
-//            .flatMap ({ [unowned self] (channelID) -> Single<String?> in
-//                return self.chatAPIService.apiActivateChannel(channelID: channelID ?? "")
-//            })
-//            .subscribe { [unowned self] (channelID) in
-//                self.showLoadingSubject.onNext(false)
-//                print("創建並激活 \(channelID ?? "") 頻道!")
-//            } onError: { [unowned self] (error) in
-//                self.showLoadingSubject.onNext(false)
-//                guard let err = error as? ICError else { return }
-//                self.showErrorMsgSubject.onNext("\(err.code ?? 0) \(err.msg ?? "")")
-//            }
-//            .disposed(by: disposeBag)
-//    }
 }
 
