@@ -69,7 +69,7 @@ class ICChatViewModel: ICViewModel {
         self.channel = channel
         setupChannel(channel)
         bindOnShutdown(chatManager.onShutdown.asDriver(onErrorJustReturn: ""))
-        bindOnActivate(chatManager.onActivate.asDriver(onErrorJustReturn: ""))
+        bindOnActivate(chatManager.onActivate.asDriver(onErrorJustReturn: nil))
         bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
         bindOnConnect(chatManager.onConnect.asDriver(onErrorJustReturn: ()))
     }
@@ -136,9 +136,10 @@ extension ICChatViewModel {
 
     }
     
-    private func bindOnActivate(_ onActivate: Driver<String>) {
+    private func bindOnActivate(_ onActivate: Driver<ICChannel?>) {
         onActivate
-            .filter({ [unowned self] (channelID) -> Bool in
+            .filter({ [unowned self] (channel) -> Bool in
+                guard let channelID = channel?.id else { return false }
                 return self.channel.id ?? "" == channelID
             })
             .drive { [unowned self] (channelID) in

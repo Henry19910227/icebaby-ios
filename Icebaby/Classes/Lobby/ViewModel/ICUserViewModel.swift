@@ -30,7 +30,7 @@ class ICUserViewModel: ICViewModel {
     private let switchTabSubject = PublishSubject<Int>()
     
     //Status
-    private var allowChat = false
+    private var isDisplay = false
     private var needToChat = false
 
     struct Input {
@@ -58,7 +58,7 @@ class ICUserViewModel: ICViewModel {
         self.chatAPIService = chatAPIService
         self.chatManager = chatManager
         self.userID = userID
-        bindAddChannel(chatManager.addChannel.asDriver(onErrorJustReturn: nil))
+        bindOnActivate(chatManager.onActivate.asDriver(onErrorJustReturn: nil))
     }
     
     deinit {
@@ -96,7 +96,11 @@ extension ICUserViewModel {
         chatTap
             .do(onNext: { [unowned self] (_) in
                 if let channel = self.chatManager.getChannelWithFriend(self.userID) { //已經存在該頻道
-                    self.navigator?.toChat(channel: channel)
+                    if channel.status == 1 {
+                        self.navigator?.toChat(channel: channel)
+                    } else {
+                        self.chatManager.createChannel(friendID: self.userID)
+                    }
                 } else { //目前沒有開通所以創建頻道
                     self.chatManager.createChannel(friendID: self.userID)
                 }
@@ -105,9 +109,11 @@ extension ICUserViewModel {
             .disposed(by: disposeBag)
     }
     
-    //第一次激活該頻道，會收到AddChannel訊號
-    private func bindAddChannel(_ addChannel: Driver<ICChannel?>) {
-        addChannel
+    private func bindOnActivate(_ onActivate: Driver<ICChannel?>) {
+        onActivate
+            .filter({ [unowned self] (_) -> Bool in
+                return self.isDisplay
+            })
             .drive(onNext: { [unowned self] (channel) in
                 guard let channel = channel else { return }
                 self.navigator?.toChat(channel: channel)
@@ -117,11 +123,8 @@ extension ICUserViewModel {
     
     private func bindIsDisplay(_ isDisplay: Driver<Bool>) {
         isDisplay
-            .filter({ (isDisplay) -> Bool in
-                return isDisplay
-            })
-            .do(onNext: { [unowned self] (isAllow) in
-                self.allowChat = isAllow
+            .do(onNext: { [unowned self] (isDisplay) in
+                self.isDisplay = isDisplay
             })
             .drive()
             .disposed(by: disposeBag)

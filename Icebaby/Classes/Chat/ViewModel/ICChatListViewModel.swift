@@ -54,7 +54,6 @@ class ICChatListViewModel: ICViewModel {
         self.userManager = userManager
         bindChannels(chatManager.channels.asDriver(onErrorJustReturn: []))
         bindUpdateChannel(chatManager.updateChannel.asDriver(onErrorJustReturn: nil))
-        bindAddChannel(chatManager.addChannel.asDriver(onErrorJustReturn: nil))
     }
 }
 
@@ -118,19 +117,6 @@ extension ICChatListViewModel {
             .disposed(by: disposeBag)
     }
     
-    private func bindAddChannel(_ addChannel: Driver<ICChannel?>) {
-        addChannel
-            .map({ [unowned self] (channel) -> ICChatListCellViewModel in
-                let vm = ICChatListCellViewModel(userID: self.userManager.uid())
-                vm.model = channel
-                return vm
-            })
-            .drive(onNext: { [unowned self] (vm) in
-                self.cellVMs.insert(vm, at: 0)
-                self.itemsSubject.onNext(self.cellVMs)
-            })
-            .disposed(by: disposeBag)
-    }
 }
 
 //MARK: - Setup VM

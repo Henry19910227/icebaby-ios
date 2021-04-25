@@ -59,7 +59,7 @@ class ICChatManager: NSObject {
     public let publishError = PublishSubject<String>()
     public let showConnLoading = PublishSubject<Bool>()
     public let onShutdown = PublishSubject<String>()
-    public let onActivate = PublishSubject<String>()
+    public let onActivate = PublishSubject<ICChannel?>()
     
     
     
@@ -104,9 +104,7 @@ extension ICChatManager: APIDataTransform {
                 }
                 //處理channel訂閱
                 if channel.status ?? 0 == 1 { //當頻道狀態為開啟時才訂閱
-                    if let sub = subscribeChannel(channel.id) {
-                        channelDataPool[channel.id ?? ""]?.sub = sub
-                    }
+                    subscribeChannel(channel.id ?? "")
                 } else { //當頻道狀態為關閉時取消訂閱
                     channelDataPool[channel.id ?? ""]?.sub?.unsubscribe()
                 }
@@ -259,28 +257,26 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                 }
             }
             if type == "activate" {
-                let actData = try JSONDecoder().decode(ICActivateData.self, from: event.data)
+                let activateData = try JSONDecoder().decode(ICActivateData.self, from: event.data)
                 let channelData = ICChannelData()
-                channelData.channel = actData.payload
-                if let sub = self.subscribeChannel(channelData.channel?.id ?? "") {
-                    channelData.sub = sub
-                }
-                //添加頻道
-                channelDataPool[actData.channelID ?? ""] = channelData
-                //發出頻道開啟訊號
-                onActivate.onNext(actData.channelID ?? "")
-                //發出新增頻道訊號
-                addChannel.onNext(channelData.channel)
+                channelData.channel = activateData.payload
+                //訂閱該頻道
+                subscribeChannel(channelData.channel?.id ?? "")
+                //添加頻道到pool
+                channelDataPool[activateData.channelID ?? ""] = channelData
+                //發出頻道開啟訊號(更新聊天頁面UI)
+                onActivate.onNext(activateData.payload)
+                //發出訊號更新列表(更新聊天列表UI)
+                channels.onNext(getChannelsFromPool())
             }
             if type == "shutdown" {
                 let msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
                 if let channelData = channelDataPool[msgData.channelID ?? ""] {
-                    //退訂此頻道
-                    channelData.sub?.unsubscribe()
-                    //刪除頻道
-                    channelDataPool.removeValue(forKey: msgData.channelID ?? "")
+                    //改變channel狀態
+                    channelData.channel?.status = 0
+//                    channelDataPool.removeValue(forKey: channelData.channel?.id ?? "")
                     //發出頻道關閉訊號
-                    onShutdown.onNext(msgData.channelID ?? "")
+                    onShutdown.onNext(channelData.channel?.id ?? "")
                     //發出訊號更新列表
                     channels.onNext(getChannelsFromPool())
                 }
@@ -290,9 +286,15 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
         }
     }
     
+    func onUnsubscribe(_ sub: CentrifugeSubscription, _ event: CentrifugeUnsubscribeEvent) {
+        print("結束訂閱 \(sub.channel)")
+    }
     
     func onSubscribeSuccess(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeSuccessEvent) {
         print("subscribe channel: \(sub.channel) recovered: \(event.recovered)")
+        if let channelData = channelDataPool[sub.channel] {
+            channelData.sub = sub
+        }
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
@@ -313,16 +315,19 @@ extension ICChatManager {
         return channels
     }
     // 訂閱單個頻道
-    @discardableResult private func subscribeChannel(_ channelID: String?) -> CentrifugeSubscription? {
-        guard let channelID = channelID else { return nil }
-        var subscribeItem: CentrifugeSubscription?
-        do {
-            subscribeItem = try client.newSubscription(channel: channelID, delegate: self)
-        } catch {
-            onSubscribeError.onNext(error.localizedDescription)
+    private func subscribeChannel(_ channelID: String) {
+        //刪除舊有訂閱
+        if let sub = client.getSubscription(channel: channelID) {
+            client.removeSubscription(sub)
         }
-        subscribeItem?.subscribe()
-        return subscribeItem
+        //創建新的訂閱
+        var sub: CentrifugeSubscription?
+        do {
+            sub = try client.newSubscription(channel: channelID, delegate: self)
+        } catch {
+            print(error.localizedDescription)
+        }
+        sub?.subscribe()
     }
     
     private func resetHistoryPoolStatus() {
