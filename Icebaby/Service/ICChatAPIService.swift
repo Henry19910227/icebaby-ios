@@ -16,7 +16,7 @@ protocol ICChatAPI {
     func apiCreateChannel(friendID: Int) -> Single<String?>
     func apiActivateChannel(channelID: String) -> Single<String?>
     func apiShutdownChannel(channelID: String) -> Single<String?>
-    func apiGetChannels(userID: Int) -> Single<[ICChannel]>
+    func apiGetChannels(userID: Int, start: String, end: String) -> Single<[ICChannel]>
     func apiUpdateReadDate(channelID: String, userID: Int, date: String) -> Single<ICMember?>
     func apiUpdateLastSeen(channelID: String, seq: Int) -> Single<()>
     func apiHistory(channelID: String, startSeq: Int?, endSeq: Int?, count: Int?) -> Single<[ICMessageData]>
@@ -83,9 +83,9 @@ class ICChatAPIService: APIBaseRequest, APIDataTransform, ICChatAPI, ICChatURL {
         }
     }
     
-    func apiGetChannels(userID: Int) -> Single<[ICChannel]> {
+    func apiGetChannels(userID: Int, start: String, end: String) -> Single<[ICChannel]> {
         let header = HTTPHeaders(["token": self.userManager.token() ?? ""])
-        let parameter: [String: Any] = ["user_id": userID, "status": 1]
+        let parameter: [String: Any] = ["user_id": userID, "start_datetime": start, "end_datetime": end]
         return Single<[ICChannel]>.create { [unowned self] (single) -> Disposable in
             let _ = self.sendRequest(medthod: .get, url: self.myChannelListURL, parameter: parameter, headers: header)
                 .map ({ (result) -> [ICChannel] in

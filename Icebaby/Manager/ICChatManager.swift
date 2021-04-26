@@ -354,8 +354,11 @@ extension ICChatManager {
     }
     
     private func apiGetMyChannels(userID: Int, success: @escaping ([ICChannel]) -> ()) {
+        let startDate = dateFormatter.dateToDateString(Date().addingTimeInterval(-60), "yyyy-MM-dd HH:mm:ss") ?? ""
+        let endDate = dateFormatter.dateToDateString(Date(), "yyyy-MM-dd HH:mm:ss") ?? ""
+        
         chatAPIService
-            .apiGetChannels(userID: userManager.uid())
+            .apiGetChannels(userID: userManager.uid(), start: startDate, end: endDate)
             .subscribe(onSuccess: { (channels) in
                 success(channels)
             }, onError: { (error) in
