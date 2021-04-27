@@ -33,7 +33,7 @@ class ICChatViewController: MessagesViewController {
     // UI
     private lazy var statusBarButtonItem: UIBarButtonItem = {
         let statusButton = UIBarButtonItem()
-        statusButton.title = "test"
+        statusButton.title = "關閉頻道"
         return statusButton
     }()
     private let hud = ICLoadingProgressHUD()
@@ -101,7 +101,8 @@ extension ICChatViewController {
         output?
             .status
             .drive(onNext: { [unowned self] (isActivate) in
-                self.statusBarButtonItem.title = isActivate ? "關閉頻道" : "開啟頻道"
+                self.statusBarButtonItem.title = isActivate ? "關閉頻道" : ""
+                self.statusBarButtonItem.isEnabled = isActivate
                 self.messagesCollectionView.backgroundColor = isActivate ? .white : .gray
             })
             .disposed(by: disposeBag)
