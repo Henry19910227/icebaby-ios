@@ -23,6 +23,7 @@ class ICLoginViewModel: ICViewModel {
     private let loginAPIService: ICLoginAPI
     private let userManager: UserManager
     private let fbLoginManager: FBLoginManager
+    private let chatManager: ICChatManager
     
     //RX
     private let disposeBag = DisposeBag()
@@ -56,11 +57,14 @@ class ICLoginViewModel: ICViewModel {
     init(navigator: ICLoginRootNavigator,
          loginAPIService: ICLoginAPI,
          fbLoginManager: FBLoginManager,
+         chatManager: ICChatManager,
          userManager: UserManager) {
         self.navigator = navigator
         self.loginAPIService = loginAPIService
         self.userManager = userManager
         self.fbLoginManager = fbLoginManager
+        self.chatManager = chatManager
+        bindConnectSuccess(chatManager.connectSuccess.asDriver(onErrorJustReturn: ()))
     }
     
     @discardableResult func transform(input: Input) -> Output {
@@ -87,6 +91,17 @@ extension ICLoginViewModel {
             })
             .drive()
             .disposed(by: disposeBag)
+    }
+    
+    private func bindConnectSuccess(_ connectSuccess: Driver<Void>) {
+        connectSuccess
+            .do { [unowned self] (_) in
+                self.showLoadingSubject.onNext(false)
+                self.navigator.presendToMain()
+            }
+            .drive()
+            .disposed(by: disposeBag)
+
     }
     
     private func bindLoginTap(_ loginTap: Driver<Void>) {
@@ -160,8 +175,7 @@ extension ICLoginViewModel {
                 self.userManager.saveToken(token)
                 self.userManager.saveUID(uid)
                 self.userManager.saveNickname(nickname)
-                self.showLoadingSubject.onNext(false)
-                self.navigator.presendToMain()
+                self.chatManager.connect(token: token, uid: uid)
             }) { [unowned self] (error) in
                 self.showLoadingSubject.onNext(false)
                 guard let err = error as? ICError else { return }

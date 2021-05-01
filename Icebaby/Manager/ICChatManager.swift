@@ -54,10 +54,10 @@ class ICChatManager: NSObject {
     public let addChannel = PublishSubject<ICChannel?>()
     public let updateHistory = PublishSubject<(String, [ICMessageData])>()
     public let channels = PublishSubject<[ICChannel]>()
-    public let onConnect = PublishSubject<Void>()
+    public let connecting = PublishSubject<Void>()
+    public let connectSuccess = PublishSubject<Void>()
     public let onDisconnect = PublishSubject<Void>()
     public let publishError = PublishSubject<String>()
-    public let showConnLoading = PublishSubject<Bool>()
     public let onShutdown = PublishSubject<String>()
     public let onActivate = PublishSubject<ICChannel?>()
     
@@ -82,8 +82,7 @@ extension ICChatManager: APIDataTransform {
     public func connect(token: String, uid: Int) {
         client.setToken(token)
         client.connect()
-        //顯示連接中菊花
-        showConnLoading.onNext(true)
+        connecting.onNext(())
     }
     
     public func disconnect() {
@@ -220,14 +219,13 @@ extension ICChatManager: CentrifugeClientDelegate {
         resetHistoryPoolStatus()
         pullMyChannels()
         //發送成功連接訊號
-        onConnect.onNext(())
-        //關閉顯示中菊花
-        showConnLoading.onNext(false)
+        connectSuccess.onNext(())
     }
     
     func onDisconnect(_ client: CentrifugeClient, _ event: CentrifugeDisconnectEvent) {
         print("與聊天室斷開連接: \(event.reason), reconnect: \(event.reconnect)")
         onDisconnect.onNext(())
+        connecting.onNext(())
     }
 }
 
@@ -316,9 +314,11 @@ extension ICChatManager {
     }
     // 訂閱單個頻道
     private func subscribeChannel(_ channelID: String) {
-        //刪除舊有訂閱
+        //該訂閱已存在
         if let sub = client.getSubscription(channel: channelID) {
-            client.removeSubscription(sub)
+            onSubscribeExist(sub)
+            return
+//            client.removeSubscription(sub)
         }
         //創建新的訂閱
         var sub: CentrifugeSubscription?
@@ -333,6 +333,13 @@ extension ICChatManager {
     private func resetHistoryPoolStatus() {
         for (_, historyData) in historyPool {
             historyData.needPull = true
+        }
+    }
+    
+    //該訂閱已存在
+    private func onSubscribeExist(_ sub: CentrifugeSubscription) {
+        if let channelData = channelDataPool[sub.channel] {
+            channelData.sub = sub
         }
     }
 }

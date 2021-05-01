@@ -71,7 +71,7 @@ class ICChatViewModel: ICViewModel {
         bindOnShutdown(chatManager.onShutdown.asDriver(onErrorJustReturn: ""))
         bindOnActivate(chatManager.onActivate.asDriver(onErrorJustReturn: nil))
         bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
-        bindOnConnect(chatManager.onConnect.asDriver(onErrorJustReturn: ()))
+        bindConnectSuccess(chatManager.connectSuccess.asDriver(onErrorJustReturn: ()))
     }
 }
 
@@ -113,8 +113,8 @@ extension ICChatViewModel {
         enableChangeStatusSubject.onNext(channel.me?.type ?? 0 == 1) //type = 1(房主) 才能操作開啟 or 關閉頻道
     }
     
-    private func bindOnConnect(_ onConnect: Driver<Void>) {
-        onConnect
+    private func bindConnectSuccess(_ connectSuccess: Driver<Void>) {
+        connectSuccess
             .do { [unowned self] (_) in
                 self.messages.removeAll() //斷線重連後必須先清空紀錄
                 self.chatManager.pullHistory(channelID: self.channel.id ?? "")

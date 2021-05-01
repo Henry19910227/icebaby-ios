@@ -34,7 +34,8 @@ class ICMainTabBarViewModel: ICViewModel {
         self.navigator = navigator
         self.chatManager = chatManager
         self.userManager = userManager
-        bindConnLoading(loading: chatManager.showConnLoading.asDriver(onErrorJustReturn: false))
+        bindConnecting(chatManager.connecting.asDriver(onErrorJustReturn: ()))
+        bindConnectSuccess(chatManager.connectSuccess.asDriver(onErrorJustReturn: ()))
     }
 }
 
@@ -52,19 +53,26 @@ extension ICMainTabBarViewModel {
         trigger
             .do(onNext: { [unowned self] (tabbarVC) in
                 self.navigator?.toMain(tabbarVC: tabbarVC)
-                self.chatManager?.connect(token: self.userManager.token() ?? "", uid: self.userManager.uid())
             })
             .drive()
             .disposed(by: disposeBag)
     }
     
-    private func bindConnLoading(loading: Driver<Bool>?) {
-        loading?
-            .do { [unowned self] (isShow) in
-                self.showLoadingSubject.onNext(isShow)
+    private func bindConnecting(_ connecting: Driver<Void>) {
+        connecting
+            .do { [unowned self] (_) in
+                self.showLoadingSubject.onNext(true)
             }
             .drive()
             .disposed(by: disposeBag)
-
+    }
+    
+    private func bindConnectSuccess(_ connectSuccess: Driver<Void>) {
+        connectSuccess
+            .do { [unowned self] (_) in
+                self.showLoadingSubject.onNext(false)
+            }
+            .drive()
+            .disposed(by: disposeBag)
     }
 }
