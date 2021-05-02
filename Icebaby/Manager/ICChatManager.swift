@@ -57,15 +57,16 @@ class ICChatManager: NSObject {
     public let connecting = PublishSubject<Void>()
     public let connectSuccess = PublishSubject<Void>()
     public let onDisconnect = PublishSubject<Void>()
-    public let publishError = PublishSubject<String>()
     public let onShutdown = PublishSubject<String>()
     public let onActivate = PublishSubject<ICChannel?>()
     
     
-    
+    public let publishError = PublishSubject<String>()
+    public let publishing = PublishSubject<String>()
+    public let publishSuccess = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<(String, [ICMessageData])>()
     public let onSubscribeError = PublishSubject<String>()
-    public let historyError = PublishSubject<String>()
+    public let responseError = PublishSubject<String>()
     
     init(userManager: UserManager,
          chatAPIService: ICChatAPI) {
@@ -201,10 +202,25 @@ extension ICChatManager {
             .map({ [unowned self] (channelID, data) -> (CentrifugeSubscription, Data) in
                 return (self.channelDataPool[channelID]!.sub! , data!)
             })
-            .drive(onNext: { (sub, data) in
+            .drive(onNext: { [unowned self] (sub, data) in
+                self.publishing.onNext(sub.channel)
                 sub.publish(data: data) { [unowned self] (error) in
-                    guard let error = error else { return }
-                    self.publishError.onNext(error.localizedDescription)
+                    guard let err = error as? CentrifugeError else {
+                        //訊息發送成功
+                        self.publishSuccess.onNext(sub.channel)
+                        return
+                    }
+                    //訊息發送失敗
+                    switch err {
+                    case .timeout:
+                        self.publishError.onNext("訊息發送超時 發送失敗!")
+                    case .unsubscribed:
+                        self.publishError.onNext("未訂閱該頻道")
+                    case .replyError(let code, let msg):
+                        self.publishError.onNext("\(code) - \(msg)")
+                    default:
+                        self.publishError.onNext("系統錯誤")
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -215,11 +231,15 @@ extension ICChatManager {
 extension ICChatManager: CentrifugeClientDelegate {
     func onConnect(_ client: CentrifugeClient, _ event: CentrifugeConnectEvent) {
         print("連接聊天室成功 or 斷線重連成功")
+        //訂閱自己ID的頻道
         subscribeChannel(String(userManager.uid()))
-        resetHistoryPoolStatus()
-        pullMyChannels()
         //發送成功連接訊號
         connectSuccess.onNext(())
+        //重置歷史訊息拉取標記
+        resetHistoryPoolStatus()
+        //取得我的頻道列表
+        pullMyChannels()
+        
     }
     
     func onDisconnect(_ client: CentrifugeClient, _ event: CentrifugeDisconnectEvent) {
@@ -296,7 +316,7 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
     }
     
     func onSubscribeError(_ sub: CentrifugeSubscription, _ event: CentrifugeSubscribeErrorEvent) {
-        onSubscribeError.onNext("subscribe channel \(sub.channel) error")
+        onSubscribeError.onNext(event.message)
     }
 }
 
@@ -318,14 +338,19 @@ extension ICChatManager {
         if let sub = client.getSubscription(channel: channelID) {
             onSubscribeExist(sub)
             return
-//            client.removeSubscription(sub)
         }
         //創建新的訂閱
         var sub: CentrifugeSubscription?
         do {
             sub = try client.newSubscription(channel: channelID, delegate: self)
         } catch {
-            print(error.localizedDescription)
+            guard let err = error as? CentrifugeError else { return }
+            switch err {
+            case .duplicateSub:
+                print("\(channelID) 頻道重複訂閱!")
+            default:
+                print("發生其他錯誤")
+            }
         }
         sub?.subscribe()
     }
@@ -354,7 +379,7 @@ extension ICChatManager {
                 success(channel)
             } onError: { (error) in
                 guard let err = error as? ICError else { return }
-                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                self.responseError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
 
@@ -370,7 +395,7 @@ extension ICChatManager {
                 success(channels)
             }, onError: { (error) in
                 guard let err = error as? ICError else { return }
-                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                self.responseError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             })
             .disposed(by: disposeBag)
     }
@@ -383,7 +408,7 @@ extension ICChatManager {
                 success(datas)
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
-                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                self.responseError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
     }
@@ -395,7 +420,7 @@ extension ICChatManager {
                 print("更新了最後閱讀序號")
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
-                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                self.responseError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
 
@@ -408,7 +433,7 @@ extension ICChatManager {
                 print("關閉 \(channelID ?? "") 頻道!")
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
-                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                self.responseError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
     }
@@ -420,7 +445,7 @@ extension ICChatManager {
                 print("激活 \(channelID ?? "") 頻道!")
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
-                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                self.responseError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
     }
@@ -432,7 +457,7 @@ extension ICChatManager {
                 print("創建 \(channelID ?? "") 頻道!")
             } onError: { [unowned self] (error) in
                 guard let err = error as? ICError else { return }
-                self.historyError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
+                self.responseError.onNext("\(err.code ?? 0) \(err.msg ?? "")")
             }
             .disposed(by: disposeBag)
     }

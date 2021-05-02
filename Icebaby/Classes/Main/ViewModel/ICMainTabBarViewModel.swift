@@ -15,7 +15,7 @@ class ICMainTabBarViewModel: ICViewModel {
     private let disposeBag = DisposeBag()
     
     private let navigator: ICMainTabBarNavigator?
-    private let chatManager: ICChatManager?
+    private let chatManager: ICChatManager
     private let userManager: UserManager
     private let showLoadingSubject = PublishSubject<Bool>()
     private let showErrorMsgSubject = PublishSubject<String>()
@@ -27,7 +27,6 @@ class ICMainTabBarViewModel: ICViewModel {
     struct Output {
         public let showLoading: Driver<Bool>
         public let showErrorMsg: Driver<String>
-        public let showDisconnect: Driver<Void>
     }
     
     init(navigator: ICMainTabBarNavigator, chatManager: ICChatManager, userManager: UserManager) {
@@ -36,6 +35,10 @@ class ICMainTabBarViewModel: ICViewModel {
         self.userManager = userManager
         bindConnecting(chatManager.connecting.asDriver(onErrorJustReturn: ()))
         bindConnectSuccess(chatManager.connectSuccess.asDriver(onErrorJustReturn: ()))
+        bindOnSubcribeError(chatManager.onSubscribeError.asDriver(onErrorJustReturn: ""))
+//        bindPublishError(chatManager.publishError.asDriver(onErrorJustReturn: ""))
+        bindResponseError(chatManager.responseError.asDriver(onErrorJustReturn: ""))
+        bindOnDisconnect(chatManager.onDisconnect.asDriver(onErrorJustReturn: ()))
     }
 }
 
@@ -43,8 +46,7 @@ extension ICMainTabBarViewModel {
     @discardableResult func transform(input: Input) -> Output {
         bindTrigger(trigger: input.trigger)
         return Output(showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false),
-                      showErrorMsg: chatManager!.publishError.asDriver(onErrorJustReturn: ""),
-                      showDisconnect: chatManager!.onDisconnect.asDriver(onErrorJustReturn: ()))
+                      showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -71,6 +73,42 @@ extension ICMainTabBarViewModel {
         connectSuccess
             .do { [unowned self] (_) in
                 self.showLoadingSubject.onNext(false)
+            }
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindOnSubcribeError(_ onSubcribeError: Driver<String>) {
+        onSubcribeError
+            .do { [unowned self] (msg) in
+                self.showErrorMsgSubject.onNext(msg)
+            }
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+//    private func bindPublishError(_ publishError: Driver<String>) {
+//        publishError
+//            .do { [unowned self] (msg) in
+//                self.showErrorMsgSubject.onNext(msg)
+//            }
+//            .drive()
+//            .disposed(by: disposeBag)
+//    }
+    
+    private func bindOnDisconnect(_ onDisconnect: Driver<Void>) {
+        onDisconnect
+            .do { [unowned self] (_) in
+                self.showErrorMsgSubject.onNext("與伺服器連線中斷!")
+            }
+            .drive()
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindResponseError(_ responseError: Driver<String>) {
+        responseError
+            .do { [unowned self] (msg) in
+                self.showErrorMsgSubject.onNext(msg)
             }
             .drive()
             .disposed(by: disposeBag)

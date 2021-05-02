@@ -44,9 +44,9 @@ extension ICMainTabBarController {
             .disposed(by: disposeBag)
         
         output?
-            .showDisconnect
-            .drive(onNext: { (_) in
-                self.hud.toast(self.view, "與伺服器斷線!")
+            .showErrorMsg
+            .drive(onNext: { [unowned self] (msg) in
+                self.hud.toast(self.view, msg)
             })
             .disposed(by: disposeBag)
     }
