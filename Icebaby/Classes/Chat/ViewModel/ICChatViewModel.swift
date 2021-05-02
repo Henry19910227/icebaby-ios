@@ -31,6 +31,7 @@ class ICChatViewModel: ICViewModel {
     private let showErrorMsgSubject = PublishSubject<String>()
     private let statusSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     private let enableChangeStatusSubject = ReplaySubject<Bool>.create(bufferSize: 1)
+    private let showLoadingSubject = PublishSubject<Bool>()
     
     //Status
     private var allowChat = false
@@ -53,7 +54,7 @@ class ICChatViewModel: ICViewModel {
         public let showErrorMsg: Driver<String>
         public let status: Driver<Bool>
         public let enableChangeStatus: Driver<Bool>
-        public let msgSendError: Driver<String>
+        public let showLoading: Driver<Bool>
     }
     
     init(navigator: ICChatNavigator,
@@ -72,6 +73,9 @@ class ICChatViewModel: ICViewModel {
         bindOnActivate(chatManager.onActivate.asDriver(onErrorJustReturn: nil))
         bindUpdateHistory(chatManager.updateHistory.asDriver(onErrorJustReturn: ("", [])))
         bindConnectSuccess(chatManager.connectSuccess.asDriver(onErrorJustReturn: ()))
+        bindPublishing(chatManager.publishing.asDriver(onErrorJustReturn: ""))
+        bindPublishError(chatManager.publishError.asDriver(onErrorJustReturn: ("", "")))
+        bindPublishSuccess(chatManager.publishSuccess.asDriver(onErrorJustReturn: ""))
     }
 }
 
@@ -88,7 +92,7 @@ extension ICChatViewModel {
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       status: statusSubject.asDriver(onErrorJustReturn: false),
                       enableChangeStatus: enableChangeStatusSubject.asDriver(onErrorJustReturn: false),
-                      msgSendError: chatManager.publishError.asDriver(onErrorJustReturn: ""))
+                      showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false))
     }
 }
 
@@ -192,6 +196,40 @@ extension ICChatViewModel {
             .drive(onNext: { [unowned self] (data) in
                 self.chatManager.sendMessage.onNext((self.channel.id ?? "", data))
             })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindPublishing(_ publishing: Driver<String>) {
+        publishing
+            .filter { [unowned self] (channelID) -> Bool in
+                return self.channel.id == channelID
+            }
+            .drive { [unowned self] (_) in
+                self.showLoadingSubject.onNext(true)
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindPublishError(_ publishError: Driver<(String, String)>) {
+        publishError
+            .filter { [unowned self] (channelID, _) -> Bool in
+                return self.channel.id == channelID
+            }
+            .drive { [unowned self] (_, msg) in
+                self.showLoadingSubject.onNext(false)
+                self.showErrorMsgSubject.onNext(msg)
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindPublishSuccess(_ publishSuccess: Driver<String>) {
+        publishSuccess
+            .filter { [unowned self] (channelID) -> Bool in
+                return self.channel.id == channelID
+            }
+            .drive { [unowned self] (_) in
+                self.showLoadingSubject.onNext(false)
+            }
             .disposed(by: disposeBag)
     }
     

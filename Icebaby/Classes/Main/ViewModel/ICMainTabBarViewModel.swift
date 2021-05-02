@@ -36,7 +36,6 @@ class ICMainTabBarViewModel: ICViewModel {
         bindConnecting(chatManager.connecting.asDriver(onErrorJustReturn: ()))
         bindConnectSuccess(chatManager.connectSuccess.asDriver(onErrorJustReturn: ()))
         bindOnSubcribeError(chatManager.onSubscribeError.asDriver(onErrorJustReturn: ""))
-//        bindPublishError(chatManager.publishError.asDriver(onErrorJustReturn: ""))
         bindResponseError(chatManager.responseError.asDriver(onErrorJustReturn: ""))
         bindOnDisconnect(chatManager.onDisconnect.asDriver(onErrorJustReturn: ()))
     }
@@ -86,15 +85,6 @@ extension ICMainTabBarViewModel {
             .drive()
             .disposed(by: disposeBag)
     }
-    
-//    private func bindPublishError(_ publishError: Driver<String>) {
-//        publishError
-//            .do { [unowned self] (msg) in
-//                self.showErrorMsgSubject.onNext(msg)
-//            }
-//            .drive()
-//            .disposed(by: disposeBag)
-//    }
     
     private func bindOnDisconnect(_ onDisconnect: Driver<Void>) {
         onDisconnect

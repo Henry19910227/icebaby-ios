@@ -61,7 +61,7 @@ class ICChatManager: NSObject {
     public let onActivate = PublishSubject<ICChannel?>()
     
     
-    public let publishError = PublishSubject<String>()
+    public let publishError = PublishSubject<(String, String)>()
     public let publishing = PublishSubject<String>()
     public let publishSuccess = PublishSubject<String>()
     public let onSubscribeSuccess = PublishSubject<(String, [ICMessageData])>()
@@ -124,7 +124,7 @@ extension ICChatManager: APIDataTransform {
         if let historyData = historyPool[channelID] {
             if historyData.needPull { //已登入過，但因為斷線原因，重新連接後需要追訊息
                 //使用該頻道最後一筆歷史訊息的seq查找後續的訊息
-                apiHistory(channelID: channelID, startSeq: historyData.messages?.last?.seq, endSeq: nil, count: 100) { [unowned self] (msgs) in
+                apiHistory(channelID: channelID, startSeq: historyData.messages?.last?.seq, endSeq: nil, count: 300) { [unowned self] (msgs) in
                     for msg in msgs {
                         historyData.messages?.append(msg)
                     }
@@ -213,13 +213,13 @@ extension ICChatManager {
                     //訊息發送失敗
                     switch err {
                     case .timeout:
-                        self.publishError.onNext("訊息發送超時 發送失敗!")
+                        self.publishError.onNext((sub.channel, "訊息發送超時 發送失敗!"))
                     case .unsubscribed:
-                        self.publishError.onNext("未訂閱該頻道")
+                        self.publishError.onNext((sub.channel, "未訂閱該頻道"))
                     case .replyError(let code, let msg):
-                        self.publishError.onNext("\(code) - \(msg)")
+                        self.publishError.onNext((sub.channel, "\(code) - \(msg)"))
                     default:
-                        self.publishError.onNext("系統錯誤")
+                        self.publishError.onNext((sub.channel, "系統錯誤"))
                     }
                 }
             })
@@ -244,8 +244,13 @@ extension ICChatManager: CentrifugeClientDelegate {
     
     func onDisconnect(_ client: CentrifugeClient, _ event: CentrifugeDisconnectEvent) {
         print("與聊天室斷開連接: \(event.reason), reconnect: \(event.reconnect)")
+        //會再次重連(server or 網路原因中斷)
+        if event.reconnect {
+            connecting.onNext(())
+            return
+        }
+        //不會再次重連(手動登出斷線)
         onDisconnect.onNext(())
-        connecting.onNext(())
     }
 }
 

@@ -113,9 +113,20 @@ extension ICChatViewController {
             .disposed(by: disposeBag)
         
         output?
-            .msgSendError
+            .showErrorMsg
             .drive(onNext: { [unowned self] (msg) in
                 self.hud.toast(self.view, msg)
+            })
+            .disposed(by: disposeBag)
+        
+        output?
+            .showLoading
+            .drive(onNext: { [unowned self] (isShow) in
+                if isShow {
+                    self.hud.show(view)
+                } else {
+                    self.hud.hide()
+                }
             })
             .disposed(by: disposeBag)
     }
