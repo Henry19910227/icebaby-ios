@@ -26,9 +26,9 @@ class ICChatManager: NSObject {
     static let shard = ICChatManager(userManager: ICUserManager(),
                                      chatAPIService: ICChatAPIService(userManager: ICUserManager()))
     private lazy var client: CentrifugeClient = {
-//        let url = "ws://127.0.0.1:8000/connection/websocket?format=protobuf"
+        let url = "ws://127.0.0.1:8000/connection/websocket?format=protobuf"
 //        let url = "ws://35.194.186.96:31500/connection/websocket?format=protobuf"
-        let url = "ws://www.icebaby-chat.tk:31500/connection/websocket?format=protobuf"
+//        let url = "ws://www.icebaby-chat.tk:31500/connection/websocket?format=protobuf"
         let client = CentrifugeClient(url: url, config: CentrifugeClientConfig(), delegate: self)
         return client
     }()
@@ -296,9 +296,11 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
             if type == "shutdown" {
                 let msgData = try JSONDecoder().decode(ICMessageData.self, from: event.data)
                 if let channelData = channelDataPool[msgData.channelID ?? ""] {
-                    //改變channel狀態
+                    //將channel狀態改為關閉，並且將舊的sub物件清空
                     channelData.channel?.status = 0
-//                    channelDataPool.removeValue(forKey: channelData.channel?.id ?? "")
+                    if let sub = channelData.sub {
+                        client.removeSubscription(sub)
+                    }
                     //發出頻道關閉訊號
                     onShutdown.onNext(channelData.channel?.id ?? "")
                     //發出訊號更新列表
