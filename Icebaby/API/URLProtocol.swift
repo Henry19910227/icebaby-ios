@@ -32,6 +32,7 @@ protocol ICChatURL: ICBaseURL {
 extension ICBaseURL {
     var baseURL: URL {
 //        return URL(string: "https://www.icebaby.tk/api/v1")!
+//        return URL(string: "http://34.117.227.78/api/v1")!
         return URL(string: "http://127.0.0.1:9090/api/v1")!
     }
 }

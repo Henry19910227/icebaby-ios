@@ -33,7 +33,7 @@ class ICChatViewController: MessagesViewController {
     // UI
     private lazy var statusBarButtonItem: UIBarButtonItem = {
         let statusButton = UIBarButtonItem()
-        statusButton.title = "關閉頻道"
+        statusButton.title = "繼續聊聊"
         return statusButton
     }()
     private let hud = ICLoadingProgressHUD()
@@ -78,7 +78,7 @@ extension ICChatViewController {
                                           exit: exit.asDriver(onErrorJustReturn: ()),
                                           sendMessage: sendMsg.asDriver(onErrorJustReturn: ""),
                                           allowChat: allowChat.asDriver(onErrorJustReturn: false),
-                                          changeStatus: statusBarButtonItem.rx.tap.asDriver())
+                                          renewChennel: statusBarButtonItem.rx.tap.asDriver())
         let output = viewModel?.transform(input: input)
         
         output?
@@ -101,14 +101,13 @@ extension ICChatViewController {
         output?
             .status
             .drive(onNext: { [unowned self] (isActivate) in
-                self.statusBarButtonItem.title = isActivate ? "關閉頻道" : ""
-                self.statusBarButtonItem.isEnabled = isActivate
+                self.statusBarButtonItem.title = isActivate ?  "": "繼續聊聊"
                 self.messagesCollectionView.backgroundColor = isActivate ? .white : .gray
             })
             .disposed(by: disposeBag)
         
         output?
-            .enableChangeStatus
+            .showRenewButton
             .drive(statusBarButtonItem.rx.isEnabled)
             .disposed(by: disposeBag)
         

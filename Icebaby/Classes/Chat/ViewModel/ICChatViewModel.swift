@@ -30,7 +30,7 @@ class ICChatViewModel: ICViewModel {
     private var senderSubject = PublishSubject<SenderType>()
     private let showErrorMsgSubject = PublishSubject<String>()
     private let statusSubject = ReplaySubject<Bool>.create(bufferSize: 1)
-    private let enableChangeStatusSubject = ReplaySubject<Bool>.create(bufferSize: 1)
+    private let showRenewButtonSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     private let showLoadingSubject = PublishSubject<Bool>()
     
     //Status
@@ -45,7 +45,7 @@ class ICChatViewModel: ICViewModel {
         public let exit: Driver<Void>
         public let sendMessage: Driver<String>
         public let allowChat: Driver<Bool>
-        public let changeStatus: Driver<Void>
+        public let renewChennel: Driver<Void>
     }
     
     struct Output {
@@ -53,7 +53,7 @@ class ICChatViewModel: ICViewModel {
         public let messages: Driver<[ICMessage]>
         public let showErrorMsg: Driver<String>
         public let status: Driver<Bool>
-        public let enableChangeStatus: Driver<Bool>
+        public let showRenewButton: Driver<Bool>
         public let showLoading: Driver<Bool>
     }
     
@@ -86,12 +86,12 @@ extension ICChatViewModel {
         bindExit(input.exit)
         bindAllowChat(input.allowChat)
         bindSendMessage(input.sendMessage)
-        bindStatusChange(input.changeStatus)
+        bindRenewChannel(input.renewChennel)
         return Output(sender: senderSubject.asDriver(onErrorJustReturn: ICSender()),
                       messages: messageSubject.asDriver(onErrorJustReturn: []),
                       showErrorMsg: showErrorMsgSubject.asDriver(onErrorJustReturn: ""),
                       status: statusSubject.asDriver(onErrorJustReturn: false),
-                      enableChangeStatus: enableChangeStatusSubject.asDriver(onErrorJustReturn: false),
+                      showRenewButton: showRenewButtonSubject.asDriver(onErrorJustReturn: false),
                       showLoading: showLoadingSubject.asDriver(onErrorJustReturn: false))
     }
 }
@@ -114,7 +114,7 @@ extension ICChatViewModel {
     
     private func setupChannel(_ channel: ICChannel) {
         statusSubject.onNext(channel.status ?? 0 == 1)
-        enableChangeStatusSubject.onNext(channel.me?.type ?? 0 == 1) //type = 1(房主) 才能操作開啟 or 關閉頻道
+        showRenewButtonSubject.onNext(channel.me?.type ?? 0 == 1) //type = 1(房主) 才能操作繼續聊聊
     }
     
     private func bindConnectSuccess(_ connectSuccess: Driver<Void>) {
@@ -135,6 +135,7 @@ extension ICChatViewModel {
             })
             .drive { [unowned self] (channelID) in
                 self.statusSubject.onNext(false)
+                self.showRenewButtonSubject.onNext(channel.me?.type ?? 0 == 1)
             }
             .disposed(by: disposeBag)
 
@@ -148,20 +149,15 @@ extension ICChatViewModel {
             })
             .drive { [unowned self] (channelID) in
                 self.statusSubject.onNext(true)
+                self.showRenewButtonSubject.onNext(false)
             }
             .disposed(by: disposeBag)
     }
     
-    private func bindStatusChange(_ statusChange: Driver<Void>) {
+    private func bindRenewChannel(_ statusChange: Driver<Void>) {
         statusChange
             .drive(onNext: { [unowned self] (_) in
-                if self.channel.status ?? 0 == 1 {
-                    print("關閉頻道")
-                    self.chatManager.shutdownChannel(channelID: self.channel.id ?? "")
-                } else {
-                    print("開啟頻道")
-                    self.chatManager.activateChannel(channelID: self.channel.id ?? "")
-                }
+                self.chatManager.createChannel(friendID: self.channel.member?.info?.userID ?? 0)
                 
             })
             .disposed(by: disposeBag)
@@ -269,7 +265,8 @@ extension ICChatViewModel {
                                       "channel_id": self.channel.id ?? "",
                                       "payload": payload]
         do {
-            let data = try JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
+//            let data = try JSONSerialization.data(withJSONObject: message, options: .prettyPrinted)
+            let data = try JSONSerialization.data(withJSONObject: message, options: .fragmentsAllowed)
             return data
         } catch  {
             return nil
