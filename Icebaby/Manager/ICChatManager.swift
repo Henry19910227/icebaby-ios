@@ -26,10 +26,10 @@ class ICChatManager: NSObject {
     static let shard = ICChatManager(userManager: ICUserManager(),
                                      chatAPIService: ICChatAPIService(userManager: ICUserManager()))
     private lazy var client: CentrifugeClient = {
-        let url = "ws://127.0.0.1:8000/connection/websocket?format=protobuf"
+//        let url = "ws://127.0.0.1:8000/connection/websocket?format=protobuf"
 //        let url = "ws://35.236.163.91/chat/connection/websocket?format=protobuf"
-//        let url = "wss://www.icebaby-chat.ml/chat/connection/websocket?format=protobuf"
-//        let url = "ws://www.icebaby-chat.tk:31500/connection/websocket?format=protobuf"
+        let url = "wss://www.icebaby-chat.ml/chat/connection/websocket?format=protobuf"
+//        let url = "wss://www.icebaby-chat.tk/chat/connection/websocket?format=protobuf"
         let client = CentrifugeClient(url: url, config: CentrifugeClientConfig(), delegate: self)
         return client
     }()
@@ -307,6 +307,11 @@ extension ICChatManager: CentrifugeSubscriptionDelegate {
                     //發出訊號更新列表
                     channels.onNext(getChannelsFromPool())
                 }
+            }
+            //貴妃下線時間改變通知
+            if type == "girl_offline_update" {
+                let msgData = try JSONDecoder().decode(ICOfflineUpdateData.self, from: event.data)
+                print(msgData.payload?.offline ?? "")
             }
         } catch {
             print("Error!")

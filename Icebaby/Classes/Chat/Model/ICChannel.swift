@@ -14,6 +14,9 @@ class ICChannel: Codable {
     var status: Int?
     var type: Int?
     var unread: Int?
+    var createAt: String?
+    var closeAt: String?
+    var girlOfflineAt: String?
     var me: ICMemberItem?
     var member: ICMemberItem?
     
@@ -24,6 +27,9 @@ class ICChannel: Codable {
         case status = "status"
         case type = "type"
         case unread = "unread"
+        case createAt = "create_at"
+        case closeAt = "close_at"
+        case girlOfflineAt = "girl_offline_at"
         case me = "me"
         case member = "member"
     }
